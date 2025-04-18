@@ -1,0 +1,6 @@
+#
+## Action list for setting up for drying water traps on manifold pumps
+0	TurnUniversalActuator	ManifoldA	@ManifoldA_drygas
+2	TurnUniversalActuator	ManifoldB	@ManifoldB_drygas
+4	TurnUniversalActuator 	ManifoldA_Evac	@evac_on 
+6	TurnUniversalActuator 	ManifoldB_Evac	@evac_on

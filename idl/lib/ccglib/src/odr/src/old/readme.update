@@ -1,0 +1,64 @@
+ Update Instructions for
+ ODRPACK 2.01 -- Software for Weighted Orthogonal Distance Regression
+
+
+ *******************************************************************************
+ *                                                                             *
+ *    If you have not already installed ODRPACK Version 2.00, then you MUST    *
+ *    follow the installation instructions in file README, which describes     *
+ *    the necessary steps for installing the current version, 2.01.  If you    *
+ *    have already installed Version 2.00 and would prefer to only update      *
+ *    those subprograms that have changed between Version 2.00 and Version     *
+ *    2.01, then please follow the instructions below.  File CHANGES           *
+ *    identifies how ODRPACK 2.01 differs from earlier releases.               *
+ *                                                                             *
+ *******************************************************************************
+
+
+
+ Direct questions to
+
+      Janet E. Rogers
+      Optimization Group/Applied and Computational Mathematics Division (881)
+      National Institute of Standards and Technology
+      325 Broadway
+      Boulder, CO 80303-3328
+
+      e-mail:  internet -- jrogers@bldr.nist.gov
+      phone:   (303) 497-5114 
+      fax:     (303) 497-3012
+
+
+
+
+ *** UPDATING ODRPACK FROM VERSION 2.00 TO VERSION 2.01
+
+ File CHANGES identifies how ODRPACK Version 2.01 differs from earlier
+ releases.  The modifications introduced by Version 2.01 result in an
+ increase in the minimum work vector length, and thus required that the test
+ programs and sample drivers be altered;  the data files for the sample drivers
+ remain the same as for Version 2.00.  The modifications also produce minor
+ changes in the output from the test routines and drivers.  The ODRPACK 2.00
+ User's Reference Guide (NISTIR 89-4103, Revised) can still be used with
+ ODRPACK Version 2.01, although the user will need to make note the
+ differences described in file CHANGES.
+
+ The updated subprograms for ODRPACK 2.01 are in file D_UPDATE.F for the
+ double precision version of ODRPACK, and in file S_UPDATE.F for the single
+ precision version.  A Fortran program that can be used to split this source
+ code file into files each consisting of one subprogram each is given in file
+ README.
+
+ On most UNIX systems, simply invoking the command
+
+    make -f makefile.update
+
+ will update an existing ODRPACK 2.00 library with the modified subprograms,
+ and will re-execute all of the test problems.  On others systems, the
+ installer will need to proceed with the update "by hand," replacing the
+ ODRPACK 2.00 subprograms with the updated subprograms in files D_UPDATE.F and
+ S_UPDATE.F.  Note that, as supplied with the release, makefile MAKEFILE.UPDATE
+ assumes that both the single and double precision versions of the code exist
+ in a single library;  the changes necessary to update only one version are
+ documented within MAKEFILE.UPDATE.
+

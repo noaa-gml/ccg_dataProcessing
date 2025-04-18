@@ -1,0 +1,1 @@
+/home/magicc/src/as_comm/get_as_serial.pl

@@ -1,0 +1,28 @@
+#
+#########################################
+# Routing
+#########################################
+#
+echo "<TR>";
+echo "<TD>";
+
+echo "<TABLE cellspacing = 3 cellpadding = 3>";
+echo "<TR>";
+echo "<TD align='center' class='SmallBlackB'>SYSTEM</TD>";
+echo "<TD align='center' class='SmallBlackB'>ANALYSIS DATE</TD>";
+echo "<TD align='center' class='SmallBlackB'>INITIALS</TD>";
+echo "</TR>";
+
+echo "<TR><TD> </TD></TR>";
+
+$tmp = explode('-',$path);
+
+for ($i=0; $i<count($tmp); $i++)
+{
+	echo "<TR>";
+	echo "<TH align='center' class='MediumBlueB'>${tmp[$i]}</TH>";
+	echo "<TD class = 'SmallBlackN'><HR NOSHADE SIZE = 1></TD>";
+	echo "<TD class = 'SmallBlackN'><HR NOSHADE SIZE = 1></TD>";
+	echo "</TR>";
+}
+echo "</TABLE>";

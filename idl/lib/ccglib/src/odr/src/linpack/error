@@ -1,0 +1,717 @@
+caxpy.f:
+caxpy.f:
+	caxpy:
+cchdc.f:
+cchdc.f:
+	cchdc:
+Warning on line 237 of cchdc.f: local variable i never used
+cchdd.f:
+cchdd.f:
+	cchdd:
+cchex.f:
+cchex.f:
+	cchex:
+Warning on line 247 of cchex.f: local variable rjp1j never used
+cchud.f:
+cchud.f:
+	cchud:
+ccopy.f:
+ccopy.f:
+	ccopy:
+cdotc.f:
+cdotc.f:
+	cdotc:
+cdotu.f:
+cdotu.f:
+	cdotu:
+cgbco.f:
+cgbco.f:
+	cgbco:
+cgbdi.f:
+cgbdi.f:
+	cgbdi:
+cgbfa.f:
+cgbfa.f:
+	cgbfa:
+cgbsl.f:
+cgbsl.f:
+	cgbsl:
+cgeco.f:
+cgeco.f:
+	cgeco:
+cgedi.f:
+cgedi.f:
+	cgedi:
+cgefa.f:
+cgefa.f:
+	cgefa:
+cgesl.f:
+cgesl.f:
+	cgesl:
+cgtsl.f:
+cgtsl.f:
+	cgtsl:
+chico.f:
+chico.f:
+	chico:
+chidi.f:
+chidi.f:
+	chidi:
+chifa.f:
+chifa.f:
+	chifa:
+chisl.f:
+chisl.f:
+	chisl:
+chpco.f:
+chpco.f:
+	chpco:
+chpdi.f:
+chpdi.f:
+	chpdi:
+chpfa.f:
+chpfa.f:
+	chpfa:
+chpsl.f:
+chpsl.f:
+	chpsl:
+cmach.f:
+cmach.f:
+	cmach:
+cpbco.f:
+cpbco.f:
+	cpbco:
+cpbdi.f:
+cpbdi.f:
+	cpbdi:
+cpbfa.f:
+cpbfa.f:
+	cpbfa:
+cpbsl.f:
+cpbsl.f:
+	cpbsl:
+cpoco.f:
+cpoco.f:
+	cpoco:
+cpodi.f:
+cpodi.f:
+	cpodi:
+cpofa.f:
+cpofa.f:
+	cpofa:
+cposl.f:
+cposl.f:
+	cposl:
+cppco.f:
+cppco.f:
+	cppco:
+cppdi.f:
+cppdi.f:
+	cppdi:
+cppfa.f:
+cppfa.f:
+	cppfa:
+cppsl.f:
+cppsl.f:
+	cppsl:
+cptsl.f:
+cptsl.f:
+	cptsl:
+cqrdc.f:
+cqrdc.f:
+	cqrdc:
+cqrsl.f:
+cqrsl.f:
+	cqrsl:
+crotg.f:
+crotg.f:
+	crotg:
+cscal.f:
+cscal.f:
+	cscal:
+csico.f:
+csico.f:
+	csico:
+csidi.f:
+csidi.f:
+	csidi:
+csifa.f:
+csifa.f:
+	csifa:
+csisl.f:
+csisl.f:
+	csisl:
+cspco.f:
+cspco.f:
+	cspco:
+cspdi.f:
+cspdi.f:
+	cspdi:
+cspfa.f:
+cspfa.f:
+	cspfa:
+cspsl.f:
+cspsl.f:
+	cspsl:
+csrot.f:
+csrot.f:
+	csrot:
+csscal.f:
+csscal.f:
+	csscal:
+csvdc.f:
+csvdc.f:
+	csvdc:
+cswap.f:
+cswap.f:
+	cswap:
+ctrco.f:
+ctrco.f:
+	ctrco:
+ctrdi.f:
+ctrdi.f:
+	ctrdi:
+ctrsl.f:
+ctrsl.f:
+	ctrsl:
+dasum.f:
+dasum.f:
+	dasum:
+daxpy.f:
+daxpy.f:
+	daxpy:
+dcabs1.f:
+dcabs1.f:
+	dcabs1:
+dchdc.f:
+dchdc.f:
+	dchdc:
+Warning on line 234 of dchdc.f: local variable i never used
+dchdd.f:
+dchdd.f:
+	dchdd:
+dchex.f:
+dchex.f:
+	dchex:
+Warning on line 247 of dchex.f: local variable rjp1j never used
+dchud.f:
+dchud.f:
+	dchud:
+dcopy.f:
+dcopy.f:
+	dcopy:
+ddot.f:
+ddot.f:
+	ddot:
+dgbco.f:
+dgbco.f:
+	dgbco:
+dgbdi.f:
+dgbdi.f:
+	dgbdi:
+dgbfa.f:
+dgbfa.f:
+	dgbfa:
+dgbsl.f:
+dgbsl.f:
+	dgbsl:
+dgeco.f:
+dgeco.f:
+	dgeco:
+dgedi.f:
+dgedi.f:
+	dgedi:
+dgefa.f:
+dgefa.f:
+	dgefa:
+dgesl.f:
+dgesl.f:
+	dgesl:
+dgtsl.f:
+dgtsl.f:
+	dgtsl:
+dmach.f:
+dmach.f:
+	dmach:
+dnrm2.f:
+dnrm2.f:
+	dnrm2:
+dpbco.f:
+dpbco.f:
+	dpbco:
+dpbdi.f:
+dpbdi.f:
+	dpbdi:
+dpbfa.f:
+dpbfa.f:
+	dpbfa:
+dpbsl.f:
+dpbsl.f:
+	dpbsl:
+dpoco.f:
+dpoco.f:
+	dpoco:
+dpodi.f:
+dpodi.f:
+	dpodi:
+dpofa.f:
+dpofa.f:
+	dpofa:
+dposl.f:
+dposl.f:
+	dposl:
+dppco.f:
+dppco.f:
+	dppco:
+dppdi.f:
+dppdi.f:
+	dppdi:
+dppfa.f:
+dppfa.f:
+	dppfa:
+dppsl.f:
+dppsl.f:
+	dppsl:
+dptsl.f:
+dptsl.f:
+	dptsl:
+dqrdc.f:
+dqrdc.f:
+	dqrdc:
+dqrsl.f:
+dqrsl.f:
+	dqrsl:
+drot.f:
+drot.f:
+	drot:
+drotg.f:
+drotg.f:
+	drotg:
+dscal.f:
+dscal.f:
+	dscal:
+dsico.f:
+dsico.f:
+	dsico:
+dsidi.f:
+dsidi.f:
+	dsidi:
+dsifa.f:
+dsifa.f:
+	dsifa:
+dsisl.f:
+dsisl.f:
+	dsisl:
+dspco.f:
+dspco.f:
+	dspco:
+dspdi.f:
+dspdi.f:
+	dspdi:
+dspfa.f:
+dspfa.f:
+	dspfa:
+dspsl.f:
+dspsl.f:
+	dspsl:
+dsvdc.f:
+dsvdc.f:
+	dsvdc:
+Warning on line 481 of dsvdc.f: local variable r never used
+dswap.f:
+dswap.f:
+	dswap:
+dtrco.f:
+dtrco.f:
+	dtrco:
+dtrdi.f:
+dtrdi.f:
+	dtrdi:
+dtrsl.f:
+dtrsl.f:
+	dtrsl:
+dzasum.f:
+dzasum.f:
+	dzasum:
+dznrm2.f:
+dznrm2.f:
+	dznrm2:
+icamax.f:
+icamax.f:
+	icamax:
+idamax.f:
+idamax.f:
+	idamax:
+isamax.f:
+isamax.f:
+	isamax:
+izamax.f:
+izamax.f:
+	izamax:
+Warning on line 37 of izamax.f: local variable zdum never used
+sasum.f:
+sasum.f:
+	sasum:
+saxpy.f:
+saxpy.f:
+	saxpy:
+sblas.f:
+sblas.f:
+	isamax:
+	sasum:
+	saxpy:
+	scopy:
+	sdot:
+	smach:
+	snrm2:
+	srot:
+	srotg:
+	sscal:
+	sswap:
+scasum.f:
+scasum.f:
+	scasum:
+schdc.f:
+schdc.f:
+	schdc:
+Warning on line 234 of schdc.f: local variable i never used
+schdd.f:
+schdd.f:
+	schdd:
+schex.f:
+schex.f:
+	schex:
+Warning on line 247 of schex.f: local variable rjp1j never used
+schud.f:
+schud.f:
+	schud:
+scnrm2.f:
+scnrm2.f:
+	scnrm2:
+scopy.f:
+scopy.f:
+	scopy:
+sdot.f:
+sdot.f:
+	sdot:
+sgbco.f:
+sgbco.f:
+	sgbco:
+sgbdi.f:
+sgbdi.f:
+	sgbdi:
+sgbfa.f:
+sgbfa.f:
+	sgbfa:
+sgbsl.f:
+sgbsl.f:
+	sgbsl:
+sgeco.f:
+sgeco.f:
+	sgeco:
+sgedi.f:
+sgedi.f:
+	sgedi:
+sgefa.f:
+sgefa.f:
+	sgefa:
+sgesl.f:
+sgesl.f:
+	sgesl:
+sgtsl.f:
+sgtsl.f:
+	sgtsl:
+smach.f:
+smach.f:
+	smach:
+snrm2.f:
+snrm2.f:
+	snrm2:
+spbco.f:
+spbco.f:
+	spbco:
+spbdi.f:
+spbdi.f:
+	spbdi:
+spbfa.f:
+spbfa.f:
+	spbfa:
+spbsl.f:
+spbsl.f:
+	spbsl:
+spoco.f:
+spoco.f:
+	spoco:
+spodi.f:
+spodi.f:
+	spodi:
+spofa.f:
+spofa.f:
+	spofa:
+sposl.f:
+sposl.f:
+	sposl:
+sppco.f:
+sppco.f:
+	sppco:
+sppdi.f:
+sppdi.f:
+	sppdi:
+sppfa.f:
+sppfa.f:
+	sppfa:
+sppsl.f:
+sppsl.f:
+	sppsl:
+sptsl.f:
+sptsl.f:
+	sptsl:
+sqrdc.f:
+sqrdc.f:
+	sqrdc:
+sqrsl.f:
+sqrsl.f:
+	sqrsl:
+srot.f:
+srot.f:
+	srot:
+srotg.f:
+srotg.f:
+	srotg:
+sscal.f:
+sscal.f:
+	sscal:
+ssico.f:
+ssico.f:
+	ssico:
+ssidi.f:
+ssidi.f:
+	ssidi:
+ssifa.f:
+ssifa.f:
+	ssifa:
+ssisl.f:
+ssisl.f:
+	ssisl:
+sspco.f:
+sspco.f:
+	sspco:
+sspdi.f:
+sspdi.f:
+	sspdi:
+sspfa.f:
+sspfa.f:
+	sspfa:
+sspsl.f:
+sspsl.f:
+	sspsl:
+ssvdc.f:
+ssvdc.f:
+	ssvdc:
+Warning on line 481 of ssvdc.f: local variable r never used
+sswap.f:
+sswap.f:
+	sswap:
+strco.f:
+strco.f:
+	strco:
+strdi.f:
+strdi.f:
+	strdi:
+strsl.f:
+strsl.f:
+	strsl:
+zaxpy.f:
+zaxpy.f:
+	zaxpy:
+zblas.f:
+zblas.f:
+	dcabs1:
+	drotg:
+	dzasum:
+	dznrm2:
+	zdrot:
+	izamax:
+Warning on line 276 of zblas.f: local variable zdum never used
+	zaxpy:
+	zcopy:
+	zdotc:
+	zdotu:
+	zdscal:
+	zmach:
+	zrotg:
+	zscal:
+	zswap:
+zchdc.f:
+zchdc.f:
+	zchdc:
+Warning on line 240 of zchdc.f: local variable i never used
+zchdd.f:
+zchdd.f:
+	zchdd:
+zchex.f:
+zchex.f:
+	zchex:
+Warning on line 251 of zchex.f: local variable rjp1j never used
+zchud.f:
+zchud.f:
+	zchud:
+zcopy.f:
+zcopy.f:
+	zcopy:
+zdotc.f:
+zdotc.f:
+	zdotc:
+zdotu.f:
+zdotu.f:
+	zdotu:
+zdrot.f:
+zdrot.f:
+	zdrot:
+zdscal.f:
+zdscal.f:
+	zdscal:
+zgbco.f:
+zgbco.f:
+	zgbco:
+zgbdi.f:
+zgbdi.f:
+	zgbdi:
+zgbfa.f:
+zgbfa.f:
+	zgbfa:
+zgbsl.f:
+zgbsl.f:
+	zgbsl:
+zgeco.f:
+zgeco.f:
+	zgeco:
+zgedi.f:
+zgedi.f:
+	zgedi:
+zgefa.f:
+zgefa.f:
+	zgefa:
+zgesl.f:
+zgesl.f:
+	zgesl:
+zgtsl.f:
+zgtsl.f:
+	zgtsl:
+zhico.f:
+zhico.f:
+	zhico:
+zhidi.f:
+zhidi.f:
+	zhidi:
+zhifa.f:
+zhifa.f:
+	zhifa:
+zhisl.f:
+zhisl.f:
+	zhisl:
+zhpco.f:
+zhpco.f:
+	zhpco:
+zhpdi.f:
+zhpdi.f:
+	zhpdi:
+zhpfa.f:
+zhpfa.f:
+	zhpfa:
+zhpsl.f:
+zhpsl.f:
+	zhpsl:
+zmach.f:
+zmach.f:
+	zmach:
+zpbco.f:
+zpbco.f:
+	zpbco:
+zpbdi.f:
+zpbdi.f:
+	zpbdi:
+zpbfa.f:
+zpbfa.f:
+	zpbfa:
+zpbsl.f:
+zpbsl.f:
+	zpbsl:
+zpoco.f:
+zpoco.f:
+	zpoco:
+zpodi.f:
+zpodi.f:
+	zpodi:
+zpofa.f:
+zpofa.f:
+	zpofa:
+zposl.f:
+zposl.f:
+	zposl:
+zppco.f:
+zppco.f:
+	zppco:
+zppdi.f:
+zppdi.f:
+	zppdi:
+zppfa.f:
+zppfa.f:
+	zppfa:
+zppsl.f:
+zppsl.f:
+	zppsl:
+zptsl.f:
+zptsl.f:
+	zptsl:
+zqrdc.f:
+zqrdc.f:
+	zqrdc:
+zqrsl.f:
+zqrsl.f:
+	zqrsl:
+zrotg.f:
+zrotg.f:
+	zrotg:
+zscal.f:
+zscal.f:
+	zscal:
+zsico.f:
+zsico.f:
+	zsico:
+zsidi.f:
+zsidi.f:
+	zsidi:
+zsifa.f:
+zsifa.f:
+	zsifa:
+zsisl.f:
+zsisl.f:
+	zsisl:
+zspco.f:
+zspco.f:
+	zspco:
+zspdi.f:
+zspdi.f:
+	zspdi:
+zspfa.f:
+zspfa.f:
+	zspfa:
+zspsl.f:
+zspsl.f:
+	zspsl:
+zsvdc.f:
+zsvdc.f:
+	zsvdc:
+zswap.f:
+zswap.f:
+	zswap:
+ztrco.f:
+ztrco.f:
+	ztrco:
+ztrdi.f:
+ztrdi.f:
+	ztrdi:
+ztrsl.f:
+ztrsl.f:
+	ztrsl:

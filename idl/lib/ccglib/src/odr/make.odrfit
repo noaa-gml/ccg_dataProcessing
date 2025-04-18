@@ -1,0 +1,20 @@
+CC = gcc
+
+WDIR=/projects/idl/lib/ccglib/src/
+
+FSUBS = $(WDIR)odr/odrfitf.f
+
+OBJECTS = $(WDIR)odr/odrfitf.o $(WDIR)odr/odrfitc.o
+
+INCL = -L$(WDIR)odr/src
+LIBS = -lm
+FLIBS = -lodrpack
+
+odrfit:		$(OBJECTS)
+		g77 $(OBJECTS) $(INCL) $(FLIBS) $(LIBS) -o ./odrfit
+		rm *.o
+
+.f.o:		$(FSUBS)
+		f77 -u -O -c $< -o $*.o
+.c.o:
+		$(CC) -Wall -c $*.c -o$@

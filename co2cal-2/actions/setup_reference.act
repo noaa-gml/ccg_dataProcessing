@@ -1,0 +1,7 @@
+# Setup for reference aliquot
+#
+# $1  Instrument to flush through
+#
+0    CloseRelay         hp34970     @$1_idle
+0    CloseRelay         hp34970     @Reference_MKS_Valve
+1    Noop               None        None

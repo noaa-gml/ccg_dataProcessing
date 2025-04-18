@@ -1,0 +1,61 @@
+## action file to measure qc data during trap drying procedure
+#
+# measure sample loop pressure and room pressure, return results to calling program
+0       LockInterface   hp34970  Lock
+#
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+#
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+#
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+#
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+#
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+#
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+0	SingleScan	hp34970  @room_temp @room_temp_scale
+0	PrintData	hp34970  %d %12.4
+0 	ReadValue	   	hp34970		@ManifoldA_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f
+#
+1       LockInterface   hp34970  Unlock
+

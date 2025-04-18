@@ -1,0 +1,25 @@
+body
+{ background-color:#E3E3E3; }
+input
+{font-size:1em;}
+input[type=button],[type=submit]
+{ background-color:#01DFD7; }
+select
+{font-size:1em;}
+textarea
+{
+   font-size:1em;
+   height:75px;
+}
+h2
+{ text-align:left; }
+h3,h4
+{ text-align:center; }
+.MenuTable
+{
+   width:200px;
+}
+.desktop_view
+{ display:; }
+.mobile_view
+{ display:none; }

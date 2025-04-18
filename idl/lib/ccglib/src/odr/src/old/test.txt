@@ -1,0 +1,1897 @@
+1
+ EXAMPLE  1
+
+ TEST SIMPLE ODR PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODR.
+ DATA SET REFERENCE:  DRAPER AND SMITH, 1981, EXERCISE I, PAGE 521-522                               
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+
+ *** DERIVATIVE CHECKING REPORT FOR FIT BY METHOD OF ODR ***
+
+
+     FOR RESPONSE  1 OF OBSERVATION     1
+
+                               USER                               
+                           SUPPLIED     RELATIVE    DERIVATIVE 
+        DERIVATIVE WRT        VALUE   DIFFERENCE    ASSESSMENT 
+
+             BETA(  1)    -3.18D+01     4.26D-08    VERIFIED
+             BETA(  2)     1.98D-05     1.30D-08    VERIFIED
+          DELTA( 1, 1)    -3.37D-03     5.33D-08    VERIFIED
+          DELTA( 1, 2)    -5.11D-03     7.38D-08    VERIFIED
+
+     NUMBER OF RELIABLE DIGITS IN FUNCTION RESULTS          16
+        (ESTIMATED BY ODRPACK)
+
+     NUMBER OF DIGITS OF AGREEMENT REQUIRED BETWEEN      
+     USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVE FOR  
+     USER SUPPLIED DERIVATIVE TO BE CONSIDERED VERIFIED      4
+
+     ROW NUMBER AT WHICH DERIVATIVES WERE CHECKED            1
+
+       -VALUES OF THE EXPLANATORY VARIABLES AT THIS ROW
+
+          X( 1, 1)   1.09000000D+02
+          X( 1, 2)   6.00000000D+02
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =     8          (NUMBER WITH NONZERO WEIGHT =     8)
+           NQ =     1
+            M =     2
+           NP =     2          (NUMBER UNFIXED =     2)
+
+ --- CONTROL VALUES:
+          JOB = 00020
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=2 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE CHECKED.
+                               RESULTS APPEAR CORRECT.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    6.76620105D-01
+         SUM OF SQUARED WEIGHTED DELTAS     =   0.00000000D+00
+         SUM OF SQUARED WEIGHTED EPSILONS   =   6.76620105D-01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE              
+                                                                   
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  1.15500000D-02       NO  8.65800866D+01              
+           2  5.00000000D+03       NO  2.00000000D-04              
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT              
+                                                                               
+       (I,J)                          (IFIXX)    (SCLD)      (WD)              
+
+         1,1   1.090D+02   0.000D+00       NO  9.17D-03  1.00D+00              
+         N,1   6.800D+01   0.000D+00       NO  1.47D-02  1.00D+00              
+ 
+         1,2   6.000D+02   0.000D+00       NO  1.56D-03  1.00D+00              
+         N,2   6.400D+02   0.000D+00       NO  1.56D-03  1.00D+00              
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   9.120D-01   1.000D+00
+         N,1   3.760D-01   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1      18  1.96944D-01   7.0893D-01   4.1620D-01  1.510D+00   YES
+    2      19  1.86553D-03   9.9053D-01   9.9572D-01  6.711D-01   YES
+    3      20  7.53265D-04   5.9622D-01   5.9632D-01  4.625D-02   YES
+    4      21  7.53264D-04   7.5670D-07   7.5713D-07  2.259D-05   YES
+    5      22  7.53264D-04   3.2574D-13   3.3214D-13  1.810D-08   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =     5          (NUMBER OF ITERATIONS)
+         NFEV =    22          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =     6          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     8.70D-02   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     7.53263957D-04
+         SUM OF SQUARED WEIGHTED DELTAS   =    5.82361429D-07
+         SUM OF SQUARED WEIGHTED EPSILONS =    7.52681595D-04
+
+ --- RESIDUAL STANDARD DEVIATION          =                     1.12046416D-02
+         DEGREES OF FREEDOM               =    6
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   3.65797302D-03     4.2218D-05     3.55466818D-03 TO  3.76127786D-03
+       2   2.76273320D+04     2.2245D+02     2.70830140D+04 TO  2.81716499D+04
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)      DELTA(I,1)      DELTA(I,2)
+
+         1  1.67519647D-03  1.26771981D-06  1.06044027D-05
+         2  2.04207811D-03  1.15465196D-05  5.06224853D-05
+         3 -2.06741955D-02 -6.44374753D-06 -5.83522780D-04
+         4  2.42895060D-03  1.35332858D-05  6.02457198D-05
+         5  7.27227474D-03  2.10381027D-06  2.05043707D-04
+         6  4.07668337D-03  2.17324633D-05  1.01143283D-04
+         7  1.30331782D-02  3.89740068D-06  3.67888393D-04
+         8 -8.54482325D-03 -4.62274242D-05 -2.12025259D-04
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 2.762733195780256937723606824875D+04 7.532639569022918889229512018346D-04     1
+
+  NEW TEST RESULT      = 
+ 2.762733195759230511612258851528D+04 7.532639569023399190791923096810D-04     1
+
+  DIFFERENCE           =  2.10264D-07                          4.80302D-17
+
+  RELATIVE ERROR       =  7.61073D-12                          6.37627D-14
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  2
+
+ TEST SIMPLE OLS PROBLEM
+ WITH FINITE DIFFERENCE DERIVATIVES USING DODR.
+ DATA SET REFERENCE:  DRAPER AND SMITH, 1981, EXERCISE I, PAGE 521-522                               
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF OLS ***
+
+ --- PROBLEM SIZE:
+            N =     8          (NUMBER WITH NONZERO WEIGHT =     8)
+           NQ =     1
+            M =     2
+           NP =     2          (NUMBER UNFIXED =     2)
+
+ --- CONTROL VALUES:
+          JOB = 00002
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE FIXED AT ZERO SINCE E=2.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=0 ==> DERIVATIVES ARE ESTIMATED BY FORWARD DIFFERENCES.
+                       E=2 ==> METHOD IS EXPLICIT OLS.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    6.76620105D-01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE    DERIVATIVE
+                                                          STEP SIZE
+         (K)                  (IFIXB)          (SCLB)        (STPB)
+
+           1  1.15500000D-02       NO  8.65800866D+01   1.00000D-10
+           2  5.00000000D+03       NO  2.00000000D-04   1.00000D-10
+
+ --- EXPLANATORY VARIABLE SUMMARY:
+
+       INDEX      X(I,J)
+       (I,J)            
+
+         1,1   1.090D+02
+         N,1   6.800D+01
+ 
+         1,2   6.000D+02
+         N,2   6.400D+02
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   9.120D-01   1.000D+00
+         N,1   3.760D-01   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF OLS ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1       8  1.96947D-01   7.0893D-01   4.1620D-01  1.510D+00   YES
+    2      11  1.86608D-03   9.9052D-01   9.9572D-01  6.711D-01   YES
+    3      14  7.53847D-04   5.9603D-01   5.9612D-01  4.625D-02   YES
+    4      17  7.53847D-04   3.6519D-07   3.6481D-07  2.231D-05   YES
+    5      20  7.53847D-04  -6.6525D-13   7.3426D-13  8.211D-09   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF OLS ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =     5          (NUMBER OF ITERATIONS)
+         NFEV =    22          (NUMBER OF FUNCTION EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     8.70D-02   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     7.53846772D-04
+
+ --- RESIDUAL STANDARD DEVIATION          =                     1.12089754D-02
+         DEGREES OF FREEDOM               =    6
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   3.65797271D-03     4.2220D-05     3.55466516D-03 TO  3.76128026D-03
+       2   2.76273261D+04     2.2246D+02     2.70829945D+04 TO  2.81716577D+04
+
+ --- ESTIMATED EPSILON(I,  1), I = 1, ..., N:
+
+           INDEX           VALUE -------------->
+
+       1 TO    4  1.67524573D-03  2.04353733D-03 -2.06907512D-02  2.43065938D-03
+       5 TO    8  7.27797278D-03  4.07944774D-03  1.30434799D-02 -8.55019524D-03
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 2.762732630143672940903343260288D+04 7.538467722687131359823875520476D-04     1
+
+  NEW TEST RESULT      = 
+ 2.762732613563912309473380446434D+04 7.538467722687815491394713873774D-04     1
+
+  DIFFERENCE           =  1.65798D-04                          6.84132D-17
+
+  RELATIVE ERROR       =  6.00122D-09                          9.07521D-14
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  3
+
+ TEST PARAMETER FIXING CAPABILITIES FOR POORLY SCALED OLS PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  BOGGS, BYRD AND SCHNABEL, 1985, EXAMPLE 3                                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF OLS ***
+
+ --- PROBLEM SIZE:
+            N =    44          (NUMBER WITH NONZERO WEIGHT =    44)
+           NQ =     1
+            M =     1
+           NP =     9          (NUMBER UNFIXED =     4)
+
+ --- CONTROL VALUES:
+          JOB = 00042
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE FIXED AT ZERO SINCE E=2.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=4 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE NOT CHECKED.
+                       E=2 ==> METHOD IS EXPLICIT OLS.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    7.28536065D+16
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE              
+                                                                   
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  2.81887509D-06       NO  3.54751440D+05              
+           2 -2.31290549D-03       NO  4.32356620D+02              
+           3  5.83035556D+00       NO  1.71516126D-01              
+           4  0.00000000D+00      YES  3.54751440D+06              
+           5  4.06910776D+07       NO  2.45754121D-08              
+           6  1.38001105D-03      YES  7.24631878D+02              
+           7  5.96038513D-02      YES  1.67774393D+01              
+           8  6.70582099D+00      YES  1.49124172D-01              
+           9  1.06994410D+09      YES  9.34628267D-10              
+
+ --- EXPLANATORY VARIABLE SUMMARY:
+
+       INDEX      X(I,J)
+       (I,J)            
+
+         1,1   2.500D-09
+         N,1   1.000D+00
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   9.882D-01   1.000D+00
+         N,1   9.473D-01   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF OLS ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1       6  1.21281D-05   1.0000D+00   1.0000D+00  1.492D+00   YES
+    2       7  1.21281D-05   9.5556D-11   9.5522D-11  5.559D-06   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF OLS ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =     2          (NUMBER OF ITERATIONS)
+         NFEV =     7          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =     3          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     1.29D-11   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     1.21280859D-05
+
+ --- RESIDUAL STANDARD DEVIATION          =                     5.50637947D-04
+         DEGREES OF FREEDOM               =   40
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   2.38645545D-06     4.4960D-07     1.47777105D-06 TO  3.29513984D-06
+       2  -2.20450067D-03     4.0156D-05    -2.28565970D-03 TO -2.12334164D-03
+       3   3.82273198D+00     3.8316D-02     3.74529214D+00 TO  3.90017183D+00
+       4   0.00000000D+00          FIXED
+       5   4.53364001D-01     5.2741D-03     4.42704540D-01 TO  4.64023461D-01
+       6   1.38001105D-03          FIXED
+       7   5.96038513D-02          FIXED
+       8   6.70582099D+00          FIXED
+       9   1.06994410D+09          FIXED
+
+ --- ESTIMATED EPSILON(I,  1), I = 1, ..., N:
+
+           INDEX           VALUE -------------->
+
+       1 TO    4 -5.85324109D-05 -9.89224867D-05 -1.71864030D-04 -2.11456078D-04
+       5 TO    8 -1.06612999D-04 -1.60370107D-04 -1.43278823D-04 -1.34968263D-04
+       9 TO   12 -1.60812918D-04 -1.51389652D-04 -1.19183078D-04 -2.93209254D-05
+      13 TO   16  1.08239237D-06  7.94004452D-05  1.18795055D-04  3.21769268D-04
+      17 TO   20  4.09322682D-04  4.95327906D-04  6.44709193D-04  7.10211016D-04
+      21 TO   24  6.96631790D-04  6.54863075D-04  4.84585766D-04  2.18339263D-04
+      25 TO   28  1.85543339D-05 -5.72168484D-06 -6.98195693D-05 -5.27688631D-05
+      29 TO   32 -3.09355634D-04 -6.82422839D-04 -1.05015195D-03 -1.24256230D-03
+      33 TO   36 -1.18147768D-03 -9.69898761D-04 -3.02918582D-04  5.21338703D-04
+      37 TO   40  9.05536868D-04  1.11473330D-03  7.90515099D-04  3.26581432D-04
+      41 TO   44 -3.27114252D-04 -2.76556749D-04 -5.87219618D-04  9.24026601D-05
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 1.069944100000000000000000000000D+09 1.212808593256056320566077522116D-05     3
+
+  NEW TEST RESULT      = 
+ 1.069944100000000000000000000000D+09 1.212808593255948069755418422533D-05     1
+
+  DIFFERENCE           =  0.00000D+00                          1.08251D-18
+
+  RELATIVE ERROR       =  0.00000D+00                          8.92563D-14
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  4
+
+ TEST WEIGHTING CAPABILITIES FOR ODR PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODRC. 
+ ALSO SHOWS SOLUTION OF POORLY SCALED ODR PROBLEM.
+ (DERIVATIVE CHECKING TURNED OFF.)
+ DATA SET REFERENCE:  BOGGS, BYRD AND SCHNABEL, 1985, EXAMPLE 3                                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    44          (NUMBER WITH NONZERO WEIGHT =    43)
+           NQ =     1
+            M =     1
+           NP =     9          (NUMBER UNFIXED =     6)
+
+ --- CONTROL VALUES:
+          JOB = 00030
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=3 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE NOT CHECKED.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    1.21253014D-05
+         SUM OF SQUARED WEIGHTED DELTAS     =   0.00000000D+00
+         SUM OF SQUARED WEIGHTED EPSILONS   =   1.21253014D-05
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE              
+                                                                   
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  2.38645545D-06       NO  4.19031498D+05              
+           2 -2.20450067D-03       NO  4.53617462D+02              
+           3  3.82273198D+00       NO  2.61593019D-01              
+           4  0.00000000D+00      YES  4.19031498D+06              
+           5  4.53364001D-01       NO  2.20573314D+00              
+           6  1.38001105D-03       NO  7.24631878D+02              
+           7  5.96038513D-02       NO  1.67774393D+01              
+           8  6.70582099D+00      YES  1.49124172D-01              
+           9  1.06994410D+09      YES  9.34628267D-10              
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT              
+                                                                               
+       (I,J)                          (IFIXX)    (SCLD)      (WD)              
+
+         1,1   2.500D-09   0.000D+00       NO  4.00D+08  1.60D+13              
+         N,1   1.000D+00   0.000D+00       NO  1.00D+00  1.00D-04              
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   9.882D-01   1.000D+00
+         N,1   9.473D-01   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N      BETA -------------->
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP     INDEX           VALUE
+ ----  ------  -----------  -----------  -----------  ---------  ----     -----           -----
+
+    1       8  5.61552D-06   5.3688D-01   6.0227D-01  1.254D-01    NO   1 TO  3  2.61670550D-06 -1.84847540D-03  3.81743723D+00
+                                                                        4 TO  6  0.00000000D+00  4.52780748D-01  1.17294940D-03
+                                                                        7 TO  9  5.14825868D-02  6.70582099D+00  1.06994410D+09
+    4      14  1.20726D-06   3.8806D-01   4.3619D-01  1.718D-01    NO   1 TO  3  4.42164742D-06 -1.27576009D-03  3.52384009D+00
+                                                                        4 TO  6  0.00000000D+00  4.92690445D-01  1.19191347D-03
+                                                                        7 TO  9  3.79861567D-02  6.70582099D+00  1.06994410D+09
+    7      20  7.87180D-07   9.9505D-02   1.1349D-01  1.097D-01    NO   1 TO  3  7.45301071D-06 -1.19673931D-03  3.48901832D+00
+                                                                        4 TO  6  0.00000000D+00  4.97376025D-01  1.65051648D-03
+                                                                        7 TO  9  3.53474898D-02  6.70582099D+00  1.06994410D+09
+   10      25  6.28791D-07   8.1375D-02   1.1318D-01  1.295D-01    NO   1 TO  3  1.15483151D-05 -1.13356151D-03  3.45980744D+00
+                                                                        4 TO  6  0.00000000D+00  5.01308411D-01  2.15310228D-03
+                                                                        7 TO  9  3.30381120D-02  6.70582099D+00  1.06994410D+09
+   13      28  5.58511D-07   2.2830D-02   3.5267D-02  9.439D-02    NO   1 TO  3  1.64242675D-05 -1.08860021D-03  3.43773581D+00
+                                                                        4 TO  6  0.00000000D+00  5.04280654D-01  2.62714475D-03
+                                                                        7 TO  9  3.12106008D-02  6.70582099D+00  1.06994410D+09
+   16      31  5.45208D-07   4.9324D-03   4.9324D-03  4.697D-03   YES   1 TO  3  1.95894709D-05 -1.06852377D-03  3.42732564D+00
+                                                                        4 TO  6  0.00000000D+00  5.05682583D-01  2.88788569D-03
+                                                                        7 TO  9  3.03155365D-02  6.70582099D+00  1.06994410D+09
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =    17          (NUMBER OF ITERATIONS)
+         NFEV =    32          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =    18          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     1.47D-05   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     5.45208463D-07
+         SUM OF SQUARED WEIGHTED DELTAS   =    3.42359109D-07
+         SUM OF SQUARED WEIGHTED EPSILONS =    2.02849354D-07
+
+ --- RESIDUAL STANDARD DEVIATION          =                     1.21389307D-04
+         DEGREES OF FREEDOM               =   37
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   1.95896506D-05     5.2652D-06     8.92132429D-06 TO  3.02579770D-05
+       2  -1.06852151D-03     4.0956D-05    -1.15150733D-03 TO -9.85535692D-04
+       3   3.42732422D+00     3.3460D-02     3.35952743D+00 TO  3.49512102D+00
+       4   0.00000000D+00          FIXED
+       5   5.05682776D-01     4.6737D-03     4.96213014D-01 TO  5.15152539D-01
+       6   2.88789682D-03     4.2486D-04     2.02704328D-03 TO  3.74875036D-03
+       7   3.03154590D-02     1.5303D-03     2.72147165D-02 TO  3.34162015D-02
+       8   6.70582099D+00          FIXED
+       9   1.06994410D+09          FIXED
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)      DELTA(I,1)
+
+         1  8.85704614D-05  6.98843476D-18
+         2  4.81782606D-05  2.49126529D-17
+         3 -2.47652440D-05 -3.12643640D-17
+         4 -6.44008812D-05 -6.58477834D-15
+         5  3.99462567D-05  5.03680509D-13
+         6 -1.54472294D-05 -3.10491252D-12
+         7 -1.08794814D-06 -1.10028017D-12
+         8  3.38839665D-06  1.07375440D-11
+         9 -3.34647877D-05 -5.23790915D-10
+        10 -3.95633534D-05 -1.89047768D-09
+        11 -2.74448529D-05 -3.06142579D-09
+        12  3.77539089D-05  8.26372134D-09
+        13  2.28560536D-05  1.10178971D-08
+        14  5.82190084D-06  7.03986833D-09
+        15 -6.81553078D-05 -1.45785334D-07
+        16  1.37311975D-05  3.83594668D-08
+        17 -1.58688240D-05 -3.81391617D-08
+        18 -3.32724245D-05  1.87300323D-10
+        19  3.37523234D-05 -1.85167391D-07
+        20  4.22264215D-05 -6.36459049D-07
+        21 -3.75576871D-06  1.88580887D-07
+        22  2.00621152D-05 -2.22759156D-06
+        23 -5.50627156D-06  1.10401389D-06
+        24 -6.88013739D-05  2.19196573D-05
+        25 -5.04979294D-05  2.33881198D-05
+        26  2.10761672D-05 -1.14828512D-05
+        27  5.74011372D-05 -3.62530551D-05
+        28  3.02389774D-04  0.00000000D+00
+        29  1.74166008D-04 -1.77161571D-04
+        30  1.98064654D-05 -2.39431909D-05
+        31 -7.90410048D-05  1.24670749D-04
+        32 -1.47683404D-04  2.76450567D-04
+        33 -1.12277273D-04  2.31472249D-04
+        34 -4.79553114D-05  9.93157475D-05
+        35  1.40511415D-04 -1.42581252D-04
+        36  1.62614218D-04  7.17271525D-04
+        37  1.08724514D-04  1.23259791D-03
+        38 -1.15956129D-05 -4.16815657D-04
+        39 -6.38721344D-05 -4.42575705D-03
+        40 -1.03209160D-04 -9.45381806D-03
+        41 -9.34250030D-05 -1.39895132D-02
+        42 -1.23336490D-05 -3.09254631D-03
+        43  1.69666481D-05  6.57971401D-03
+        44  6.58708761D-05  3.70510371D-02
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 1.069944100000000000000000000000D+09 5.452084633790605642698293836768D-07     1
+
+  NEW TEST RESULT      = 
+ 1.069944100000000000000000000000D+09 5.452084633791027041589552851186D-07     1
+
+  DIFFERENCE           =  0.00000D+00                          4.21399D-20
+
+  RELATIVE ERROR       =  0.00000D+00                          7.72913D-14
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  5
+
+ TEST DELTA INITIALIZATION CAPABILITIES
+ AND USE OF ISTOP TO RESTRICT PARAMETER VALUES FOR ODR PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  BOGGS, BYRD AND SCHNABEL, 1985, EXAMPLE 1                                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+
+ *** DERIVATIVE CHECKING REPORT FOR FIT BY METHOD OF ODR ***
+
+
+     FOR RESPONSE  1 OF OBSERVATION     1
+
+                               USER                               
+                           SUPPLIED     RELATIVE    DERIVATIVE 
+        DERIVATIVE WRT        VALUE   DIFFERENCE    ASSESSMENT 
+
+             BETA(  1)    -9.79D-01     3.27D-08    VERIFIED
+             BETA(  2)     9.59D-01     3.34D-08    VERIFIED
+          DELTA( 1, 1)    -9.59D-01     4.04D-07    VERIFIED
+
+     NUMBER OF RELIABLE DIGITS IN FUNCTION RESULTS          16
+        (ESTIMATED BY ODRPACK)
+
+     NUMBER OF DIGITS OF AGREEMENT REQUIRED BETWEEN      
+     USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVE FOR  
+     USER SUPPLIED DERIVATIVE TO BE CONSIDERED VERIFIED      4
+
+     ROW NUMBER AT WHICH DERIVATIVES WERE CHECKED            1
+
+       -VALUES OF THE EXPLANATORY VARIABLES AT THIS ROW
+
+          X( 1, 1)  -2.13701920D-02
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    40          (NUMBER WITH NONZERO WEIGHT =    40)
+           NQ =     1
+            M =     1
+           NP =     2          (NUMBER UNFIXED =     2)
+
+ --- CONTROL VALUES:
+          JOB = 01020
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=1 ==> DELTAS ARE INITIALIZED BY USER.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=2 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE CHECKED.
+                               RESULTS APPEAR CORRECT.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    2.13003002D+02
+         SUM OF SQUARED WEIGHTED DELTAS     =   2.22998645D-03
+         SUM OF SQUARED WEIGHTED EPSILONS   =   2.13000772D+02
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE              
+                                                                   
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  1.00000000D+00       NO  2.00000000D-01              
+           2  1.00000000D+00       NO  1.00000000D+00              
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT              
+                                                                               
+       (I,J)                          (IFIXX)    (SCLD)      (WD)              
+
+         1,1  -2.137D-02   0.000D+00       NO  2.00D+00  1.00D+00              
+         N,1   1.993D+00   0.000D+00       NO  2.00D+00  1.00D+00              
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1  -1.196D+00   1.000D+00
+         N,1   1.262D+00   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1      15  2.61860D+01   8.7706D-01   9.9181D-01  7.180D-02    NO
+    2      19  2.69487D+00   8.9709D-01   9.5185D-01  5.373D-02    NO
+    3      22  1.14955D+00   5.7343D-01   5.8129D-01  2.076D-02    NO
+    4      24  1.09672D+00   4.5960D-02   4.6016D-02  4.042D-03    NO
+    5      26  1.08906D+00   6.9802D-03   6.9780D-03  8.578D-04    NO
+    6      29  1.08621D+00   2.6219D-03   2.6215D-03  3.355D-04    NO
+    7      32  1.08509D+00   1.0280D-03   1.0280D-03  1.332D-04    NO
+    8      34  1.08487D+00   2.0456D-04   2.0456D-04  2.659D-05    NO
+    9      37  1.08478D+00   8.1706D-05   8.1705D-05  1.063D-05    NO
+   10      40  1.08475D+00   3.2663D-05   3.2663D-05  4.252D-06    NO
+   11      43  1.08473D+00   1.3062D-05   1.3062D-05  1.700D-06    NO
+   12      44  1.08473D+00   1.3062D-06   1.3062D-06  1.700D-07    NO
+   13      48  1.08473D+00   1.0449D-06   1.0449D-06  1.360D-07    NO
+   14      49  1.08473D+00   1.0449D-07   1.0449D-07  1.360D-08    NO
+   15      52  1.08473D+00   4.1797D-08   4.1797D-08  5.441D-09    NO
+   16      55  1.08473D+00   1.6719D-09   1.6719D-09  2.177D-10    NO
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =    16          (NUMBER OF ITERATIONS)
+         NFEV =    55          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =    17          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     4.55D-01   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     1.08472869D+00
+         SUM OF SQUARED WEIGHTED DELTAS   =    8.40017240D-03
+         SUM OF SQUARED WEIGHTED EPSILONS =    1.07632852D+00
+
+ --- RESIDUAL STANDARD DEVIATION          =                     1.68954111D-01
+         DEGREES OF FREEDOM               =   38
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   1.01000000D+00     5.4611D-02     8.99445893D-01 TO  1.12055411D+00
+       2   1.00806508D+00     2.8682D-02     9.50000743D-01 TO  1.06612941D+00
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)      DELTA(I,1)
+
+         1  2.13840659D-01  7.72546758D-04
+         2  2.25560304D-01  9.41129554D-04
+         3  1.04497486D-01  5.45425660D-04
+         4 -1.50874326D-01 -6.68930741D-04
+         5 -2.53059717D-01 -1.47995790D-03
+         6  1.00819860D-01  7.61395327D-04
+         7 -2.08153575D-01 -1.47827218D-03
+         8 -2.07020851D-02 -6.56435112D-05
+         9  8.29941689D-02  9.01373708D-04
+        10  8.32053215D-02  1.31278062D-03
+        11 -2.74508126D-02 -1.60088981D-04
+        12 -2.31693881D-02 -9.77002251D-05
+        13  2.80662023D-01  6.40983340D-03
+        14 -2.33380568D-01 -8.18107398D-03
+        15  2.90886301D-01  1.07469430D-02
+        16  5.51250039D-04  2.30850838D-03
+        17 -8.54153789D-03  2.87442762D-03
+        18 -3.14043264D-02 -2.69146898D-02
+        19 -2.33002803D-02 -4.35952599D-02
+        20 -1.25678379D-03  5.32820350D-02
+        21 -1.97974590D-05  2.03929764D-02
+        22  1.61303539D-03 -3.27077555D-03
+        23  2.03791618D-02  4.03459318D-02
+        24  3.79059604D-02  2.89275631D-03
+        25  1.15361308D-01  1.53906991D-02
+        26 -1.59261060D-01 -1.09534748D-02
+        27 -4.08298033D-01 -1.48581627D-02
+        28  1.32135752D-01  3.24792549D-03
+        29  1.05612345D-01  2.07767148D-03
+        30  9.18128552D-02  1.14522968D-03
+        31 -5.70692650D-02 -1.03708418D-03
+        32  3.58111933D-01  4.54918829D-03
+        33  1.95909122D-01  2.02871320D-03
+        34 -1.92950972D-01 -1.76449168D-03
+        35 -1.71485464D-02 -2.84782108D-04
+        36 -1.37149959D-01 -9.97503592D-04
+        37 -2.06598358D-01 -1.25925941D-03
+        38  3.24011770D-02  1.01793800D-04
+        39  1.54243454D-01  5.78989068D-04
+        40 -2.35594637D-01 -9.23080829D-04
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 1.426988156377258620821635304310D+00 1.084728687127432200654197913536D+00     1
+
+  NEW TEST RESULT      = 
+ 1.426988156353226067096784390742D+00 1.084728687476404607181734718324D+00     1
+
+  DIFFERENCE           =  2.40326D-11                          3.48972D-10
+
+  RELATIVE ERROR       =  1.68415D-11                          3.21714D-10
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  6
+
+ TEST STIFF STOPPING CONDITIONS FOR UNSCALED ODR PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  HIMMELBLAU, 1970, EXAMPLE 6.2-4, PAGE 188                                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+
+ *** DERIVATIVE CHECKING REPORT FOR FIT BY METHOD OF ODR ***
+
+
+     FOR RESPONSE  1 OF OBSERVATION     6
+
+                               USER                               
+                           SUPPLIED     RELATIVE    DERIVATIVE 
+        DERIVATIVE WRT        VALUE   DIFFERENCE    ASSESSMENT 
+
+             BETA(  1)     1.00D+00     0.00D+00    VERIFIED
+             BETA(  2)     6.07D-01     3.67D-08    VERIFIED
+             BETA(  3)     1.82D+00     1.92D-07    VERIFIED
+          DELTA( 6, 1)     3.00D+00     9.93D-08    VERIFIED
+          DELTA( 6, 2)    -9.10D-01     1.92D-07    VERIFIED
+
+     NUMBER OF RELIABLE DIGITS IN FUNCTION RESULTS          16
+        (ESTIMATED BY ODRPACK)
+
+     NUMBER OF DIGITS OF AGREEMENT REQUIRED BETWEEN      
+     USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVE FOR  
+     USER SUPPLIED DERIVATIVE TO BE CONSIDERED VERIFIED      4
+
+     ROW NUMBER AT WHICH DERIVATIVES WERE CHECKED            6
+
+       -VALUES OF THE EXPLANATORY VARIABLES AT THIS ROW
+
+          X( 6, 1)   1.00000000D+00
+          X( 6, 2)   1.00000000D+00
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    13          (NUMBER WITH NONZERO WEIGHT =    13)
+           NQ =     1
+            M =     2
+           NP =     3          (NUMBER UNFIXED =     3)
+
+ --- CONTROL VALUES:
+          JOB = 00020
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=2 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE CHECKED.
+                               RESULTS APPEAR CORRECT.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     2.22D-14   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     2.22D-16   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =     2          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    1.79305083D-01
+         SUM OF SQUARED WEIGHTED DELTAS     =   0.00000000D+00
+         SUM OF SQUARED WEIGHTED EPSILONS   =   1.79305083D-01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE              
+                                                                   
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  3.00000000D+00       NO  3.33333333D-01              
+           2  3.00000000D+00       NO  3.33333333D-01              
+           3 -5.00000000D-01       NO  3.33333333D-01              
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT              
+                                                                               
+       (I,J)                          (IFIXX)    (SCLD)      (WD)              
+
+         1,1   0.000D+00   0.000D+00       NO  1.00D+01  1.00D+00              
+         N,1   2.900D+00   0.000D+00       NO  3.45D-01  1.00D+00              
+ 
+         1,2   0.000D+00   0.000D+00       NO  1.00D+01  1.00D+00              
+         N,2   1.800D+00   0.000D+00       NO  3.33D-01  1.00D+00              
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   2.930D+00   1.000D+00
+         N,1   9.810D+00   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1      21  1.48223D-02   9.1733D-01   9.1674D-01  1.050D+00   YES
+    2      22  1.47797D-02   2.8741D-03   2.8968D-03  2.693D-02   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     4 ==> ITERATION LIMIT REACHED.
+        NITER =     2          (NUMBER OF ITERATIONS)
+         NFEV =    22          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =     3          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     2.28D-01   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     1.47796721D-02
+         SUM OF SQUARED WEIGHTED DELTAS   =    1.33891597D-02
+         SUM OF SQUARED WEIGHTED EPSILONS =    1.39051238D-03
+
+ --- RESIDUAL STANDARD DEVIATION          =                     3.84443391D-02
+         DEGREES OF FREEDOM               =   10
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   3.02127269D+00     3.6888D-02     2.93902959D+00 TO  3.10351579D+00
+       2   2.95883347D+00     8.3319D-02     2.77306895D+00 TO  3.14459799D+00
+       3  -5.25432714D-01     3.0453D-02    -5.93328437D-01 TO -4.57536992D-01
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)      DELTA(I,1)      DELTA(I,2)
+
+         1  2.30719900D-03 -6.95012295D-03  3.55910649D-03
+         2 -1.82563237D-02  5.51320253D-02 -1.69143244D-02
+         3  2.15864761D-02 -6.50743998D-02  1.16586122D-02
+         4  3.12413384D-03 -9.35402855D-03  9.99213291D-04
+         5  6.40415322D-03 -1.93295345D-02  9.86829589D-03
+         6  2.82279358D-03 -8.48602806D-03  2.57756334D-03
+         7 -1.19110059D-02  3.59974322D-02 -6.51316549D-03
+         8  5.71926168D-04 -1.67110502D-03  3.01261303D-04
+         9 -2.29090591D-03  6.89012388D-03 -3.54298530D-03
+        10 -5.27479950D-03  1.59368352D-02 -4.86034770D-03
+        11 -1.37120696D-02  4.14217198D-02 -7.49927629D-03
+        12  8.43418310D-03 -2.54123018D-02  4.57142724D-03
+        13  9.63073868D-03 -2.90305923D-02  5.79461938D-03
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 4.261321829513978975967347651022D+00 1.477967210398420730421698010559D-02     4
+
+  NEW TEST RESULT      = 
+ 4.261321829513978975967347651022D+00 1.477967210398419516115264826794D-02     4
+
+  DIFFERENCE           =  0.00000D+00                          1.21431D-17
+
+  RELATIVE ERROR       =  0.00000D+00                          8.21606D-16
+
+ *** STOPPING CONDITIONS SHOW CONVERGENCE NOT ATTAINED. ***
+        NO FURTHER COMPARISONS MADE BETWEEN RESULTS.
+
+
+1
+ EXAMPLE  7
+
+ TEST RESTART FOR UNSCALED ODR PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  HIMMELBLAU, 1970, EXAMPLE 6.2-4, PAGE 188                                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    13          (NUMBER WITH NONZERO WEIGHT =    13)
+           NQ =     1
+            M =     2
+           NP =     3          (NUMBER UNFIXED =     3)
+
+ --- CONTROL VALUES:
+          JOB = 20220
+              = ABCDE, WHERE
+                       A=2 ==> FIT IS A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=2 ==> COVARIANCE MATRIX WILL NOT BE COMPUTED.
+                       D=2 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE CHECKED.
+                               RESULTS APPEAR CORRECT.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     2.22D-14   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     2.22D-16   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    52          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    1.47796721D-02
+         SUM OF SQUARED WEIGHTED DELTAS     =   1.33891597D-02
+         SUM OF SQUARED WEIGHTED EPSILONS   =   1.39051238D-03
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE              
+                                                                   
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  3.02127269D+00       NO  3.33333333D-01              
+           2  2.95883347D+00       NO  3.33333333D-01              
+           3 -5.25432714D-01       NO  3.33333333D-01              
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT              
+                                                                               
+       (I,J)                          (IFIXX)    (SCLD)      (WD)              
+
+         1,1   0.000D+00  -6.950D-03       NO  1.00D+01  1.00D+00              
+         N,1   2.900D+00  -2.903D-02       NO  3.45D-01  1.00D+00              
+ 
+         1,2   0.000D+00   3.559D-03       NO  1.00D+01  1.00D+00              
+         N,2   1.800D+00   5.795D-03       NO  3.33D-01  1.00D+00              
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   2.930D+00   1.000D+00
+         N,1   9.810D+00   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    3      23  1.47797D-02   7.3362D-07   7.4861D-07  8.411D-04   YES
+    4      24  1.47797D-02   4.5525D-10   4.6927D-10  2.427D-05   YES
+    5      25  1.47797D-02   4.3698D-13   4.5367D-13  7.007D-07   YES
+    6      26  1.47797D-02   1.7764D-15   4.7183D-16  2.313D-08   YES
+    7      27  1.47797D-02   1.5543D-15   5.0722D-19  7.195D-10   YES
+    8      28  1.47797D-02  -1.7764D-15   5.5343D-22  1.204D-11   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =     8          (NUMBER OF ITERATIONS)
+         NFEV =    28          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =     9          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     2.28D-01   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     1.47796613D-02
+         SUM OF SQUARED WEIGHTED DELTAS   =    1.33923007D-02
+         SUM OF SQUARED WEIGHTED EPSILONS =    1.38736056D-03
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+           INDEX           VALUE -------------->
+
+       1 TO    3  3.02122470D+00  2.95882000D+00 -5.25382883D-01
+
+     N.B. NO PARAMETERS WERE FIXED BY THE USER OR DROPPED AT THE LAST
+          ITERATION BECAUSE THEY CAUSED THE MODEL TO BE RANK DEFICIENT.
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)      DELTA(I,1)      DELTA(I,2)
+
+         1  2.29869910D-03 -6.94488650D-03  3.56666879D-03
+         2 -1.82412535D-02  5.51109257D-02 -1.69175847D-02
+         3  2.15545172D-02 -6.51210396D-02  1.16448520D-02
+         4  3.10769668D-03 -9.38904997D-03  9.98372544D-04
+         5  6.39050599D-03 -1.93071545D-02  9.88268089D-03
+         6  2.81290078D-03 -8.49840531D-03  2.58219366D-03
+         7 -1.19105692D-02  3.59845058D-02 -6.49632104D-03
+         8  5.59803317D-04 -1.69129161D-03  3.04241701D-04
+         9 -2.28908821D-03  6.91584984D-03 -3.56508956D-03
+        10 -5.27648150D-03  1.59414362D-02 -4.86270054D-03
+        11 -1.37112916D-02  4.14248928D-02 -7.48235509D-03
+        12  8.41203973D-03 -2.54146622D-02  4.56155790D-03
+        13  9.60776220D-03 -2.90272085D-02  5.78348338D-03
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 4.261272307142888848829898051918D+00 1.477966125465374376546368040408D-02     1
+
+  NEW TEST RESULT      = 
+ 4.261272307140899329169769771397D+00 1.477966125465366917235421340138D-02     1
+
+  DIFFERENCE           =  1.98952D-12                          7.45931D-17
+
+  RELATIVE ERROR       =  4.66884D-13                          5.04701D-15
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  8
+
+ TEST USE OF TAUFAC TO RESTRICT FIRST STEP FOR ODR PROBLEM
+ WITH FINITE DIFFERENCE DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  POWELL AND MACDONALD, 1972, TABLES 7 AND 8, PAGES 153-154                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    14          (NUMBER WITH NONZERO WEIGHT =    14)
+           NQ =     1
+            M =     1
+           NP =     3          (NUMBER UNFIXED =     3)
+
+ --- CONTROL VALUES:
+          JOB = 00210
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=2 ==> COVARIANCE MATRIX WILL NOT BE COMPUTED.
+                       D=1 ==> DERIVATIVES ARE ESTIMATED BY CENTRAL DIFFERENCES.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D-02
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    6.65183875D+01
+         SUM OF SQUARED WEIGHTED DELTAS     =   0.00000000D+00
+         SUM OF SQUARED WEIGHTED EPSILONS   =   6.65183875D+01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE    DERIVATIVE
+                                                          STEP SIZE
+         (K)                  (IFIXB)          (SCLB)        (STPB)
+
+           1  2.50000000D+01       NO  3.33333333D-02   4.64159D-06
+           2  3.00000000D+01       NO  3.33333333D-02   4.64159D-06
+           3  6.00000000D+00       NO  3.33333333D-02   4.64159D-06
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT    DERIVATIVE
+                                                                      STEP SIZE
+       (I,J)                          (IFIXX)    (SCLD)      (WD)        (STPD)
+
+         1,1   1.000D+00   0.000D+00       NO  1.00D+00  1.00D+00   4.64159D-06
+         N,1   1.400D+01   0.000D+00       NO  7.14D-02  1.00D+00   4.64159D-06
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   2.638D+01   1.000D+00
+         N,1   2.222D+01   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1      21  1.65304D-03   9.9998D-01   9.9998D-01  1.906D-01   YES
+    2      30  1.14442D-03   3.0769D-01   3.0772D-01  5.736D-03   YES
+    3      39  1.14442D-03   2.8528D-06   2.8589D-06  4.489D-05   YES
+    4      48  1.14442D-03   9.2508D-11   9.3866D-11  7.581D-07   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =     4          (NUMBER OF ITERATIONS)
+         NFEV =    48          (NUMBER OF FUNCTION EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     5.38D-03   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     1.14441947D-03
+         SUM OF SQUARED WEIGHTED DELTAS   =    1.25033077D-04
+         SUM OF SQUARED WEIGHTED EPSILONS =    1.01938640D-03
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+           INDEX           VALUE -------------->
+
+       1 TO    3  2.71167487D+01  3.36427043D+01  6.62121910D+00
+
+     N.B. NO PARAMETERS WERE FIXED BY THE USER OR DROPPED AT THE LAST
+          ITERATION BECAUSE THEY CAUSED THE MODEL TO BE RANK DEFICIENT.
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)      DELTA(I,1)
+
+         1  7.59801116D-03  4.97540746D-03
+         2  7.39164816D-04  4.06579050D-04
+         3 -6.94196648D-03 -3.28158116D-03
+         4 -1.71319408D-02 -7.08391784D-03
+         5 -7.84792233D-03 -2.87575737D-03
+         6  3.89544361D-03  1.27960336D-03
+         7  1.08567684D-02  3.22813867D-03
+         8  7.23311504D-03  1.96282386D-03
+         9  7.22701041D-03  1.80177855D-03
+        10  7.62288350D-03  1.75618816D-03
+        11  5.74541441D-03  1.22941679D-03
+        12 -6.34168099D-04 -1.26609681D-04
+        13 -3.71790892D-03 -6.95241813D-04
+        14 -1.46591743D-02 -2.57682804D-03
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 4.371487317909745229371765162796D+01 1.144419474408286127933842557525D-03     1
+
+  NEW TEST RESULT      = 
+ 4.371487334212800135446741478518D+01 1.144419474408238639878687692431D-03     1
+
+  DIFFERENCE           =  1.63031D-07                          4.74881D-17
+
+  RELATIVE ERROR       =  3.72941D-09                          4.14953D-14
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE  9
+
+ TEST IMPLICIT MODEL FOR OLS PROBLEM
+ USING DODRC.
+ DATA SET REFERENCE:  FULLER, 1987, TABLE 3.2.10, PAGES 244-245                                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    20          (NUMBER WITH NONZERO WEIGHT =    20)
+           NQ =     1
+            M =     2
+           NP =     5          (NUMBER UNFIXED =     5)
+
+ --- CONTROL VALUES:
+          JOB = 00001
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=0 ==> DERIVATIVES ARE ESTIMATED BY FORWARD DIFFERENCES.
+                       E=1 ==> METHOD IS IMPLICIT ODR.
+       NDIGIT =    15          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     6.06D-06   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =   100          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL SUM OF SQUARED WEIGHTED DELTAS =                    0.00000000D+00
+         INITIAL PENALTY FUNCTION VALUE     =   8.39823392D-01
+                 PENALTY TERM               =   8.39823392D-01
+                 PENALTY PARAMETER          =   1.0D+01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE    DERIVATIVE
+                                                          STEP SIZE
+         (K)                  (IFIXB)          (SCLB)        (STPB)
+
+           1 -1.00000000D+00       NO  1.00000000D+00   3.16228D-10
+           2 -3.00000000D+00       NO  3.33333333D-01   3.16228D-10
+           3  9.00000000D-02       NO  1.11111111D+01   3.16228D-10
+           4  2.00000000D-02       NO  5.00000000D+01   3.16228D-10
+           5  8.00000000D-02       NO  1.25000000D+01   3.16228D-10
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT    DERIVATIVE
+                                                                      STEP SIZE
+       (I,J)                          (IFIXX)    (SCLD)      (WD)        (STPD)
+
+         1,1   5.000D-01   0.000D+00       NO  2.00D+00  1.00D+00   3.16228D-10
+         N,1  -3.440D+00   0.000D+00       NO  2.91D-01  1.00D+00   3.16228D-10
+ 
+         1,2  -1.200D-01   0.000D+00       NO  8.33D+00  1.00D+00   3.16228D-10
+         N,2  -4.860D+00   0.000D+00       NO  2.06D-01  1.00D+00   3.16228D-10
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.      PENALTY    ACT. REL.   PRED. REL.
+  IT.  NO. FN     FUNCTION   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS        VALUE    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+ PENALTY PARAMETER VALUE =    1.0E+01
+    1      13  6.95806D-02   9.1715D-01   9.2121D-01  3.787D-01   YES
+    2      21  6.86021D-02   1.4063D-02   1.3989D-02  4.791D-02   YES
+    3      29  6.85929D-02   1.3366D-04   1.3152D-04  2.458D-03   YES
+    4      37  6.85929D-02   2.8035D-07   2.5896D-07  3.301D-04   YES
+    5      45  6.85929D-02   2.2442D-09   2.0585D-09  2.466D-05   YES
+
+ PENALTY PARAMETER VALUE =    1.0E+02
+    6      71  8.58086D-02   5.8379D-01   5.8368D-01  7.423D-02   YES
+    7      79  8.57904D-02   2.1187D-04   2.1044D-04  1.733D-02   YES
+    8      87  8.57902D-02   2.9685D-06   2.9272D-06  6.287D-04   YES
+    9      95  8.57902D-02   6.9621D-09   6.7263D-09  7.071D-05   YES
+
+ PENALTY PARAMETER VALUE =    1.0E+03
+   10     116  8.79954D-02   1.7982D-01   1.7982D-01  8.918D-03   YES
+   11     124  8.79951D-02   3.5396D-06   3.4883D-06  2.281D-03   YES
+   12     132  8.79951D-02   2.0851D-08   1.9954D-08  8.141D-05   YES
+   13     140  8.79951D-02   1.1440D-10   1.1132D-10  7.103D-06   YES
+
+ PENALTY PARAMETER VALUE =    1.0E+04
+   14     161  8.82218D-02   2.2544D-02   2.2544D-02  9.096D-04   YES
+   15     169  8.82218D-02   3.7995D-08   3.6729D-08  2.331D-04   YES
+   16     177  8.82218D-02   1.6593D-10   1.5080D-10  8.213D-06   YES
+
+ PENALTY PARAMETER VALUE =    1.0E+05
+   17     195  8.82446D-02   2.3129D-03   2.3129D-03  8.969D-05   YES
+   18     203  8.82446D-02   2.6031D-10   2.3349D-10  1.092D-05   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     2 ==> PARAMETER CONVERGENCE.
+        NITER =    18          (NUMBER OF ITERATIONS)
+         NFEV =   217          (NUMBER OF FUNCTION EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     3.18D-02   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL SUM OF SQUARED WEIGHTED DELTAS =                     8.82420346D-02
+         FINAL PENALTY FUNCTION VALUE     =    8.82445616D-02
+               PENALTY TERM               =    2.52700897D-06
+               PENALTY PARAMETER          =    1.0D+05
+
+ --- RESIDUAL STANDARD DEVIATION          =                     7.66994283D-02
+         DEGREES OF FREEDOM               =   15
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1  -9.99380972D-01     1.1138D-01    -1.23682206D+00 TO -7.61939883D-01
+       2  -2.93104848D+00     1.0977D-01    -3.16504351D+00 TO -2.69705344D+00
+       3   8.75730479D-02     4.1061D-03     7.88199915D-02 TO  9.63261044D-02
+       4   1.62299739D-02     2.7500D-03     1.03676338D-02 TO  2.20923140D-02
+       5   7.97538008D-02     3.4963D-03     7.23007073D-02 TO  8.72068944D-02
+
+ --- ESTIMATED DELTA(I,*), I = 1, ..., N:
+
+         I      DELTA(I,1)      DELTA(I,2)
+
+         1  3.40723874D-02  4.76860368D-02
+         2 -2.65182325D-02 -2.55209375D-02
+         3 -6.46554198D-02 -4.89656210D-02
+         4 -6.02229818D-02 -3.67984225D-02
+         5  1.53930306D-01  4.61089357D-02
+         6  7.49624603D-02  5.60550739D-03
+         7 -1.34843681D-02  1.40897870D-03
+         8 -9.20913712D-02  3.20494708D-02
+         9 -2.95789191D-02  1.74354120D-02
+        10 -2.24316152D-03  1.96476563D-03
+        11  1.75676764D-02 -2.30886080D-02
+        12 -1.84834167D-02  3.96269350D-02
+        13  1.65840790D-03 -1.00326725D-01
+        14 -9.59481801D-03 -6.81523716D-02
+        15  8.68789767D-03  2.81098730D-02
+        16  3.24759423D-02  6.89227234D-02
+        17  3.11881390D-02  4.53121160D-02
+        18 -7.48532795D-03 -8.53414499D-03
+        19  5.74203368D-03  5.51928209D-03
+        20 -3.59272946D-02 -2.83635072D-02
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 3.099048849376848657755090243882D+00 8.824708863783850554263210597128D-02     2
+
+  NEW TEST RESULT      = 
+ 3.099048341282356844317291688640D+00 8.824203462684793164427787814930D-02     2
+
+  DIFFERENCE           =  5.08094D-07                          5.05401D-06
+
+  RELATIVE ERROR       =  1.63952D-07                          5.72711D-05
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE 10
+
+ TEST MULTIRESPONSE MODEL FOR ODR PROBLEM
+ WITH FINITE DIFFERENCE DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  BATES AND WATTS, 1988, TABLE A1.13, PAGES 280-281                              
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    23          (NUMBER WITH NONZERO WEIGHT =    21)
+           NQ =     2
+            M =     1
+           NP =     5          (NUMBER UNFIXED =     5)
+
+ --- CONTROL VALUES:
+          JOB = 00210
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=2 ==> COVARIANCE MATRIX WILL NOT BE COMPUTED.
+                       D=1 ==> DERIVATIVES ARE ESTIMATED BY CENTRAL DIFFERENCES.
+                       E=0 ==> METHOD IS EXPLICIT ODR.
+       NDIGIT =    15          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    1.61756061D+03
+         SUM OF SQUARED WEIGHTED DELTAS     =   0.00000000D+00
+         SUM OF SQUARED WEIGHTED EPSILONS   =   1.61756061D+03
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE    DERIVATIVE
+                                                          STEP SIZE
+         (K)                  (IFIXB)          (SCLB)        (STPB)
+
+           1  4.00000000D+00       NO  2.50000000D-01   1.00000D-05
+           2  2.00000000D+00       NO  5.00000000D-01   1.00000D-05
+           3  7.00000000D+00       NO  1.42857143D-01   1.00000D-05
+           4  4.00000000D-01       NO  2.50000000D+00   1.00000D-05
+           5  5.00000000D-01       NO  2.00000000D+00   1.00000D-05
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT    DERIVATIVE
+                                                                      STEP SIZE
+       (I,J)                          (IFIXX)    (SCLD)      (WD)        (STPD)
+
+         1,1   3.000D+01   0.000D+00      YES  3.33D-02  1.11D-07   1.00000D-05
+         N,1   1.500D+05   0.000D+00       NO  6.67D-06  4.44D-15   1.00000D-05
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   4.220D+00   5.596D+02
+         N,1   2.759D+00   5.596D+02
+ 
+         1,2   1.360D-01   8.397D+03
+         N,2   1.390D-01   8.397D+03
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF ODR ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1      18  2.81264D+02   8.2612D-01   9.9950D-01  1.204D+00   YES
+    2      31  8.75783D+00   9.6886D-01   9.9813D-01  2.200D-01   YES
+    3      44  2.48574D+00   7.1617D-01   9.5244D-01  1.597D-01   YES
+    4      57  4.24412D-01   8.2926D-01   8.3031D-01  2.241D-02   YES
+    5      70  4.20540D-01   9.1238D-03   9.0876D-03  4.429D-03   YES
+    6      83  4.20539D-01   2.8954D-06   2.7128D-06  3.930D-04   YES
+    7      96  4.20539D-01   1.4230D-08   1.3313D-08  2.690D-05   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     1 ==> SUM OF SQUARES CONVERGENCE.
+        NITER =     7          (NUMBER OF ITERATIONS)
+         NFEV =    96          (NUMBER OF FUNCTION EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     8.15D-03   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     4.20538922D-01
+         SUM OF SQUARED WEIGHTED DELTAS   =    5.54022895D-04
+         SUM OF SQUARED WEIGHTED EPSILONS =    4.19984899D-01
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+           INDEX           VALUE -------------->
+
+       1 TO    4  4.37998809D+00  2.43330566D+00  8.00288453D+00  5.10114676D-01
+               5  5.17390199D-01
+
+     N.B. NO PARAMETERS WERE FIXED BY THE USER OR DROPPED AT THE LAST
+          ITERATION BECAUSE THEY CAUSED THE MODEL TO BE RANK DEFICIENT.
+
+ --- ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+
+         I    EPSILON(I,1)    EPSILON(I,2)      DELTA(I,1)
+
+         1 -7.38556281D-03  1.25939922D-03  0.00000000D+00
+         2 -1.05612518D-03 -1.22845804D-03  0.00000000D+00
+         3 -2.70861844D-03 -2.14347061D-03  0.00000000D+00
+         4  4.68593718D-02 -4.25940146D-03  0.00000000D+00
+         5  8.08104420D-03 -3.47539550D-03  0.00000000D+00
+         6  1.53882474D-03  3.85293691D-04  3.03694703D+01
+         7  4.60534881D-03  1.19118721D-03  3.78987347D+01
+         8  4.50904278D-03  1.23570429D-03  6.22631839D+01
+         9 -1.00624342D-03 -2.91872299D-04  1.11187207D+02
+        10  1.05810430D-02  3.27283292D-03  1.15710270D+02
+        11  6.93618486D-03  2.43480864D-03  2.41437285D+02
+        12  3.95512337D-05  1.75761986D-05  9.61345659D+02
+        13 -3.77619651D-03 -2.42909122D-03  1.33029993D+03
+        14 -5.56743469D-04 -1.70124794D-03  2.07511789D+03
+        15  2.08264689D-03 -2.23723708D-03  2.90289763D+03
+        16 -7.50661987D-03  2.16469603D-03  5.21813714D+03
+        17 -1.56730631D-03  2.03369394D-04  7.54565125D+03
+        18 -5.93228163D-04  2.72079634D-05  1.74201144D+04
+        19  1.15244167D-04 -2.42068517D-07  2.42745693D+04
+        20  2.63614224D-04  5.18444905D-06  3.78492489D+04
+        21 -3.81043947D-04 -1.03970544D-05  5.53493969D+04
+        22 -3.36863330D-04 -1.26155472D-05  8.75792611D+04
+        23  2.87168504D-03  1.41195403D-04  1.29496518D+05
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 9.469917836739933036938055010978D+00 4.205389215588104523391166367219D-01     1
+
+  NEW TEST RESULT      = 
+ 9.469917762502790381518025242258D+00 4.205389215886734533000890223775D-01     1
+
+  DIFFERENCE           =  7.42371D-08                          2.98630D-11
+
+  RELATIVE ERROR       =  7.83926D-09                          7.10113D-11
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE 11
+
+ TEST DETECTION OF QUESTIONABLE ANALYTIC DERIVATIVES FOR OLS PROBLEM
+ USING DODRC.
+ DATA SET REFERENCE:  POWELL AND MACDONALD, 1972, TABLES 7 AND 8, PAGES 153-154                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+
+ *** DERIVATIVE CHECKING REPORT FOR FIT BY METHOD OF OLS ***
+
+
+     FOR RESPONSE  1 OF OBSERVATION     1
+
+                               USER                               
+                           SUPPLIED     RELATIVE    DERIVATIVE 
+        DERIVATIVE WRT        VALUE   DIFFERENCE    ASSESSMENT 
+
+             BETA(  1)     0.00D+00     9.70D-01    QUESTIONABLE (SEE NOTE 3)
+             BETA(  2)     0.00D+00     2.25D-02    QUESTIONABLE (SEE NOTE 3)
+             BETA(  3)     0.00D+00     1.05D-02    QUESTIONABLE (SEE NOTE 3)
+
+     NOTES:
+
+      (3) USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVES DISAGREE, BUT
+          RESULTS ARE QUESTIONABLE BECAUSE ONE IS IDENTICALLY ZERO
+          AND THE OTHER IS NOT.
+
+     NUMBER OF RELIABLE DIGITS IN FUNCTION RESULTS          16
+        (ESTIMATED BY ODRPACK)
+
+     NUMBER OF DIGITS OF AGREEMENT REQUIRED BETWEEN      
+     USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVE FOR  
+     USER SUPPLIED DERIVATIVE TO BE CONSIDERED VERIFIED      4
+
+     ROW NUMBER AT WHICH DERIVATIVES WERE CHECKED            1
+
+       -VALUES OF THE EXPLANATORY VARIABLES AT THIS ROW
+
+          X( 1, 1)   1.00000000D+00
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF OLS ***
+
+ --- PROBLEM SIZE:
+            N =    14          (NUMBER WITH NONZERO WEIGHT =    14)
+           NQ =     1
+            M =     1
+           NP =     3          (NUMBER UNFIXED =     3)
+
+ --- CONTROL VALUES:
+          JOB = 00022
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE FIXED AT ZERO SINCE E=2.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=2 ==> DERIVATIVES ARE SUPPLIED BY USER.
+                               DERIVATIVES WERE CHECKED.
+                               RESULTS APPEAR QUESTIONABLE.
+                       E=2 ==> METHOD IS EXPLICIT OLS.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00D+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49D-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     3.67D-11   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =    50          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL WEIGHTED SUM OF SQUARES        =                    6.65183875D+01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE    DERIVATIVE
+                                                         ASSESSMENT
+         (K)                  (IFIXB)          (SCLB)              
+
+           1  2.50000000D+01       NO  3.33333333D-02  QUESTIONABLE
+           2  3.00000000D+01       NO  3.33333333D-02  QUESTIONABLE
+           3  6.00000000D+00       NO  3.33333333D-02  QUESTIONABLE
+
+ --- EXPLANATORY VARIABLE SUMMARY:
+
+       INDEX      X(I,J)
+       (I,J)            
+
+         1,1   1.000D+00
+         N,1   1.400D+01
+
+ --- RESPONSE VARIABLE AND EPSILON ERROR WEIGHT SUMMARY:
+
+       INDEX      Y(I,L)      WEIGHT
+       (I,L)                    (WE)
+
+         1,1   2.638D+01   1.000D+00
+         N,1   2.222D+01   1.000D+00
+
+ *** ITERATION REPORTS FOR FIT BY METHOD OF OLS ***
+
+
+         CUM.                 ACT. REL.   PRED. REL.
+  IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+ NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+ ----  ------  -----------  -----------  -----------  ---------  ----
+
+    1      24  6.65184D+01   0.0000D+00   0.0000D+00  0.000D+00   YES
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF OLS ***
+
+ --- STOPPING CONDITIONS:
+         INFO =  1023
+              =  ABCD, WHERE A NONZERO VALUE FOR DIGIT A, B, OR C INDICATES WHY
+                       THE RESULTS MIGHT BE QUESTIONABLE, AND DIGIT D INDICATES
+                       THE ACTUAL STOPPING CONDITION.
+                       A=1 ==> DERIVATIVES ARE QUESTIONABLE.
+                       C=2 ==> DERIVATIVES ARE ZERO RANK AT THE SOLUTION.
+                       D=3 ==> SUM OF SQUARES CONVERGENCE AND PARAMETER CONVERGENCE.
+        NITER =     1          (NUMBER OF ITERATIONS)
+         NFEV =    24          (NUMBER OF FUNCTION EVALUATIONS)
+         NJEV =     2          (NUMBER OF JACOBIAN EVALUATIONS)
+        IRANK =     3          (RANK DEFICIENCY)
+        RCOND =     0.00D+00   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL WEIGHTED SUMS OF SQUARES       =                     6.65183875D+01
+
+ --- RESIDUAL STANDARD DEVIATION          =                     8.15588055D+00
+         DEGREES OF FREEDOM               =    0
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1   2.50000000D+01        DROPPED
+       2   3.00000000D+01        DROPPED
+       3   6.00000000D+00        DROPPED
+
+ --- ESTIMATED EPSILON(I,  1), I = 1, ..., N:
+
+           INDEX           VALUE -------------->
+
+       1 TO    4 -2.12824711D+00 -2.15338202D+00 -2.17361007D+00 -2.19297148D+00
+       5 TO    8 -2.18753205D+00 -2.17853564D+00 -2.17414444D+00 -2.18046225D+00
+       9 TO   12 -2.18216734D+00 -2.18292056D+00 -2.18563784D+00 -2.19267768D+00
+      13 TO   14 -2.19597334D+00 -2.20712839D+00
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 3.950949253027682317451763083227D+01 6.651838750834910740650229854509D+01  1023
+
+  NEW TEST RESULT      = 
+ 3.950949253027682317451763083227D+01 6.651838750834907898479286814108D+01  1023
+
+  DIFFERENCE           =  0.00000D+00                          2.84217D-14
+
+  RELATIVE ERROR       =  0.00000D+00                          4.27276D-16
+
+
+ *** RESULTS AGREE TO WITHIN STOPPING TOLERANCE. ***
+
+
+1
+ EXAMPLE 12
+
+ TEST DETECTION OF INCORRECT ANALYTIC DERIVATIVES FOR ODR PROBLEM
+ WITH ANALYTIC DERIVATIVES USING DODRC.
+ DATA SET REFERENCE:  POWELL AND MACDONALD, 1972, TABLES 7 AND 8, PAGES 153-154                      
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+
+ *** DERIVATIVE CHECKING REPORT FOR FIT BY METHOD OF ODR ***
+
+
+     FOR RESPONSE  1 OF OBSERVATION     1
+
+                               USER                               
+                           SUPPLIED     RELATIVE    DERIVATIVE 
+        DERIVATIVE WRT        VALUE   DIFFERENCE    ASSESSMENT 
+
+             BETA(  1)     0.00D+00     9.70D-01    QUESTIONABLE (SEE NOTE 3)
+             BETA(  2)     0.00D+00     2.25D-02    QUESTIONABLE (SEE NOTE 3)
+             BETA(  3)     0.00D+00     1.05D-02    QUESTIONABLE (SEE NOTE 3)
+          DELTA( 1, 1)     1.00D+00     1.67D+00   *QUESTIONABLE (SEE NOTE 7)
+
+     NOTES:
+
+      (3) USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVES DISAGREE, BUT
+          RESULTS ARE QUESTIONABLE BECAUSE ONE IS IDENTICALLY ZERO
+          AND THE OTHER IS NOT.
+
+      (7) USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVES DISAGREE, AND
+          HAVE FEWER THAN 2 DIGITS IN COMMON.  DERIVATIVE CHECKING MUST
+          BE TURNED OFF IN ORDER TO PROCEED.
+
+     NUMBER OF RELIABLE DIGITS IN FUNCTION RESULTS          16
+        (ESTIMATED BY ODRPACK)
+
+     NUMBER OF DIGITS OF AGREEMENT REQUIRED BETWEEN      
+     USER SUPPLIED AND FINITE DIFFERENCE DERIVATIVE FOR  
+     USER SUPPLIED DERIVATIVE TO BE CONSIDERED VERIFIED      4
+
+     ROW NUMBER AT WHICH DERIVATIVES WERE CHECKED            1
+
+       -VALUES OF THE EXPLANATORY VARIABLES AT THIS ROW
+
+          X( 1, 1)   1.00000000D+00
+
+ COMPARISON OF NEW RESULTS WITH DOUBLE PRECISION CRAY YMP RESULT:
+
+                         NORM OF BETA        SUM OF SQUARED WTD OBS ERRORS  INFO
+
+       CRAY YMP RESULT = 
+ 3.950949253027682317451763083227D+01 6.651838750834910740650229854509D+01 40100
+
+  NEW TEST RESULT      = 
+ 3.950949253027682317451763083227D+01 6.651838750834907898479286814108D+01 40100
+
+  DIFFERENCE           =  0.00000D+00                          2.84217D-14
+
+  RELATIVE ERROR       =  0.00000D+00                          4.27276D-16
+
+ *** STOPPING CONDITIONS SHOW CONVERGENCE NOT ATTAINED. ***
+        NO FURTHER COMPARISONS MADE BETWEEN RESULTS.
+
+
+1
+
+
+
+ *** SUMMARY: ALL TESTS AGREE WITH EXPECTED RESULTS. ***

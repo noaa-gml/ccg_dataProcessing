@@ -1,0 +1,6 @@
+# end_cycle.act
+# Use to end the measurement cycle by collecting the qc data
+# sample pressures, flow rates, room temp, etc.
+
+0	StopScan   hp34970   @sample_pressure_scale,@sample_flow_scale,@reference_pressure_scale,@reference_flow_scale,@room_temp_scale,@chiller_temp_scale
+0 	LogData	   hp34970   $1    Replace

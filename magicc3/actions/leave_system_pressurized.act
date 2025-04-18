@@ -1,0 +1,11 @@
+#  Action file to leave the system under pressure after the pre-analysis
+#  
+#
+#       $1 manifold
+#       $2 port_num
+#       $3 next_off port
+#
+0       TurnUniversalActuator   ManifoldSelect  @Manifold$1_port
+1       TurnUniversalActuator   Manifold$1      $2
+5       TurnUniversalActuator   Manifold$1      $3
+10      TurnUniversalActuator   ManifoldSelect  @Manifold$1_port_off

@@ -1,0 +1,5 @@
+# pause for Aerodyne cell to fill
+10	StartScan	hp34970	 @sample_flow
+20	StopScan	hp34970	 @sample_flow_scale
+20	LogData		hp34970  $1	Replace
+22	Noop	        None	None

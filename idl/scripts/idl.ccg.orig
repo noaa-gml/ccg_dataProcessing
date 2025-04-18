@@ -1,0 +1,85 @@
+#!/bin/bash
+# Startup of idl 
+# This script should only be called from the 'idl'
+# script located in this directory.
+# The first arguement must be the display.
+# Any more arguements are passed on to idl.
+
+
+PATH=$PATH:/usr/bin/X11
+export PATH
+
+dir=`pwd`
+
+usepwd=0
+nox=0
+usex=0
+term=xterm
+useide=0
+ver=""
+
+for i in $*
+do
+	case $i in
+	-display) DISPLAY=$2; export DISPLAY; shift 2;;
+   -v) ver=$2; shift 2;;
+	-x) usex=1; shift;;
+	-nox) nox=1; shift;;
+	-d)  dir=$2;  shift 2;;
+	-w) useide="1"; shift;;
+	-t) term=$2; shift 2;;
+	esac
+done
+
+IDL_DIR=/opt/itt
+IDL_DEVICE=X
+
+if [ "$ver" != "" ]
+then
+   IDL_DIR=$IDL_DIR/$ver
+else
+   IDL_DIR=$IDL_DIR/idl
+fi
+
+if [ -f $HOME/.idlrc ]
+then
+	IDL_STARTUP=$HOME/.idlrc
+	export IDL_STARTUP
+fi
+
+IDL_PATH=$IDL_PATH:+$HOME/idl:+`pwd`/idl:+/ccg/idl/lib:+$IDL_DIR/lib
+
+export IDL_DIR IDL_PATH IDL_DEVICE
+
+# If a batch file was specified, use the nox option, unless -x was also
+# specified
+
+if [ "$*" != ""  -a "$usex" != "1" ]
+then
+        nox="1"
+fi
+
+prog=$IDL_DIR/bin/idl
+# echo $prog
+
+cd $dir
+
+if [ $nox = "1" ]
+then
+	$prog $*
+else
+	if [ $useide != 0 ]
+	then
+		$prog -w $*
+	else
+		case $term in
+		xterm) /usr/bin/xterm -title "IDL" -name IDL -e $prog $* ;;
+		gnome-terminal) /usr/bin/gnome-terminal -t "IDL" --name IDL -x $prog $* ;;
+		konsole) /usr/bin/konsole -T "IDL" --name IDL -e $prog $* 2>/dev/null;;
+		aterm) /usr/bin/xterm -title "IDL" -name IDL -e $prog $* ;;
+		*) /usr/bin/xterm -title "IDL" -name IDL -e $prog $* ;;
+		esac
+	fi
+fi
+
+exit

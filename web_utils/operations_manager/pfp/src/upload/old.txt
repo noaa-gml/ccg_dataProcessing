@@ -1,0 +1,16 @@
+ 
+Sample Plan
+  1 (valid)     10 ft      --- lat      --- lon    --:--:--  ---- -- --
+  2 (valid)     20 ft      --- lat      --- lon    --:--:--  ---- -- --
+  3 (valid)     30 ft      --- lat      --- lon    --:--:--  ---- -- --
+  4 (valid)     40 ft      --- lat      --- lon    --:--:--  ---- -- --
+  5 (valid)     50 ft      --- lat      --- lon    --:--:--  ---- -- --
+  6 (valid)     60 ft      --- lat      --- lon    --:--:--  ---- -- --
+  7 (valid)     70 ft      --- lat      --- lon    --:--:--  ---- -- --
+  8 (valid)     80 ft      --- lat      --- lon    --:--:--  ---- -- --
+  9 (valid)     90 ft      --- lat      --- lon    --:--:--  ---- -- --
+ 10 (valid)    100 ft      --- lat      --- lon    --:--:--  ---- -- --
+ 11 (valid)    110 ft      --- lat      --- lon    --:--:--  ---- -- --
+ 12 (valid)    120 ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+

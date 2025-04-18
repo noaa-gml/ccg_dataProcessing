@@ -1,0 +1,95 @@
+**See notes at bottom of page when Molly has problems uploading/downloading to PFP.
+
+
+Installing Digi-One SP
+
+When the web server is rebooted, it is likely that the kernel
+version has been updated.  This may disable the device if
+the kernel update is different enough to cause execute errors.
+In this case, the Digi-one source needs to be recompiled and
+then the device needs to be reconfigured using dgrp_gui.
+
+February 19, 2009 - dyc
+
+Release Notes: 90000630_D.pdf
+RPM source: 40002086_N.src.rpm
+
+IP: 140.172.195.88
+MA: 00409D:25475A
+FIRMWARE VER.  82000774_F1
+/dev/ttyr100
+
+IP: 140.172.195.89
+MA: 00409D:2547ED
+FIRMWARE VER.  82000774_F1
+/dev/ttyr200
+
+IP: 140.172.195.90
+MA: 00409D:286A80
+FIRMWARE VER.  82000774_F1
+/dev/ttyr300
+
+See Installation Guide (Chapter 7, Linux Installation).
+
+1) Goto www.digi.com.
+2) On the website, browse to Support -> Drivers.
+3) Select 'Digi One SP'
+4) View /etc/redhat-release on OM to find the current OS version
+   (ex) CentOS release 4.7 (Final)
+5) Find the OS on the website.
+   (ex) CentOS release 4.7 (Final) ~ Linux Red Hat AS 4
+   (NOTE) Ken and I found that several Linux OS selections use the
+          same rpm file.
+6) Download the *.src.rpm file and place it in /tmp on OM
+   (ex) 40002086_N.src.rpm
+7) Kill the current active daemons
+   a) sudo dgrp_cfg_node uninit r1
+   b) sudo dgrp_cfg_node uninit r2
+   c) sudo dgrp_cfg_node uninit r3
+8) Remove the old version of dgrp
+   (ex) sudo rpm -e -vv dgrp-version
+   Note: To find the old version, 'rpm -q dgrp'
+9) In the /tmp directory, execute the following commands
+   a) sudo rpmbuild --rebuild --define DISTRO=REDHAT_XX (package) [See Digi One SP Documentation - Users Guide: RealPort Installation Guide]
+   b) sudo rpm -ivv /usr/src/redhat/RPMS/i386/dgrp-#.#-#.i386.rpm
+      >) This unpacks from the rpmbuild command. Do an 'ls -l' in the 
+         /usr/src/redhat/RPMS/i386/ directory to see which one is the newest.
+   c) sudo /sbin/modprode dgrp [instead of 'insmod dgrp']
+10) Run the dgrp-gui
+   (ex) /usr/bin/dgrp/config/dgrp_gui
+11) Add the devices
+   (ex) RealPort ID: r1
+        IP Address or Name: 140.172.195.88
+        Number of Ports: 1
+        Major Number: <left unset>
+        IP Port: 771 <default>
+        Acess Mode: 0666 <default>
+        Owner: 0 <default>
+        Group: 0 <default>
+        Encrpyt Session: never <default>
+        Encrypt IP Port: 1027 <default>
+        Link Speed: auto <default>
+   (NOTE) r2 is 140.172.195.89
+   (NOTE) r3 is 140.172.193.251
+   (NOTE) Learned that RealPort ID must be unique.  Cannot configure
+          devices as ttyrp00 ttyrp01 ttyrp02.  Would need to do a
+          soft link.
+12) Start the device daemons. After adding the devices, a dialog box will appear
+    with the command, 'Run It' and 'Cancel' button appears. In front of the
+    command, type 'sudo' so that it runs as root. 
+
+Other:
+To check if the module is running, run '/sbin/lsmod'
+Check that permissions of /dev/ttyr100 and /dev/ttyr200 (on om) are readable and writeable for user, 
+group, and other.
+
+Usually when Molly cannot download/upload to PFPs, it is because the permissions have changed on
+the ports. When permissions are as ...
+
+  crw------- 1 root root 253, 0 Mar 24 11:45 /dev/ttyr100
+  crw------- 1 root root 253, 0 Mar 24 11:45 /dev/ttyr200
+
+Molly can't read/write.  Must change permissions to 666.
+
+  crw-rw-rw- 1 root root 253, 0 Mar 24 11:45 /dev/ttyr100
+  crw-rw-rw- 1 root root 253, 0 Mar 24 11:45 /dev/ttyr200

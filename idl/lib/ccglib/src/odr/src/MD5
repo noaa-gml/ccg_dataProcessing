@@ -1,0 +1,41 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+
+# netlib-bl master Wed Jun 4 22:25:33 EDT 1997
+QDabP4Qm7nH8XEyiD0BsKw	.master
+HFA1jf1ojP1CzWh3Ov3juA	changes
+Tro8U/2zEidF92qXvPgj8A	d_drive1.f
+n/udNBQpvmZnt3CUvfZgTg	d_drive2.f
+Q4ty61Bthybsi5W+3HBajA	d_drive3.f
+NesZXKZAZ1i9z7RPCHdsNQ	d_lpkbls.f
+EQisE6qg+IHVWnx+IvYkiA	d_mprec0.f
+WO67ujm4cY1erOXDFKZ4yA	d_odr.f
+Iv9gUPNji8qD21yIM+9B+g	d_test.f
+7Mpy9nb+Xc5vaMLriLwAfw	d_update.f
+vpGnbR5/awtGrBDGdZWIQA	data1.dat
+FZQsldE6C+mj6ZpcbbZq5Q	data2.dat
+Rl0e6Ar9qsB2c6YpMeBBdw	data3.dat
+PDRD599e2j+p6BEGMsLY0w	guide.ps
+uqK8uGuGBjFSvkOQK/PpcQ	index
+GTtTuB8ZvQ1AfLEPEa4m8g	makefile
+593v0rOkF7GAeknn8TFV8A	makefile.update
+xRvBiieZefus5vBbWXGC+g	readme
+2TiXEvkv60kxZXRm1ud9hQ	readme.update
+af2RzOMrduq6jU28JWg2+Q	s_drive1.f
+DqlL/J4/V6Scy0AFk9txAw	s_drive2.f
+DqByQ4Uu8vUfTng+rwFcaw	s_drive3.f
+vvAMExT3e03tXUAMSz4F3w	s_lpkbls.f
+16qBr1Px0hQEpew7eOOoFw	s_mprec0.f
+EAWHrLQdK5ROOP6yv67yJQ	s_odr.f
+KpCK2OP90jWQJ4p8TRkvYw	s_test.f
+p7gOHWDA2ZrjJ/6iS4C43g	s_update.f
+A3jFMdjzxW7lFe9/IAg7iQ	test.txt
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.6.2
+
+iQCVAwUBM5Yjnr5pvxO9gjtZAQGfHQP/bMdosweYgD1K+3L7iHVtpdX08Rsbxefy
+O/fe6odeywlaP028bQXN1cQ2TDMd4bvAACF1xhNjhhXhCtmAvpgEkJA2GsaFMnBm
+Hmt4fsVpqaDQSSZtq9ohScOGdYRQIcx3sfS1t0Y2/VzGDWsul6rg6k5B7m1EVSvI
+I+8wGgW5NQM=
+=Ml99
+-----END PGP SIGNATURE-----

@@ -1,0 +1,23 @@
+CC = cc
+CFLAGS = -c
+#CFLAGS = -c -DFORTRAN_NAMES
+PROJDIR= /projects/
+
+FSUBS = filter_dp.f
+
+OBJECTS = crvfit.o filter_dp.o
+
+LIBS = -lccg_unix -lm
+INCL = -L $(PROJDIR)network/lib/
+
+FLIBS = -lcl
+#FLIBS = -lftn
+
+crvfit:		$(OBJECTS)
+		$(CC) $(OBJECTS) $(FLIBS) $(INCL) $(LIBS) -o ./crvfit
+		rm -f *.o
+
+.f.o:		$(FSUBS)
+		/opt/fortran/bin/f77 -c -C $< -o $*.o -o$@
+.c.o:
+		$(CC) -c $(INCL) $*.c -o$@

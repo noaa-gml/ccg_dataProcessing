@@ -1,0 +1,20 @@
+# Action file to measure LGR
+#
+#    $1 temp file for data line
+#    $2 temp file for flow rate
+#
+#  Action line syntax:
+#              0 MonitorNonPolledData device  time_avg  forever?  reg_time_interval? sp_col? water_corrected? filename? filemode?
+#              NEW****     0 MonitorNonPolledData device  time_avg  forever?  reg_time_interval? sp_col? water_corrected? filename? filemode? nc_expected
+#
+#
+0      TurnUniversalActuator     SystemSelect    @Sys_Picarro
+0      CloseRelay                hp34970         @picarro_sample_valve
+0      CloseRelay                hp34970         @MFC_valve
+160    StartScan                 hp34970         @sample_flow
+160    MonitorNonPolledData      picarro         30   0   0   0  0  $1 replace 40
+190    StopScan                  hp34970         @sample_flow_scale
+190    LogData                   hp34970         $2      Replace
+190    OpenRelay                 HP34970         @picarro_sample_valve
+190    OpenRelay                 hp34970         @MFC_valve
+190    TurnUniversalActuator     SystemSelect    @Sys_Picarro_off

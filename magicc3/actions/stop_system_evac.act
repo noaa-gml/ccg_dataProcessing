@@ -1,0 +1,8 @@
+# action to stop system evacuation
+#
+#
+
+0	OpenRelay		hp34970		@gc_sample_loop_relax
+1	OpenRelay		hp34970		@Sys_evac
+1	OpenRelay		hp34970		@Sample_mks_open_valve
+1	CloseRelay		hp34970		@Sample_mks_close_valve 

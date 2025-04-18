@@ -1,0 +1,230 @@
+Unit History
+PFP_serial_number: 3090 
+PCP_serial_number: 3501 
+firmware: 3g
+site_code: CAR
+sample_mode: semi
+pfp_minus_sys_time: -40
+front_pressure: 11.8
+avg_pressure: 11.8
+
+Altitude History
+sample   plan         start/end            min/max/mean 
+  1     20000      20391    20382      20355    20436    20384 
+  2     18000      18353    18347      18330    18357    18344 
+  3     16000      16377    16349      16306    16380    16342 
+  4     14500      14781    14806      14781    14808    14793 
+  5     13000      13246    13236      13239    13272    13257 
+  6     11500      11679    11699      11664    11717    11692 
+  7     10500      10662    10662      10663    10704    10685 
+  8      9500       9441     9601       9301     9566     9443 
+  9      8000       8077     8081       8033     8093     8066 
+ 10      7000       7025     7016       7024     7097     7060 
+ 11      6000       6026     6048       5996     6050     6029 
+ 12      5500       5492     5581       5419     5546     5494 
+
+Location History
+sample    plan lat/lon           start lat/lon           end lat/lon 
+   1         --         --     40.7296  -104.6464     40.6526  -104.6368 
+   2         --         --     40.6502  -104.6644     40.6889  -104.7356 
+   3         --         --     40.7237  -104.6807     40.6500  -104.6679 
+   4         --         --     40.6659  -104.6730     40.7190  -104.6781 
+   5         --         --     40.7208  -104.6853     40.6690  -104.6443 
+   6         --         --     40.6685  -104.6370     40.6703  -104.6585 
+   7         --         --     40.6798  -104.6370     40.6629  -104.6560 
+   8         --         --     40.6839  -104.6425     40.6585  -104.6612 
+   9         --         --     40.6945  -104.6429     40.6616  -104.6563 
+  10         --         --     40.6900  -104.6442     40.6653  -104.6643 
+  11         --         --     40.6633  -104.6420     40.6904  -104.6721 
+  12         --         --     40.7181  -104.6510     40.6759  -104.6419 
+
+Time History
+sample    plan date/time         start date/time         end date/time 
+   1           --        --   2016-01-13  19:20:23   2016-01-13  19:22:27 
+   2           --        --   2016-01-13  19:28:20   2016-01-13  19:30:17 
+   3           --        --   2016-01-13  19:37:22   2016-01-13  19:39:12 
+   4           --        --   2016-01-13  19:44:05   2016-01-13  19:45:51 
+   5           --        --   2016-01-13  19:50:36   2016-01-13  19:52:15 
+   6           --        --   2016-01-13  19:56:48   2016-01-13  19:58:25 
+   7           --        --   2016-01-13  20:02:57   2016-01-13  20:04:30 
+   8           --        --   2016-01-13  20:08:35   2016-01-13  20:10:04 
+   9           --        --   2016-01-13  20:13:28   2016-01-13  20:14:55 
+  10           --        --   2016-01-13  20:18:39   2016-01-13  20:20:03 
+  11           --        --   2016-01-13  20:23:49   2016-01-13  20:25:10 
+  12           --        --   2016-01-13  20:26:54   2016-01-13  20:28:15 
+
+Fill History
+sample   manifold flush   sample flush   fill volume   fill pressure 
+  1           5.02           10.02           2.05           40.13
+  2           5.03           10.10           1.99           40.08
+  3           5.12           10.12           1.85           40.18
+  4           5.15           10.14           1.82           40.61
+  5           5.17           10.01           1.78           40.83
+  6           5.19           10.04           1.61           40.02
+  7           5.01           10.14           1.64           41.37
+  8           5.02           10.06           1.57           40.56
+  9           5.15           10.01           1.60           42.36
+ 10           5.11           10.04           1.48           41.64
+ 11           5.01           10.08           1.36           40.13
+ 12           5.14           10.13           1.34           41.02
+
+Flag History
+sample    flags 
+  1        (plan valid) (taken)
+  2        (plan valid) (taken)
+  3        (plan valid) (taken)
+  4        (plan valid) (taken)
+  5        (plan valid) (taken)
+  6        (plan valid) (taken)
+  7        (plan valid) (taken)
+  8        (plan valid) (taken)
+  9        (plan valid) (taken)
+ 10        (plan valid) (taken)
+ 11        (plan valid) (taken)
+ 12        (plan valid) (taken)
+
+Ambient History
+sample   temperature (C)   humidity (%RH)   pressure (mbar) 
+  1          -21.50             59.91           463.39 
+  2          -15.87             35.56           503.26 
+  3          -10.88             20.65           546.07 
+  4           -7.63             14.00           580.27 
+  5           -4.46              7.05           616.91 
+  6           -0.83              6.72           654.41 
+  7            1.16              8.87           680.69 
+  8            2.23             21.05           709.42 
+  9            5.20             19.17           751.41 
+ 10            7.70             17.69           780.32 
+ 11            8.13             17.63           809.64 
+ 12            7.10             20.01           823.90 
+
+GPS History
+sample    altitude    lat     lon         fix    prec    date     time 
+   1    20382    40.6526  -104.6368      3     8.00    2016-01-13  19:23:08 
+   2    18347    40.6889  -104.7356      3     9.00    2016-01-13  19:30:57 
+   3    16349    40.6500  -104.6679      3     8.00    2016-01-13  19:39:52 
+   4    14806    40.7190  -104.6781      3    10.00    2016-01-13  19:46:32 
+   5    13236    40.6690  -104.6443      3    10.00    2016-01-13  19:52:55 
+   6    11699    40.6703  -104.6585      3    10.00    2016-01-13  19:59:06 
+   7    10662    40.6629  -104.6560      3    10.00    2016-01-13  20:05:11 
+   8     9601    40.6585  -104.6612      3    10.00    2016-01-13  20:10:45 
+   9     8081    40.6616  -104.6563      3     9.00    2016-01-13  20:15:35 
+  10     7016    40.6653  -104.6643      3     9.00    2016-01-13  20:20:43 
+  11     6048    40.6904  -104.6721      3    10.00    2016-01-13  20:25:50 
+  12     5581    40.6759  -104.6419      3    10.00    2016-01-13  20:28:55 
+
+Prefill Each Fill History
+sample   manifold flush   sample flush   fill volume   fill pressure 
+  1           1.09            5.06           2.06           40.13
+  2           1.12            5.03           2.01           40.08
+  3           1.01            5.16           1.84           40.29
+  4           1.04            5.06           1.81           40.10
+  5           1.07            5.07           1.79           41.15
+  6           1.17            5.06           1.74           41.47
+  7           1.16            5.03           1.65           40.64
+  8           1.19            5.21           1.70           42.25
+  9           1.19            5.19           1.60           42.25
+ 10           1.05            5.04           1.49           41.64
+ 11           1.04            5.03           1.30           40.21
+ 12           1.08            5.03           1.38           40.45
+
+Prefill Each Flag History
+sample    flags 
+  1        (plan valid) (taken)
+  2        (plan valid) (taken)
+  3        (plan valid) (taken)
+  4        (plan valid) (taken)
+  5        (plan valid) (taken)
+  6        (plan valid) (taken)
+  7        (plan valid) (taken)
+  8        (plan valid) (taken)
+  9        (plan valid) (taken)
+ 10        (plan valid) (taken)
+ 11        (plan valid) (taken)
+ 12        (plan valid) (taken)
+
+Prefill Each Time History
+sample    plan date/time         start date/time         end date/time 
+   1           --        --   2016-01-13  19:19:05   2016-01-13  19:20:12 
+   2           --        --   2016-01-13  19:27:05   2016-01-13  19:28:09 
+   3           --        --   2016-01-13  19:36:12   2016-01-13  19:37:11 
+   4           --        --   2016-01-13  19:42:58   2016-01-13  19:43:54 
+   5           --        --   2016-01-13  19:49:31   2016-01-13  19:50:25 
+   6           --        --   2016-01-13  19:55:45   2016-01-13  19:56:38 
+   7           --        --   2016-01-13  20:01:55   2016-01-13  20:02:46 
+   8           --        --   2016-01-13  20:07:33   2016-01-13  20:08:24 
+   9           --        --   2016-01-13  20:12:29   2016-01-13  20:13:17 
+  10           --        --   2016-01-13  20:17:42   2016-01-13  20:18:28 
+  11           --        --   2016-01-13  20:22:55   2016-01-13  20:23:38 
+  12           --        --   2016-01-13  20:25:59   2016-01-13  20:26:43 
+
+Prefill All Fill History
+sample   manifold flush   sample flush   fill volume   fill pressure 
+  1             --            5.16           1.47           41.23
+  2             --            5.12           1.60           42.55
+  3             --            5.06           1.60           42.31
+  4             --            5.22           1.89           40.64
+  5             --            5.13           1.58           40.53
+  6             --            5.04           2.83           42.09
+  7             --            5.00           1.70           41.15
+  8             --            5.02           1.69           41.53
+  9             --            5.20           2.44           41.10
+ 10             --            5.16           2.58           41.04
+ 11             --            5.25           1.66           40.40
+ 12             --            5.08           1.76           41.55
+
+Prefill All Flag History
+sample    flags 
+  1        (plan valid) (taken)
+  2        (plan valid) (taken)
+  3        (plan valid) (taken)
+  4        (plan valid) (taken)
+  5        (plan valid) (taken)
+  6        (plan valid) (taken)
+  7        (plan valid) (taken)
+  8        (plan valid) (taken)
+  9        (plan valid) (taken)
+ 10        (plan valid) (taken)
+ 11        (plan valid) (taken)
+ 12        (plan valid) (taken)
+
+Prefill All Time History
+sample    plan date/time         start date/time         end date/time 
+   1           --        --   2016-01-13  18:50:22   2016-01-13  18:50:57 
+   2           --        --   2016-01-13  18:51:02   2016-01-13  18:51:43 
+   3           --        --   2016-01-13  18:51:48   2016-01-13  18:52:29 
+   4           --        --   2016-01-13  18:52:34   2016-01-13  18:53:16 
+   5           --        --   2016-01-13  18:53:21   2016-01-13  18:54:01 
+   6           --        --   2016-01-13  18:54:06   2016-01-13  18:54:46 
+   7           --        --   2016-01-13  18:54:51   2016-01-13  18:55:34 
+   8           --        --   2016-01-13  18:55:39   2016-01-13  18:56:21 
+   9           --        --   2016-01-13  18:56:26   2016-01-13  18:57:03 
+  10           --        --   2016-01-13  18:57:08   2016-01-13  18:57:52 
+  11           --        --   2016-01-13  18:57:57   2016-01-13  18:58:41 
+  12           --        --   2016-01-13  18:58:46   2016-01-13  18:59:32 
+
+Limits History
+  altitude tolerance:     100 ft 
+  latitude tolerance:     0.10 deg 
+  longitude tolerance:    0.10 deg 
+  sampling mode:         semi auto 
+  run pumps continuous in Capture Mode:  No 
+  max flush time:                     100 seconds 
+  manifold flush volume:              5.0 liters 
+  sample flush volume:               10.0 liters 
+  pre-fill manifold flush volume:     1.0 liters 
+  pre-fill sample flush volume:       5.0 liters 
+  pause after pre-fill:               0.1 minutes 
+  pre-fill all samples after test:  Yes 
+  pre-fill each sample before fill: Yes 
+  manifold flush time without PCP:    5 seconds 
+  sample flush time without PCP:     40 seconds 
+  max fill time:                     60 seconds 
+  prefill pressure:                40.0 psia 
+  final fill pressure:             40.0 psia 
+  max test time:  100 seconds 
+  min flowrate:     4.0 lpm 
+  max pressure:    50.0 psia 
+  min supply:      19.0 volts 
+  bypass system test:                  No 
+  close sample valves at system test:  No 

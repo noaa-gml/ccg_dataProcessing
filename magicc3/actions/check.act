@@ -1,0 +1,6 @@
+#
+# Check if devices respond.
+#
+0 CheckDevice   hp34970       @query_34970
+0 CheckDevice   HP35900       @query_a/d
+0 Noop		none 	none

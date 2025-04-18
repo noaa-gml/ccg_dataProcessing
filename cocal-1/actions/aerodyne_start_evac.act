@@ -1,0 +1,5 @@
+# action file for starting Aerodyne cell evac
+# for stop flow measurements
+#
+0	SendCommand		aerodyne_comm_file	@aerodyne_start_evac_runscript
+3	Noop			None			None

@@ -1,0 +1,152 @@
+/*standard table style for printing query results*/
+.tl_table{
+	border-collapse:collapse;
+	border: thin solid silver;
+
+	/*border-bottom: 1px Silver solid;
+	border-right: 1px Silver solid;*/
+	padding:2px 2px 2px 2px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.tl_table td{
+	/*border: 1px Silver solid;
+*/
+	border: thin solid silver;
+	
+	color:#515151;
+	font-size: 12px;
+	padding: 2px 2px 2px 2px;
+}
+.tl_table tr:hover{
+	/*background-color:papayawhip;*/
+	border:2px solid Grey;
+}
+
+.selectedRow{
+	background-color:#9CCFFF;
+	border:2px solid black;
+}
+.tl_table_red{
+	background-color:#FE3044;
+}
+.tl_table_green{
+	background-color:#00FF80;
+}
+.tl_table thead{
+	/*border: thin solid black;*/
+}
+.tl_table th{
+	font-weight:bold;
+	color:black;
+    
+	background: #e6e6e6 url("/inc/dbutils/th_bg.png") 50% 50% repeat-x;
+	border: thin solid grey;
+	padding-left:4px;
+	padding-right:4px;
+	padding-top: 4px;
+    padding-bottom: 4px;
+	text-align: center;
+	vertical-align: top;
+	font-weight: normal;
+    color: #212121;
+
+	font-size:14px;
+	white-space: nowrap;
+	text-transform: capitalize;
+	
+}
+.tl_table th a{	color: #515151;}
+.tl_table th a:link{
+	text-decoration: none;
+	color: black;
+}
+.tl_table th a:hover{
+	text-decoration: underline;
+	color: blue;
+}
+.hidden{visibility: hidden;}
+.editableTD{
+	background-color:#FFFEE4;
+	border:thin inset black;
+}
+
+.tl_calibrationsDiv{
+	height: 200px;
+	overflow: auto;
+	width:610px;
+	min-width:610px;
+	border: thin solid silver;
+}
+.tl_calDataLabel:hover{
+	border:thin solid silver;
+}
+.tinyital{
+	font-size:10px;
+	font-style:italic;
+}
+
+.tl_error{
+	font-size:12px;font-style:italic;font-weight:bold;
+}
+.tl_calibrations_results_div{
+	height: 200px;
+	overflow: auto;
+	width:610px;
+	min-width:610px;
+	border: thin solid silver;
+}
+@media print{
+	body * {
+		visibility:hidden;
+	}
+	.tl_calibrations_results_div,.tl_calibrations_results_div *{
+		visibility:visible;
+	}
+	.tl_calibrations_results_div{
+		background-color: white;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        border:none;
+	}
+}
+.tl_calibrations_results_table{
+	margin:0;
+	padding:0;
+	border-collapse:collapse;
+}
+.tl_calibrations_results_table td{
+	border:thin solid silver;
+	left-padding:5px;
+}
+.tl_calTable tl_calibrations_results_table {border:none;}
+.tl_calTable2{
+	border-collapse: collapse;	
+}
+.tl_calTable2 th{
+	padding: 4px 4px 4px 4px;
+}
+.tl_calTable2 td{
+	border: thin solid silver;
+	padding-left:4px;
+	padding-right:4px;
+	padding-top: 4px;
+    padding-bottom: 4px;
+	text-align: center;
+}
+
+.highlight_comment_row{
+	border: medium solid red;
+}
+
+
+
+
+
+
+

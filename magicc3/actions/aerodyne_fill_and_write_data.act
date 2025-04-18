@@ -1,0 +1,8 @@
+# action file for filling Aerodyne cell and starting the process of the Aerodyne writing data to the transient data file
+# for stop flow measurements
+#
+# Need to wait a little before looking for acknowledgment of command so use
+# 3 Noop None step
+#
+0	SendCommand		aerodyne_comm_file	@aerodyne_fill_and_start_wd_runscript
+3	Noop			None			None

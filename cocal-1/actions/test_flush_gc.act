@@ -1,0 +1,14 @@
+# Action to flush GC sample loop
+#
+#    $1 Manifold 
+#    $2 gc qc file for flow
+#
+0    TurnUniversalActuator   ManifoldSelect  @Manifold$1_port
+0    TurnUniversalActuator   SystemSelect    @Sys_Aerolaser
+0    OpenRelay               hp34970         @MFC_valve
+0    CloseRelay              hp34970         @aerolaser_sample_valve
+#10   StartScan               hp34970         @sample_flow
+#30   StopScan                hp34970         @sample_flow_scale
+#30   LogData                 hp34970         $2              Replace
+#30   TurnUniversalActuator   SystemSelect    @Sys_GC_off
+

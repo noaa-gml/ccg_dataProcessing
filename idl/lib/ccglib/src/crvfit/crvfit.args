@@ -1,0 +1,211 @@
+Program: 	'ccg_ccgvu'
+
+Written:	October 1994 - kam
+Revised:	January 1996 - kam
+
+
+	This program uses the curve fitting techniques developed
+	by the NOAA/CMDL Carbon Cycle Group and documented in 
+
+		Thoning, K.W., P.P. Tans, and W.D. Komhyr,
+		Atmospheric carbon dioxide at Mauna Loa Observatory, 2,
+		Analysis of the NOAA/GMCC data, 1974-1985,
+		J. Geophys. Res., 94, 8549-8565, 1989.
+
+	The program calls the Fortran filter routines developed by 
+	Mr. Kirk Thoning of the Carbon Cycle Group.
+
+	Several arguments are required to call this program.  The user
+	is expected to already have some familiarity with this curve
+	fitting technique.  The arguments are described below.
+
+Argument options:
+
+	-f 	This required option specifies the source data file.  This
+		file is expected to have a least two (2) columns where the
+		first column is date in decimal notation, (e.g., 1996.011234
+		or 93.934592), and the second column contains the ordinate
+		value to be fitted.
+			
+		Usage: 		-f tmp/test.dat
+
+	-d	This required option specifies the directory path that
+		should be used to save any selected curve fitting results.
+
+		Usage: 		-d /users/ken/tmp/
+
+	-p	This option is used to specify the prefix of any specified
+		output file.  Entries such as brw, cba, etc... might be
+		used, but any prefix will do. The entry will be converted
+		to lowercase.  If no prefix is specified then the default
+		'zzz' will be assigned.
+
+		Usage: 		-p brw
+
+	-s	This option is used to specify the suffix of any specified
+		output file.  Entries such as ch4, co, h2, n2o, sf6, c13co2,
+		o18co2, and c13ch4 might be used, but any suffix will do.
+		The entry will be converted to lowercase.  If no suffix is 
+		specified then the default 'zzz' will be assigned.
+
+		Usage: 		-s n2o
+
+	-e 	If specified then any specified output files will have evenly
+		spaced values beginning at the first data value and stepping
+		one interval or time-step as specified with option x.  If not
+		specified, selected output have identical resolution to source
+		data.
+
+		Usage: 		-e
+
+	-z	This option is used to specify the number of polynomial
+		terms used in the function f(t).  Note that a default value of 
+		three (3) is used if the source file contains more than two
+		(2) years of data, and a value of two (2) is assigned if less
+		than two (2) years of data are supplied.   Keep in mind that
+		neither default may be appropiate for the supplied data.
+
+		Usage: 		-z 3
+
+	-y	This option is used to specify the number of harmonic terms
+		used in the function f(t).  Note that a default value of 
+		four (4) is used .  Keep in mind that this default assignment
+		may not be appropiate for the supplied data.
+
+		Usage: 		-y 4
+
+	-x	This option is used to specify the resolution or time-step 
+		interval (in days) of the supplied data.  Note that a default
+		value of seven (7) days is assigned if none is specified.
+		Keep in mind that this default assignment may not be appropiate
+		for the supplied data.
+
+		Usage: 		-x 14
+
+	-w	This option is used to specify the short term filter cutoff 
+		used in constructing the smooth curve S(t).  Note that a 
+		default value of eighty (80) is assigned if none is specified.
+		Keep in mind that this default assignment may not be appropiate
+		for the supplied data.
+
+		Usage: 		-w 80
+
+	-v	This option is used to specify the long term filter cutoff 
+		used in constructing the smooth trend curve T(t).  Note that a 
+		default value of 667 is assigned if none is specified.  Keep
+		in mind that this default assignment may not be appropiate
+		for the supplied data.
+
+		Usage: 		-v 667
+
+	-u	This option is used to specify the date (in decimal notation
+		at t=0.  Note that if none is specified then the decimal date
+		at t=0 is set to be the minimum decimal date in the supplied
+		data file.
+
+		Usage: 		-u 1993.0
+
+	-a	If specified then the save ALL of the result options specified
+		below.  Each unique file will contain two (2) columns where the
+		first column contains the date in decimal notation and the 
+		second column contains values of the specified result at each
+		each time step.
+
+		Usage: 		-a
+
+    	-1	If specified then the function, f(t), will be saved to the 
+		destination directory with the file name <prefix>_ftn.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the function determined at each time step.
+
+		Usage: 		-1
+
+	-2	If specified then the smooth curve, S(t), will be saved to the
+		destination directory with the file name <prefix>_sc.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the smooth curve determined at each time step.
+		Usage: 		-2
+
+	-3	If specified then the smooth trend, T(t), will be saved to the
+		destination directory with the file name <prefix>_tr.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the smooth trend curve determined at each
+		time step.
+
+		Usage: 		-3
+
+	-4	If specified then the growth rate, dT/dt, will be saved to the
+		destination directory with the file name <prefix>_gr.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the growth rate determined at each time step.
+
+		Usage: 		-4
+
+	-5	If specified then the harmonic component of f(t) will be saved
+		to the destination directory with the name <prefix>_fsc.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the harmonic components of f(t) determined
+		at each time step.
+
+		Usage: 		-5
+
+	-6	If specified then the smooth seasonal cycle, S(t)-T(t) will be
+		saved to the destination directory with the file name 
+		<prefix>_ssc.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the smooth seasonal cycle determined
+		at each time step.
+
+		Usage: 		-6
+
+	-7	If specified then the function residuals, c(t)-f(t), will be
+		saved to the destination directory with the file name 
+		<prefix>_residf.<suffix>.
+		The file will contain two (2) columns where the first column
+		contains the date in decimal notation and the second column
+		contains values of the function residuals determined
+		at each data value time step.
+
+		Usage: 		-7
+
+	-8	If specified then the smooth curve residuals, c(t)-S(t),
+		will be saved to the destination directory with the file
+		name <prefix>_residsc.<suffix>.  The file will contain two (2)
+		columns where the first column contains the date in decimal
+		notation and the second column contains values of the smooth
+		curve residuals determined at each data value time step.
+
+		Usage: 		-8
+
+	-9	If specified then the coefficients of the function f(t) 
+		will be saved to the destination directory with the file
+		name <prefix>_coef.<suffix>.  The file will contain two (2)
+		columns where the first column contains the coefficient
+		and the second column contains the uncertainty of each 
+		coefficient as defined with ccgvu.  The number of entries
+		is defined by npoly and nharm...npoly+2*nharm.
+
+		Usage: 		-8
+
+Complete Example:
+
+
+	./crvfit 	-1
+			-2
+			-3
+			-4
+			-f/crc/b/kam/cgo.ch4.dat
+			-d/crc/b/kam/tmp/
+			-pcgo
+			-sch4
+			-z3
+			-y4
+			-x7
+			-w80
+			-v667

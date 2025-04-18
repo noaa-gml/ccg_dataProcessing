@@ -1,0 +1,8 @@
+# action file to measure final flask pressure after all measurements finished
+#
+#	$1 qc data file, append to existing file
+
+0	ReadValue	hp34970		@manifold_pressure      DCVOLT
+0	ScaleValue	hp34970		@manifold_pressure_scale
+0	PrintData	hp34970		%d %12.4
+0	LogData		hp34970         $1		Append

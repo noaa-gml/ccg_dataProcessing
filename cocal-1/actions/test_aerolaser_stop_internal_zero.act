@@ -1,0 +1,8 @@
+# Action file to stop internal zero on VURF.
+# allows system flushing with sample while zero being measured.
+#
+0    SendCommand        AeroLaser   @aerolaser_zero_off
+3    PrintReply        AeroLaser   @aerolaser_zero_off
+5	Noop		None		None
+
+

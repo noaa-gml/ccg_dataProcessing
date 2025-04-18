@@ -1,0 +1,6 @@
+# Action for setting a multiposition valve to a certain position
+# For samples and standards, we can use any valve so must also pass in the
+# valve name. 
+# $1 = ManifoldA, ManifoldB, ManifoldC, or ManifoldSelect
+# $2 = actual port number OR a port number and direction separated by space
+0 TurnUniversalActuator		$1     $2  

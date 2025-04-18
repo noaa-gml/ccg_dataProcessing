@@ -1,0 +1,21 @@
+# Action file to measure LGR
+#
+#    $1 temp file for data line
+#    $2 temp file for flow rate
+#
+## Action line syntax:
+#           0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+#
+# Increase flushing since lgr not being run before the Aeris 
+0    TurnUniversalActuator     SystemSelect    @Sys_Aeris
+0    CloseRelay                hp34970         @Aeris_sample_valve
+0    CloseRelay                hp34970         @MFC_valve
+45   StartScan                 hp34970         @sample_flow
+45   MonitorDevice             aeris           None 30   0   0   $1 replace 
+75   StopScan                  hp34970         @sample_flow_scale
+75   LogData                   hp34970         $2     Replace
+75   OpenRelay                 hp34970         @Aeris_sample_valve
+75   OpenRelay                 hp34970         @MFC_valve
+75   TurnUniversalActuator     SystemSelect    @Sys_Aeris_off
+#

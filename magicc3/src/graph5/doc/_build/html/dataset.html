@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dataset &mdash; WxPython Graph Widget v1 documentation</title>
+    <link rel="stylesheet" href="_static/gmd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="WxPython Graph Widget v1 documentation" href="index.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">WxPython Graph Widget v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dataset</a><ul>
+<li><a class="reference internal" href="#constructor">Constructor</a></li>
+<li><a class="reference internal" href="#class-attributes">Class Attributes:</a></li>
+<li><a class="reference internal" href="#class-methods">Class Methods:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dataset.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dataset">
+<h1>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h1>
+<p>The Dataset class is used to contain the data points and drawing style
+of a &#8216;set&#8217; of data.  It also keeps track of which axis on the graph that
+the data is to be mapped to.</p>
+<p>A data point consists of an x value, a y value, and a weight value.
+The weight value is used to distinguish between different drawing styles.
+For example, a data set of</p>
+<blockquote>
+<div>x = [1, 2, 3]
+y = [2, 3, 4]
+wt = [0, 0, 1]</div></blockquote>
+<p>will have the first two points drawn in the first style, the third point
+drawn in the second style.</p>
+<p>The x and y values are stored as numpy arrays for faster processing.</p>
+<p>The Dataset class also has a popup dialog that can be used to dynamically
+change the style attributes of the dataset.</p>
+<div class="section" id="constructor">
+<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
+<p>class Dataset( x = None, y = None, name = &#8220;&#8221;)</p>
+<blockquote>
+<div>x and y are lists of numbers representing the x axis and y axis values.</div></blockquote>
+</div>
+<div class="section" id="class-attributes">
+<h2>Class Attributes:<a class="headerlink" href="#class-attributes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>dataset. <strong>name</strong></dt>
+<dd>Same as dataset.label</dd>
+<dt>dataset. <strong>hidden</strong></dt>
+<dd>True if dataset is not to be drawn in graph.  Default is False</dd>
+<dt>dataset. <strong>label</strong></dt>
+<dd>Label to use in graph legend for the dataset.</dd>
+<dt>dataset. <strong>xaxis</strong></dt>
+<dd>The id of the xaxis to map the data on</dd>
+<dt>dataset. <strong>yaxis</strong></dt>
+<dd>The id of the yaxis to map the data on</dd>
+<dt>dataset. <strong>xdata</strong></dt>
+<dd>numpy array created from x list</dd>
+<dt>dataset. <strong>ydata</strong></dt>
+<dd>numpy array created from y list</dd>
+<dt>dataset. <strong>weights</strong></dt>
+<dd>numpy array with corresponding weight value for each data point.
+Default is an array of zeros equal to xdata in length</dd>
+<dt>dataset. <strong>ymin</strong></dt>
+<dd>The minimum value in ydata</dd>
+<dt>dataset. <strong>ymax</strong></dt>
+<dd>The maximum value in ydata</dd>
+<dt>dataset. <strong>xmin</strong></dt>
+<dd>The minimum value in xdata</dd>
+<dt>dataset. <strong>xmax</strong></dt>
+<dd>The maximum value in xdata</dd>
+<dt>dataset. <strong>missingValue</strong></dt>
+<dd>Value to designate a &#8216;missing&#8217; data point.
+** Unused **</dd>
+<dt>dataset. <strong>subsetStart</strong></dt>
+<dd>** Unused **</dd>
+<dt>dataset. <strong>subsetEnd</strong></dt>
+<dd>** Unused **</dd>
+<dt>dataset. <strong>userData</strong></dt>
+<dd>An user specified list that corresponds to the xdata, ydata arrays.
+That is, we can remember an additional list of data that the developer can
+access at any time.  Typical example is if the index of a data point is known,
+get the userData that goes with this data point.  mydata = dataset.userData[index]
+The userData list is not used by the graph widget at all, it is
+there just to attach some extra data to the dataset.</dd>
+<dt>dataset. <strong>styles</strong></dt>
+<dd>List of Style objects for drawing the dataset.  There should be one style
+for each unique value in the weights array.</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="class-methods">
+<h2>Class Methods:<a class="headerlink" href="#class-methods" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>dataset. <strong>SetData</strong> (x, y, w=[])</dt>
+<dd>Convert the given list of x and y data values
+to a numpy array, and save.  x and y must be same length.
+The weight list is optional, but if given should be same length as x and y.</dd>
+<dt>dataset. <strong>SetAxis</strong> (axis)</dt>
+<dd>Set the axis that this dataset is mapped to.  <strong>axis</strong> is an axis object.  It can be obtained by using the graph.getXAxis() or graph.getYAxis() methods.</dd>
+<dt>dataset. <strong>SetWeights</strong> (wt)</dt>
+<dd>List of weight values for each data point.
+The length of wt should match that of xdata and ydata.</dd>
+<dt>dataset. <strong>SetStyle</strong> (style)</dt>
+<dd>Set the default style class for the entire dataset</dd>
+<dt>dataset. <strong>SetWeightStyle</strong> (wt, style):</dt>
+<dd>Set the style class for points matching a weight value.</dd>
+<dt>dataset. <strong>ShowDatasetStyleDialog</strong> (graph)</dt>
+<dd>Show the popup dialog for editing style attributes.</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">WxPython Graph Widget v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Kirk Thoning.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+The following are the steps used to 
+compile the loess routines and create
+the loess library.
+
+January 31, 1996 - kam
+
+(1) 	download files from netlib at
+	netlib.att.com
+
+(2)	download support files from netlib
+	Specifically, 13 routines from the
+	Blas and Linpack directories.
+
+(3)	Place the support files in support/.
+	Compile the 13 support routines
+
+	f77 -c -u -O *.f
+
+(4)	Construct the support library
+	within the support/ directory:
+
+	ar r libsupport.a *.o
+
+(5)	Make the necessary changes to the
+	make file.  Compare makefile with
+	makefile.orig.  Add supp.o to list
+	of object files.
+
+(6)	run makefile
+
+(7) 	Copy *.o files into lib directory.
+	Exclude gas.o from the copy.
+	Copy support/*.o files into lib directory
+	Construct loess library within the
+	lib/ directory:
+
+	ar r libloess.a *.o

@@ -1,0 +1,24 @@
+#!/bin/bash
+set -x
+
+    trap "echo got kill signal" 15
+
+    cd /home/magicc
+
+
+
+# kill the initial run manager.  It should wait
+# for any subprocesses to finish.
+
+    read pid < .pid
+    kill $pid
+
+# Kill any hardware manager programs (hm).
+
+    a=`ps -fu magicc | grep hm | awk '{print $2}'`
+    for i in $a
+    do
+        kill $i 2>/dev/null
+    done
+
+

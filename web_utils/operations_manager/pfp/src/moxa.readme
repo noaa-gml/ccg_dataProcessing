@@ -1,0 +1,57 @@
+Installing MOXA NPort TTY Driver
+
+140.172.195.90
+
+Updated:  July 26, 2004 - kam
+
+See Installation Guide.
+
+1) Download from www.moxa.com (DE-211)
+2) Kernal source must be installed on server
+3) Edit /usr/lib/npreal/npreal.c
+   line 828: tty->count TO tty->count.counter
+4) Make (in driver directory)
+5) cd /usr/lib/npreal
+   make (in admin directory)
+6) Kill npreal process (if running)
+7) Run npadm
+   Delete Server
+   Add Server
+8) Add 2 lines to /etc/rc.d/rc.local
+   insmod npreal
+   /usr/lib/npreal/bin/npreald -t 1&
+9) Manually start process from command line
+   $ /usr/lib/npreal/bin/npreald -t 1&
+
+
+Note [August 18, 2004 - kam]
+
+If the web server kernel gets updated automatically
+then the moxa source code needs to be recompiled
+(e.g., steps 4 and 5).  
+
+This must be done as su.  
+
+Note:  ignore the cp error
+below.  The important thing is that the object
+code exists in /lib/modules/<kernel vers>/kernel/drivers/char/.
+chmod 744 npreal.o in above directory.  Then need to do steps
+6, "/sbin/insmod npreal" from command line, 9.
+
+
+>>>
+possible compile error 
+
+[root@www driver]# make
+make -f driver.mak
+make[1]: Entering directory `/usr/lib/npreal/driver'
+gcc -DLINUX -c  -DMODVERSIONS -DMODULE -D__KERNEL__ -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer -pipe -m486 -I/usr/src/linux-2.4/include -I/usr/src/linux/include npreal.c
+`-m486' is deprecated. Use `-march=i486' or `-mcpu=i486' instead.
+cp -p npreal.o /lib/modules/2.4.21-20.EL.c0smp/kernel/drivers/char/
+cp -p npreal.o /lib/modules/2.4.21-20.EL.c0smp/misc/
+cp: cannot create regular file `/lib/modules/2.4.21-20.EL.c0smp/misc/npreal.o': No such file or directory
+make[1]: *** [module] Error 1
+make[1]: Leaving directory `/usr/lib/npreal/driver'
+make: *** [driver] Error 2
+<<<
+

@@ -1,0 +1,13 @@
+# Action file to measure VURF
+#       $1 temp qc file for data line
+#       $2 Append or Replace for file write
+#
+# Action line syntax:
+#           0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+0     LockInterface         hp34970       Lock
+0     StartScan             hp34970       @sample_flow
+5     StopScan              hp34970       @sample_flow_scale
+5     LogData               hp34970       $1  $2 
+5     LockInterface         hp34970       UnLock
+

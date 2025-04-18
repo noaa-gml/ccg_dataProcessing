@@ -1,0 +1,5 @@
+#!/bin/bash
+
+    cd /home/magicc
+
+    exec python /home/magicc/magicc.py  2>error.log

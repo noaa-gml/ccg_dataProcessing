@@ -1,0 +1,9 @@
+#
+# Magicc Peak Identification Table for n2o
+#
+# Gas    Channel   Retention    Window
+# Name   Number    Time (sec)  Size (sec)
+#-----   -------   ----------  ---------
+#           
+N2O	  0	   48	       20  
+SF6       0        88          30

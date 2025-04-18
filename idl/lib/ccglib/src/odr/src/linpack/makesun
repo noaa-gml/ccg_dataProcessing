@@ -1,0 +1,125 @@
+LIB=linpack
+FFLAGS=-O
+OBJ =  \
+	daxpy.o	\
+	dchdc.o	\
+	dchdd.o	\
+	dchex.o	\
+	dchud.o	\
+	dcopy.o	\
+	ddot.o	\
+	dgbco.o	\
+	dgbdi.o	\
+	dgbfa.o	\
+	dgbsl.o	\
+	dgeco.o	\
+	dgedi.o	\
+	dgefa.o	\
+	dgesl.o	\
+	dgtsl.o	\
+	dmach.o	\
+	dnrm2.o	\
+	dpbco.o	\
+	dpbdi.o	\
+	dpbfa.o	\
+	dpbsl.o	\
+	dpoco.o	\
+	dpodi.o	\
+	dpofa.o	\
+	dposl.o	\
+	dppco.o	\
+	dppdi.o	\
+	dppfa.o	\
+	dppsl.o	\
+	dptsl.o	\
+	dqrdc.o	\
+	dqrsl.o	\
+	drot.o	\
+	drotg.o	\
+	dscal.o	\
+	dsico.o	\
+	dsidi.o	\
+	dsifa.o	\
+	dsisl.o	\
+	dspco.o	\
+	dspdi.o	\
+	dspfa.o	\
+	dspsl.o	\
+	dsvdc.o	\
+	dswap.o	\
+	dtrco.o	\
+	dtrdi.o	\
+	dtrsl.o	\
+	idamax.o	\
+	dasum.o \
+	izamax.o \
+	zaxpy.o \
+	zblas.o \
+	zchdc.o \
+	zchdd.o \
+	zchex.o \
+	zchud.o \
+	zcopy.o \
+	zdotc.o \
+	zdotu.o \
+	zdrot.o \
+	zdscal.o \
+	zgbco.o \
+	zgbdi.o \
+	zgbfa.o \
+	zgbsl.o \
+	zgeco.o \
+	zgedi.o \
+	zgefa.o \
+	zgesl.o \
+	zgtsl.o \
+	zhico.o \
+	zhidi.o \
+	zhifa.o \
+	zhisl.o \
+	zhpco.o \
+	zhpdi.o \
+	zhpfa.o \
+	zhpsl.o \
+	zmach.o \
+	zpbco.o \
+	zpbdi.o \
+	zpbfa.o \
+	zpbsl.o \
+	zpoco.o \
+	zpodi.o \
+	zpofa.o \
+	zposl.o \
+	zppco.o \
+	zppdi.o \
+	zppfa.o \
+	zppsl.o \
+	zptsl.o \
+	zqrdc.o \
+	zqrsl.o \
+	zrotg.o \
+	zscal.o \
+	zsico.o \
+	zsidi.o \
+	zsifa.o \
+	zsisl.o \
+	zspco.o \
+	zspdi.o \
+	zspfa.o \
+	zspsl.o \
+	zsvdc.o \
+	zswap.o \
+	ztrco.o \
+	ztrdi.o \
+	ztrsl.o 
+lib$(LIB).a:	$(OBJ)
+	ar ru sun$(LIB).a $?
+	ranlib sun$(LIB).a
+
+install:	lib$(LIB).a
+	ln -s /netlib/netlib/linpack/sun$(LIB).a /usr/local/lib
+	rm *.o
+
+test: test.o
+	fortran test.o -l$(LIB)
+	time a.out

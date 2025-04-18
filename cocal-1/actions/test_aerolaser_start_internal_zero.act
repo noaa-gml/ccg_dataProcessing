@@ -1,0 +1,7 @@
+# Action file to start zero on VURF using internal scrubber.
+# allows system flushing with sample while zero being measured.
+#
+0      SendCommand   AeroLaser   @aerolaser_zero_on
+3     PrintReply   AeroLaser   @aerolaser_zero_on
+5     Noop	     None	 None
+

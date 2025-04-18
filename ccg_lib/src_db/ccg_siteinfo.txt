@@ -1,0 +1,129 @@
+#
+# This file contains site information for site codes
+# that we do not want to manage in the GMD site table
+# because they may be temporary.
+#
+# These sites may be removed from this list and added
+# to the GMD DB if/when they produce observations that 
+# will be used in CarbonTracker.
+#
+# Columns are defined as follows:
+#
+# col 1: site code (not restricted to 3-characters).  If a delimiter 
+#        is required, use a hyphen (-)
+#
+# col 2: site name
+# col 3: site country
+# col 4: lat
+# col 5: lon
+# col 6: elev (masl)
+# col 7: sample height (magl)
+# col 8: LT to UTC conversion
+# col 9: comment
+#
+# Be aware that the 3-letter code must be unique with respect
+# to our DB and existing entries in this file.
+# 2012-03-28 (kam)
+#
+
+F3 | North Sea Platform | Netherlands | 54.84 | 4.73 | 0 | 46 | -1 | from Ingrid van der Laan-Luijkx
+
+HANLE | Hanle | India | 32.90 | 78.90 | 0 | 0 | -99 | CMMCS and LSCE
+#LAMTO | Lamto | 
+#IVITTUT | Ivittut | Greenland | 
+
+RK1 | Kermadec Island | Raoul Island | -29.2 | -177.9 | 2 | 0 | -99 | Ralph
+Keeling CO2 site
+
+LIN | Lin'an | China | 30.3 | 119.73 | 138.6 | 10 | -99 | CMA site (code
+conflict with LAN)
+
+BRN | Burns, Oregon | United States | 44.47 | -119.69 | 1398 | 6.5 | 8 | Mathias Geockede 2008-08-13
+MPK | Mary's Peak, Oregon | United States | 44.50 | -123.55 | 1248 | 7.5 | 8 | Mathias Geockede 2008-08-13
+MRV | Mary's River, Oregon | United States | 44.65 | -123.55 | 310 | 37.9 | 8 | Mathias Geockede 2008-08-13
+MTS | Metolius, Oregon | United States | 44.45 | -121.56 | 1310 | 33.5 | 8 | Mathias Geockede 2008-08-13
+YQH | Yaquina Head, Oregon | United States | 44.67 | -124.07 | 116 | 12.5 | 8 | Mathias Geockede 2008-08-13
+#
+# don't have elev for ARA and GPA
+#
+ARA | Arcturus, Queensland | Australia | -23.859 | 148.475 | 0 | 25 | -10 | Zoe Loh 2010-12-08
+GPA | Gunn Point, Victoria | Australia | -12.249 | 131.045 | 0 | 25 | -10 | Zoe Loh 2010-12-08
+PHA | Point Hicks, Victoria | Australia | -37.802 | 139.275 | 50 | 0 | -10 | David Etheridge 2008-12-08
+AIA005 | Bass Strait, Tasmania | Australia | -40.53 | 144.30 | 0 | 500 | -10 | Ray Langenfelds
+
+#
+# for arlyn, empirical boundary conditions
+#
+lat20-alt3500_99D2 | name | North America | 20 | -999.99 | 3500 | 0 | -99 | provided by Arlyn
+lat20-alt4500_99D2 | name | North America | 20 | -999.99 | 4500 | 0 | -99 | provided by Arlyn
+lat20-alt5500_99D2 | name | North America | 20 | -999.99 | 5500 | 0 | -99 | provided by Arlyn
+lat20-alt6500_99D2 | name | North America | 20 | -999.99 | 6500 | 0 | -99 | provided by Arlyn
+lat30-alt3500_99D2 | name | North America | 30 | -999.99 | 3500 | 0 | -99 | provided by Arlyn
+lat30-alt4500_99D2 | name | North America | 30 | -999.99 | 4500 | 0 | -99 | provided by Arlyn
+lat30-alt5500_99D2 | name | North America | 30 | -999.99 | 5500 | 0 | -99 | provided by Arlyn
+lat30-alt6500_99D2 | name | North America | 30 | -999.99 | 6500 | 0 | -99 | provided by Arlyn
+lat40-alt3500_99D2 | name | North America | 40 | -999.99 | 3500 | 0 | -99 | provided by Arlyn
+lat40-alt4500_99D2 | name | North America | 40 | -999.99 | 4500 | 0 | -99 | provided by Arlyn
+lat40-alt5500_99D2 | name | North America | 40 | -999.99 | 5500 | 0 | -99 | provided by Arlyn
+lat40-alt6500_99D2 | name | North America | 40 | -999.99 | 6500 | 0 | -99 | provided by Arlyn
+lat50-alt3500_99D2 | name | North America | 50 | -999.99 | 3500 | 0 | -99 | provided by Arlyn
+lat50-alt4500_99D2 | name | North America | 50 | -999.99 | 4500 | 0 | -99 | provided by Arlyn
+lat50-alt5500_99D2 | name | North America | 50 | -999.99 | 5500 | 0 | -99 | provided by Arlyn
+lat50-alt6500_99D2 | name | North America | 50 | -999.99 | 6500 | 0 | -99 | provided by Arlyn
+lat60-alt3500_99D2 | name | North America | 60 | -999.99 | 3500 | 0 | -99 | provided by Arlyn
+lat60-alt4500_99D2 | name | North America | 60 | -999.99 | 4500 | 0 | -99 | provided by Arlyn
+lat60-alt5500_99D2 | name | North America | 60 | -999.99 | 5500 | 0 | -99 | provided by Arlyn
+lat60-alt6500_99D2 | name | North America | 60 | -999.99 | 6500 | 0 | -99 | provided by Arlyn
+lat70-alt3500_99D2 | name | North America | 70 | -999.99 | 3500 | 0 | -99 | provided by Arlyn
+lat70-alt4500_99D2 | name | North America | 70 | -999.99 | 4500 | 0 | -99 | provided by Arlyn
+lat70-alt5500_99D2 | name | North America | 70 | -999.99 | 5500 | 0 | -99 | provided by Arlyn
+lat70-alt6500_99D2 | name | North America | 70 | -999.99 | 6500 | 0 | -99 | provided by Arlyn
+
+#For arlyn, these are earth network sites.. we may add these to the official db later.
+#Note, the format below is different than the above ones.  These are made to conform with obspack expectations.
+#If we decide to continue using this file, we need to settle on a format, clean and document.  jwm 10/16
+AWSHQ | Germantown | North America | 39.200555 | -77.263055 | 161.2 | -99 | n/a | n/a
+SNDGS | San Diego | North America | 32.866943 | -117.257222 | 0 | -99 | n/a | n/a
+GHG01 | Bucktown | North America | 38.459722 | -76.043055 | 2.7 | -99 | n/a | n/a
+GHG03 | Dublin | North America | 32.654166 | -83.029721 | 107.9 | -99 | n/a | n/a
+GHG05 | Houlton | North America | 46.143055 | -68.113333 | 288.3 | -99 | n/a | n/a
+GHG06 | Bagley | North America | 47.520554 | -95.425554 | 453.5 | -99 | n/a | n/a
+GHG08 | Bremen | North America | 41.458055 | -86.193333 | 252.1 | -99 | n/a | n/a
+GHG09 | Munich | North America | 48.666111 | -98.841388 | 486.2 | -99 | n/a | n/a
+GHG12 | Danbury | North America | 36.376943 | -80.368888 | 701 | -99 | n/a | n/a
+GHG10 | Wedgefield | North America | 33.854166 | -80.529721 | 67.1 | -99 | n/a | n/a
+GHG15 | Middlesex | North America | 35.831388 | -78.145277 | 73.8 | -99 | n/a | n/a
+GHG16 | Somerset | North America | 36.961111 | -84.568332 | 374 | -99 | n/a | n/a
+GHG18 | Richmond | North America | 37.508888 | -77.57611 | 105.2 | -99 | n/a | n/a
+GHG19 | Stockholm | North America | 41.14361 | -74.538333 | 400.5 | -99 | n/a | n/a
+GHG20 | Signal Mountain | North America | 35.207222 | -85.286388 | 608.4 | -99 | n/a | n/a
+GHG21 | Hamden | North America | 41.43361 | -72.945277 | 203.6 | -99 | n/a | n/a
+GHG25 | Lewisburg | North America | 40.944721 | -76.878888 | 166.4 | -99 | n/a | n/a
+GHG35 | Durham | North America | 43.708333 | -72.153888 | 558.1 | -99 | n/a | n/a
+GHG38 | Utica | North America | 42.878888 | -74.784999 | 482.5 | -99 | n/a | n/a
+GHG39 | Victorville | North America | 34.609444 | -117.287221 | 1372.2 | -99 | n/a | n/a
+GHG40 | Mauna Loa | North America | 19.536111 | -155.576667 | 3396 | -99 | n/a | n/a
+GHG41 | Missoula | North America | 47.0411111 | -113.986111 | 2418 | -99 | n/a | n/a
+GHG42 | Salt Lake City | North America | 40.766944 | -111.8475 | 1298 | -99 | n/a | n/a
+GHG43 | Silverton | North America | 44.99862 | -122.694882 | 351 | -99 | n/a | n/a
+GHG43 | Silverton | North America | 44.99862 | -122.694882 | 349 | -99 | n/a | n/a
+GHG44 | Granda Hills | North America | 34.283889 | -118.4725 | 391 | -99 | n/a | n/a
+GHG45 | San Clemente Island | North America | 33.4179 | -111.928751 | 358 | -99 | n/a | n/a
+GHG47 | Mineloa | North America | 40.749444 | -73.638333 | 37.49 | -99 | n/a | n/a
+GHG48 | Halethorpe | North America | 39.25756 | -76.67345 | 72 | -99 | n/a | n/a
+GHG54 | Mashpee | North America | 41.6568 | -70.4973 | 33 | -99 | n/a | n/a
+GHG55 | Arlington | North America | 38.891629 | -77.13119 | 110 | -99 | n/a | n/a
+GHG56 | NW District of Columbia | North America | 38.950047 | -77.079432 | 123 | -99 | n/a | n/a
+GHG58 | NW Baltimore | North America | 39.3444 | -76.6861 | 135 | -99 | n/a | n/a
+GHG59 | NE Baltimore | North America | 39.3154 | -76.583 | 45 | -99 | n/a | n/a
+GHG60 | Jessup | North America | 39.1723 | -76.7765 | 67.1 | -99 | n/a | n/a
+CNGPR | Canoga Park | North America | 34.194906 | -118.604525 | 242 | -99 | n/a | n/a
+TRSTD | Trinidad | North America | 41.054408 | -124.150777 | 103 | -99 | n/a | n/a
+LSN01 | USC Roof 1  | North America | 34.021667 | -118.288889 | 81 | -99 | n/a | n/a
+LSN02 | USC Roof 2 | North America | 34.021389 | -118.288611 | 81 | -99 | n/a | n/a
+TMPST | Tempe | North America | 33.417222 | -111.934722 | 330 | -99 | n/a | n/a
+LSN05 | Compton | North America | 33.873889 | -118.276667 | 259 | -99 | n/a | n/a
+LSN06 | Fullerton | North America | 33.880317 | -117.88445 | 73 | -99 | n/a | n/a
+IRV01 | Irvine | North America | 33.643698 | -117.844749 | 40 | -99 | n/a | n/a
+SNBCC | Carritas Communication | North America | 34.064156 | -117.58318 | 288 | -99 | n/a | n/a
+

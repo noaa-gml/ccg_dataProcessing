@@ -1,0 +1,22 @@
+# action file to flush tank regulator
+#
+# $1    manifold 
+# $2    portnum
+# 
+0       TurnUniversalActuator   SystemSelect  	@Sys_GC
+0       TurnUniversalActuator   ManifoldSelect  @Manifold$1_port
+2       TurnUniversalActuator   Manifold$1      $2
+2	OpenRelay		hp34970		@MFC_valve
+182     SingleScan              hp34970         @sample_flow @sample_flow_scale
+182     PrintData               hp34970         none 
+182     TurnUniversalActuator   SystemSelect  	@Sys_GC_off
+#
+#fast for testing code
+#0       TurnUniversalActuator   SystemSelect  	@Sys_GC
+#0       TurnUniversalActuator   ManifoldSelect  @Manifold$1_port
+#2       TurnUniversalActuator   Manifold$1      $2
+#2	OpenRelay		hp34970		@MFC_valve
+#10     SingleScan              hp34970         @sample_flow @sample_flow_scale
+#10     PrintData               hp34970         none 
+#10     TurnUniversalActuator   SystemSelect  	@Sys_GC_off
+

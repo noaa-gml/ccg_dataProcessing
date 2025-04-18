@@ -1,0 +1,450 @@
+#!/usr/bin/perl
+#
+#This script can be used to update an external flag/add a new tag to 1 data row.
+#
+#This logic will decide when it's appropriate to update the flask_data.flag column or to let
+#the tagging system do it, so the caller doesn't need to know which to do or how to do it.
+#
+#See help section below and script comments for details.
+#
+#On error a message will be printed to screen and an exit with non zero return status.  Some errors may be logged.
+#
+#jwm - 4/16
+#
+use DBI;
+use Getopt::Long;
+use strict;
+use warnings;
+
+require "/projects/src/db/ccg_utils.pl";
+require "/projects/src/db/ccg_dbutils.pl";
+require "/projects/src/db/ccg_dbutils2.pl";
+
+#Variables with some defaults for optional arguements
+my ($noerror,$i,@tmp,$dbh,$sql,$a);
+my $event_num=0;
+my $parameter="";
+my $adate="";
+my $atime="";
+my $inst="";
+my $data_num="";
+my $help="";
+my $flag="";
+my $tag_num="";
+my @tag_nums=();
+my $comment="";
+my $mergeMode=0;
+my $update=0;
+my $description="Tag added via script";
+my $needTag=0;
+my $needFlag=0;
+my $count=0;
+my $verbose=0;
+my $productionDB=1;
+my $data_source=8;#default to generic addtag script data source.  See tag_createTagRange stored proc for details.
+my $forceUpdate=0;
+
+#Parse Arguments
+
+if ($#ARGV == -1) { &showargs(); }
+
+$noerror = GetOptions(  "help|h"=>\$help,
+		"data_num|d:i"=>\$data_num,
+		"tag_num|t:i"=>\$tag_num,
+		"flag|f:s"=>\$flag,
+		"event_num|e:i"=>\$event_num,
+		"parameter|g:s"=>\$parameter,
+		"adate:s"=>\$adate,
+		"atime:s"=>\$atime,
+		"inst:s"=>\$inst,
+		"comment|c:s"=>\$comment,
+		"mergeMode:i"=>\$mergeMode,
+		"update|u"=>\$update,
+		"verbose|v"=>\$verbose,
+		"productionDB:i"=>\$productionDB,
+		"data_source:i"=>\$data_source,
+		"forceUpdate:i"=>\$forceUpdate);
+if ( $noerror != 1 ) { exit; }
+if ($help) { &showargs() }
+if ($mergeMode<0 || $mergeMode>2){&doError("Invalide mergeMode");}
+
+
+#Either data_num or the 5 unique params to id row + flag or tag is required
+if(!(($data_num || ($event_num && $parameter && $adate && $atime && $inst)) && ($flag || $tag_num))){&showargs();exit;}
+
+# Connect to Database
+$dbh = &connect_db();
+if(!$productionDB){demodb();}
+
+#Find unique data_num if not passed.
+if(!($data_num)){
+	#Note default string matches in our mysql db are not case sensitive, but we'll convert for clarity and 
+	#future proofing.
+	$parameter=lc($parameter);
+	$inst=lc($inst);
+	my @bind_values=($event_num,$parameter,$adate,$atime,$inst);
+	$data_num=dosqlval(q{select data_num from flask_data_view where event_num=? and lower(parameter)=? and adate=? and atime=? and lower(inst)=?},@bind_values);
+	if(!$data_num){
+		&doError("Could not find unique row for passed parameters."); 
+	}
+}else{
+	#Verify passed data_num is a good data_num
+	$i=dosqlval("select count(*) from flask_data d where d.num=?",($data_num));
+	if($i!=1){
+		&doError("Error: passed data_num is not in flask_data!");
+	}
+}
+
+
+#Figure out if we will be updating the external flag column or adding tag(s).  
+$needTag=dosqlval("select count(*) from flask_data d where d.num=? and d.update_flag_from_tags=1",($data_num));
+$needFlag=($needTag)?0:1;
+
+#If $forceUpdate passed and we are in merge mode 0 for a tag converted row, remove existing script added tags if not being re-applied
+#Flag rows will get set below.  This is to handle when data files are re-processed and a formally * < > row
+#is now ok.  We'll remove the prior tag here and add any as needed below.
+if($forceUpdate && $mergeMode==0 && $needTag && $flag ne ''){
+	#See if there is an existing tag for this data row
+	my $sql="select r.range_num 
+		from tag_range_info_view r, flask_data_tag_range d
+ 		where r.range_num=d.range_num and d.data_num=? and 
+			r.is_data_range=1 and r.rowcount=1
+			and r.tag_num=?";
+	my $del=q{call tag_deleteTagRange(48,?,@v_status,@v_mssg,@v_numrows)};
+	my ($f,$s,$t)=split(//,$flag);
+	#*..
+	if($f eq '.'){
+		my $range_num=dosqlval($sql,($data_num,34));
+		if($range_num){dodml($del,($range_num));}
+	}
+	#..<
+	if($t eq '.'){
+		my $range_num=dosqlval($sql,($data_num,35));
+		if($range_num){dodml($del,($range_num));}
+		#..>
+		$range_num=dosqlval($sql,($data_num,36));
+		if($range_num){dodml($del,($range_num));}
+	}
+}
+
+#Try to get needed flag/tag_nums based on what caller passed and which we need.
+if($needFlag && !$flag){
+#No flag passed, get the internal flag of passed tag_num
+	my $n=dosqlval("select count(*) from tag_view where num=?",($tag_num));
+	if($n!=1){
+		&doError("Invalid tag_num passed:$tag_num.");
+	}
+	$flag=dosqlval("select internal_flag from tag_view where num=?",($tag_num));
+}
+
+#Verify the flag is proper length
+if(($needFlag || !$tag_num)  && length($flag)!=3){
+	&doError("Incorrect flag length passed.  Must be 3 characters.\n");
+}
+
+#Find the tag_num if needed.
+if($needTag && !$tag_num && $flag ne '...'){
+	#This is a little trickier because different programs could have the same flag, but they mean something different.
+	#Basically, we'll just see if we can find a unique tag_num to use for passed row and error out if not.
+	#We use the tag_filters logic built into the tag_view to find an appropriate tag based on the row's prog/proj/strat/params.
+	#Note we skip the query if caller passed '...'.  That flag may change the external flag (in clobber mode), but we won't
+	#take any action on existing tags.  We may need to change this in the future, but I'm not sure what makes sense.. ie it seems
+	#crazy to delete all tags in that case (some may not be related).  So default to leave as is.  This may cause issues with reprocessing
+	#though, so we may need to come up with a way to pass a negative tag or something to remove all instances of a tag.
+	my @flags=();
+	
+
+	#We need to do some massaging of the caller's flag
+	#because many of those programs were written with the assumption that they were overwriting or merging the exisiting
+	#flag.  What we actually want (for tag rows) is the new item that needs to be added.  For instance, some callers may
+	#want to add a 2nd character flag and so will pass existing 1st and 3rd with new 2nd.  If there is an existing 1st or 3rd,
+	#that will result in us getting something like CU., which we won't be able to match to a tag.  In fact, its worse, as 
+	#the C represents 1 or more collection issues and so CU. is merging 2 different schemes.  If the first col C already existed,
+	#we can't know if the caller is passing a C because it was there before or if they want to actually add a C.. flag
+	# So we'll attempt to discern the intended flag when possible and log any errors in the tag_entry_errors table.   
+	#
+	# NOTE; for now we are skipping name space collision because for the current tag sites it won't be an issue.  Once
+	# curl, arl & sil come on line, we'll have to figure out how to handle.  Best way is probably to make sure they only send actual flags
+	# and don't regurgitate the existing flag parts (not clobber mode, maybe a new one).  The error processing is disabled below.
+	
+	my ($new1,$new2,$new3)=split(//,$flag);
+	#Create new flags based on the combinations possible from passed flag.  We'll just create ones that would be new for the
+	#row.  The first three are easy, if the col of new flag is different from corresponding col of old flag, then we'll
+	#try to add it.  The last one is to handle the case when caller passes a flag that is in the same name space as the new external
+	#flag scheme.  We'll attempt to interpret and error if can't.  Note the default charset is currently case insensitive.  We use 
+	#the binary keyword to force cs because it's relevant in the first 3 and to future proof the last one.
+	$sql="select 	case when binary substring(d.flag,1,1)='$new1' then '...' else '${new1}..' end as newflag1,
+			case when binary substring(d.flag,2,1)='$new2' then '...' else '.${new2}.' end as newflag2,
+			case when binary substring(d.flag,3,1)='$new3' then '...' else '..${new3}' end as newflag3,
+			case when 
+				(binary lower('$new1') in ('c','m','b','u') 
+					and binary lower(substring(d.flag,1,1))=lower('$new1') ) or
+				(binary lower('$new2') in ('s','u') 
+					and binary lower(substring(d.flag,2,1))=lower('$new2')) or
+				(binary lower('$new3') in ('c','m','b','u') 
+					and binary lower(substring(d.flag,3,1))=lower('$new3')) 
+			then 'error' else '...' end as namespace_check 
+		from flask_data d where d.num=? and d.update_flag_from_tags=1";
+	$a=dosql($sql,$data_num);
+	if(@{$a}){
+		my $row=@{$a}[0];
+		foreach my $key(keys %{$row}){push @flags,${$row}{$key};}
+	}	
+
+	#Now process gathered flag(s)	
+	my $sql1="select distinct t.num from tag_view t, flask_data_view d
+		where d.data_num=? and ";
+	my $sql2="	t.internal_flag=? ";#Separate out so we can swap this clause below.
+	my $sql3="	and (t.program_num is null or t.program_num=d.program_num)
+			and (t.parameter_num is null or t.parameter_num=d.parameter_num)
+			and (t.strategy_num is null or t.strategy_num=d.strategy_num)
+			and (t.project_num is null or t.project_num=d.project_num) ";
+	$sql=$sql1.$sql2.$sql3;
+
+	foreach my $tflag (@flags){
+		if($tflag eq 'error'){
+			next;#SKIP error handling for now.  See above comments.
+			&doError("Unable to determine whether flag $flag is merging with existing external flag or trying to add new tag.");
+		}
+		
+		#Loop through the 1+ flags and try to find a number, error if any fail.  If there's none (that aren't...) 
+		#silently continue (do no work).  This would be for a case like when passed flag didn't differ from existing.
+		if($tflag ne '...'){	
+			$a=dosql($sql,($data_num,$tflag));
+			my $i=@{$a};#Dereference array to get count.
+	
+			#If no rows found, try again with a case insensitive search
+			if($i==0){
+				$sql2="lower(t.internal_flag)=? ";
+				$sql=$sql1.$sql2.$sql3;
+				my $tflag2=lc($tflag);
+				$a=dosql($sql,($data_num,$tflag2));
+				$i=@{$a};
+			}
+			if($i==1){#found 1, see if target row already has it
+				my $row=@{$a}[0];
+				my $tnum=@{$row}{'num'};
+				my $tcount=dosqlval("select count(*) from flask_data_tag_view where data_num=? and tag_num=?",($data_num,$tnum));
+				if($tcount==0){
+					#If not already present, add to the work queue.
+					push @tag_nums,$tnum ;
+				}else{
+					if($verbose){print "Skipping $tnum ($tflag) row already has it.\n";}
+				}
+			}else{
+				my $msg="Error: Row is configured for tags but ";
+				$msg.=($i)?"more that one possible tag found for passed data row and flag:($flag)$tflag":"no tag found for passed data row and flag:($flag)$tflag";
+				&doError($msg);
+			}
+		}
+	}
+}elsif($needTag && $tag_num){#tagnum was passed, see if row already has it and skip if so.
+	my $tcount=dosqlval("select count(*) from flask_data_tag_view where data_num=? and tag_num=?",($data_num,$tag_num));
+	if($tcount==0){push @tag_nums,$tag_num };#silently skip if already present.		
+}
+
+
+if(!$update){
+	print "\nAll checks passed for tag_num:$tag_num, data_num:$data_num, comment:$comment, description:$description, flag:$flag\n\nPass -u to do actual update\n\n";
+	exit(0);
+}
+
+#Update the external flag if needed
+if($needFlag){
+	if($verbose){print("Updating external flag \n");}
+#We'll use mergeMode to determine how to merge new flag with any exisiting flag.  
+#Note that merge mod 0 was updated 9/20/16 to include * first col after discussions with pat and kirk. 
+	my ($new1,$new2,$new3)=split(//,$flag);
+	$sql="update flask_data d
+		set d.flag=
+		case $mergeMode 
+		when 0 then #automatic flagging scripts merge mode logic
+			concat(
+				case when substring(d.flag,1,1) in ('.','*') then '$new1' else substring(d.flag,1,1) end,
+				case when substring(d.flag,2,1)='.' then '$new2' else substring(d.flag,2,1) end,
+				case when substring(d.flag,3,1) in ('.','>','<') then '$new3' else substring(d.flag,3,1) end
+		      	)
+		when 1 then #ccg_flaskupdate logic
+			concat(
+				case when substring(d.flag,1,1) in ('*','.') or '$new1'='*' then '$new1' else substring(d.flag,1,1) end,
+				case when substring(d.flag,2,1)='.' then '$new2' else substring(d.flag,2,1) end,
+				case when substring(d.flag,3,1)='.'  then '$new3' else substring(d.flag,3,1) end
+			)
+		when 2 then '$flag'
+		else d.flag
+		end 
+				
+		where d.num=? and d.update_flag_from_tags=0 ";
+	$i=dodml($sql,($data_num));
+	if ($i){
+		my $msg="$i row updated\n";
+		if($verbose){print "$msg";}
+	}else{
+		&doError("Error updating external flag.\n");
+	}
+}
+
+#If adding a tag, call the sp
+if($needTag && @tag_nums){
+	if($verbose){print "Found ".@tag_nums." tags to add\n";}
+	#Create temp tables need by the stored proc. 
+	dodml("create temporary table t_data_nums as select num from flask_data where 1=0",());
+	dodml("create temporary table t_event_nums as select num from flask_event where 1=0",());#This one isn't used by this script (currently), but is required by the proc.
+
+	#Insert our data_num
+	dodml("insert t_data_nums select ?",($data_num));
+
+	#loop through all the tag_nums and call sp for each.
+	foreach my $tnum (@tag_nums){
+		if($verbose){print("Inserting tag $tnum.\n");}
+
+		#SP params are userID(48 is generic ccg), tag_num, comment, prelim (not for this), json selection criteria (not relevant),data_source (8), description of criteria,
+		#and out params status, mssg, numrows, and range_num
+		if($comment){#We want comment to go in as a null when not present, but I had trouble getting it to bind hence the conditional switch here..
+			dodml(q{call tag_createTagRange(48,?,?,0,'',?,?,@v_status,@v_mssg,@v_numrows,@v_range_num)},($tnum,$comment,$data_source,$description));
+		}else{
+			dodml(q{call tag_createTagRange(48,?,null,0,'',?,?,@v_status,@v_mssg,@v_numrows,@v_range_num)},($tnum,$data_source,$description));
+		}
+
+		#fetch the results
+		$a=dosql(q{select @v_status as 'status',@v_mssg as 'message', @v_numrows as 'numrows', @v_range_num as range_num},());
+		if($a){
+			my $tmp=@{$a}[0];
+			my($status,$message,$numrows,$range_num)=@{$tmp}{qw(status message numrows range_num)};
+			
+			if($status){#Some sort of error
+				&doError("Error inserting tag: Status:$status Message:$message");
+			}else{
+				if($verbose){print $message."\n";}
+			}
+		}else{
+			&doError("Unknown error calling tag insert procedure");
+		}
+	}
+}
+# Disconnect from DB
+#
+&disconnect_db($dbh);
+#
+
+
+exit(0);
+
+#######################################
+# Subroutines
+#######################################
+#
+sub doError(){
+        my($msg)=@_;
+        $msg="\n$msg\n\nParameters; data_num:$data_num tag_num:$tag_num flag:$flag event_num:$event_num parameter:$parameter adate:$adate atime:$atime inst:$inst mergeMode:$mergeMode.\n";
+	#log error too.
+	dodml(q{insert tag_entry_errors (data_num,flag,user,comment) select ?,?,user(),?},($data_num,$flag,$msg));
+	die $msg."Stopped at: ";
+        #exit();
+}
+sub showargs()
+{
+	print 	"
+#######################
+ccg_addtag
+#######################
+
+This script can be used to update an external flag/add a new tag to 1 data row.
+
+This logic will decide when it's appropriate to update the flask_data.flag column or to let
+the tagging system do it, so the caller doesn't need to know which to do or how to do it.
+
+You can call it using unique row identifiers (event,parameter,adate,atime,inst) for a single
+row or alternately using the flask_data.num unique id.  
+
+To specify the flag, pass either a traditional 3 character flag or the associated tag_dictionary.num id.
+
+If the flask_data.update_flag_from_tags column is set to 0, the logic will attempt to set the external flag
+to the passed value, using passed mergeMode rules to merge with any existing flag.
+
+If it's set to 1, 1 or more tags are added (since the tagging logic will
+overwrite the external flag column with its own value).  
+
+The logic will attempt to convert between the two when needed.  If a flag is passed for a row that needs tags,
+the logic will compare each character of the new flag to the old flag and add 1 or more tags as needed for new issues.
+For example a P.z will result in the P.. and the ..z tags getting added to the row (if not already present).	
+
+
+On success, this exits with a zero.  On error, a non-zero value.
+
+
+Options:
+-h, -help
+	Produce help menu
+
+#To id target rows, pass either data_num(s) or event_num,parameter,adate,atime,inst
+
+-d, -data_num
+	flask_data.num target id
+
+-e, -event_num
+	event_num for flask_data row.
+-g, -parameter=[parameter]
+	paramater formulae
+	Specify a single parameter (e.g., -parameter=co2) (not case sensitive)
+-adate
+	quoted analysis date in yyyy-mm-dd format (e.g., -adate='2008-02-01')
+-atime
+	quoted analysis time in hh:mm:ss 24h format (e.g., -atime='14:33:15')
+-inst
+	instrument used for analysis.
+
+#To identify the flag/tag to be applied, pass either tag_num or flag
+
+--t, -tag_num
+	tag_dictionary.num id for the tag/flag to add.  Only a 
+	tag_num or flag should be passed, not both.
+	The logic can convert between tag/flag when needed.
+-f, -flag
+	Three letter flag (or tag_num) to apply.  Only a tag_num or
+	flag should be passed, not both.
+	The logic can convert between tag/flag when needed.
+
+-comment
+	optional comment to write to the tag (not flask_data.comment!)
+
+-mergeMode(default 0)
+	This controls the logic used to merge external flags when needed.
+	-mode=0 (is what is used on the automated flagging scripts).
+		update first column character of existing flag only if that character is '.' or '*'
+		update second column character of existing flag only if that character is '.'
+		update third column character of existing flag only if that character is '.', '>', or '<'.
+
+	-mode=1 (is what is used by ccg_flaskupdate.pl).
+		Overwrite an existing 1st column flag IF an existing 1st column flag IS '*' OR '.'
+   		OR the new flag has an '*' in the 1st column
+  
+  		Never overwrite an existing 2nd column flag
+		Never overwrite an existing 3rd column flag
+	-mode=2 (clobber mode)
+		Completely overwrite.  
+		
+-u, -update
+	pass to do actual update, if left off, we just print insert statement.
+-v, -verbose
+-productionDB (default 1)
+	Pass 0 to use mund_dev.flask_data copy.  Pass 1 to use live production database.
+	This is for dev purpurses
+
+-forceUpdate (default 0)
+	This is a special flag for use in mergeMode 0 to handle reprocessing of raw data files.
+	When passed 1 and the row has been converted to tagging system this will attempt to remove
+	previous automatically added tags (*.. ..> ..<) if the new flag doesn't have them present. 
+	Normal mergeMode 0 doesn't remove existing tags, this option allows the above 3 to be removed.
+
+Examples:
+#Add tag 20 (or +.. flag if update_flag_from_tags=0) to flask_data row 386529 
+   	ccg_addtag.pl -d=386529 -t=20 -u -v
+#Add same tag and set flag (if row is not set to auto update external flag from tags) using other identifiers
+	ccg_addtag.pl -f='+..' -e=96 -parameter=h2 -inst=CS -adate='1988-07-20' -atime='08:09:00' -u -v
+
+	ccg_addtag.pl -d=386529 -t=10 -c='Flux dripping from capicitor' -u
+";
+   exit(1);
+}
+

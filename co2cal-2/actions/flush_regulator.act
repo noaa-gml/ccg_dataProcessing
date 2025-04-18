@@ -1,0 +1,26 @@
+#
+# Flush the reference gas for 180 seconds
+# $1  Manifold
+# $2  Portnum
+# $3  SysSelect position
+# $4  Instrument to flush through
+# $5  file to write data to
+#
+0    OpenRelay		         hp34970		 @Isotope_idle
+0    OpenRelay		         hp34970		 @Picarro_idle
+0    CloseRelay		         hp34970		 @$4_idle
+0    OpenRelay		         hp34970		 @Sample_MKS_Valve
+0    CloseRelay		         hp34970   		 @Reference_MKS_Valve
+0    TurnUniversalActuator	 SysSelect	     $3
+0    TurnUniversalActuator	 ManifoldSelect	 @Manifold$1_port
+0    TurnUniversalActuator	 Manifold$1	     $2
+1    ConfigChannel           hp34970         @sample_pressure   DCVOLT
+1    ConfigChannel           hp34970         @sample_flow   DCVOLT
+1    ConfigChannel           hp34970         @reference_pressure   DCVOLT
+1    ConfigChannel           hp34970         @reference_flow   DCVOLT
+1    ConfigChannel           hp34970         @room_temp  DCVOLT
+1    ConfigChannel           hp34970         @chiller_temp  TC K
+200   StartScan               hp34970         @sample_pressure,@sample_flow,@reference_pressure,@reference_flow,@room_temp,@chiller_temp
+220   StopScan                hp34970         @sample_pressure_scale,@sample_flow_scale,@reference_pressure_scale,@reference_flow_scale,@room_temp_scale,@chiller_temp_scale
+220   LogData                 hp34970         $5    Replace
+220   Noop			         None	         None

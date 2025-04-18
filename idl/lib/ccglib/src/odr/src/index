@@ -1,0 +1,108 @@
+file	odrpack/index
+for	list of all odrpack files
+
+file	odrpack/readme
+for	installation instructions for odrpack 2.01
+
+file	odrpack/readme.update
+for	instructions for updating from odrpack 2.00 to odrpack 2.01
+
+file	odrpack/changes
+for	revision history
+
+file	odrpack/guide.ps
+for	odrpack 2.01 user's reference guide, in postscript format
+size	926 kB
+
+file	odrpack/makefile
+for	unix makefile for installing odrpack 2.01
+
+file	odrpack/makefile.update
+for	unix makefile for updating from odrpack 2.00 to odrpack 2.01
+
+file	odrpack/d_odr.f
+prec	double
+gams	K1a1a3, K1b1a2, L8a4, L8c5, L8d1, L8e5
+for	odrpack 2.01 source code,
+,	excluding linpack, blas, and machine dependent subprograms
+size	367 kB
+
+file	odrpack/d_lpkbls.f
+prec	double
+for	subprograms from linpack and blas
+
+file	odrpack/d_mprec0.f
+prec	double
+for	odrpack 2.01 machine dependent subprogram
+
+file	odrpack/s_odr.f
+gams	K1a1a3, K1b1a2, L8a4, L8c5, L8d1, L8e5
+prec	single
+for	odrpack 2.01 source code,
+,	excluding linpack, blas, and machine dependent subprograms
+size	367 kB
+
+file	odrpack/s_lpkbls.f
+prec	single
+for	subprograms from linpack and blas
+
+file	odrpack/s_mprec0.f
+prec	single
+for	odrpack 2.01 machine dependent subprogram
+
+file	odrpack/d_update.f
+prec	double
+for	source code for subprograms that changed
+,	between odrpack 2.00 and odrpack 2.01
+size	283 kB
+
+file	odrpack/s_update.f
+prec	single
+for	source code for subprograms that changed
+,	between odrpack 2.00 and odrpack 2.01
+size	283 kB
+
+file	odrpack/test.txt
+for	results for d_test.f from running odrpack 2.01 on a sparc workstation
+
+file	odrpack/d_test.f
+prec	double
+for	test driver
+
+file	odrpack/d_drive1.f
+prec	double
+for	driver for explicit single response problem
+
+file	odrpack/d_drive2.f
+prec	double
+for	driver for implicit single response problem
+
+file	odrpack/d_drive3.f
+prec	double
+for	driver for explicit multiresponse problem
+
+file	odrpack/s_test.f
+prec	single
+for	test driver
+
+file	odrpack/s_drive1.f
+prec	single
+for	driver for explicit single response problem
+
+file	odrpack/s_drive2.f
+prec	single
+for	driver for implicit single response problem
+
+file	odrpack/s_drive3.f
+prec	single
+for	driver for explicit multiresponse problem
+
+file	odrpack/data1.dat
+for	data set for drivers d_drive1.f and s_drive1.f
+
+file	odrpack/data2.dat
+for	data set for drivers d_drive2.f and s_drive2.f
+
+file	odrpack/data3.dat
+for	data set for drivers d_drive3.f and s_drive3.f
+

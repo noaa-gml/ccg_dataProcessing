@@ -1,0 +1,9 @@
+# action file for filling Aerodyne cell
+# for stop flow measurements
+#
+# Either set fill pressure in config file or pass in as argument
+# Need to wait a little before looking for acknowledgment of command so use
+# 3 Noop None step
+#
+0	SendCommand		aerodyne_comm_file	@aerodyne_fill_runscript
+3	Noop			None			None

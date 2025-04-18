@@ -1,0 +1,23 @@
+## action file to flush GC sample loops.  
+#Uses the Picarro to pull sample through the loops
+# 
+#	$1 manifold
+#	$2 port_num
+# 	$3 GC qc data file
+#
+# 	QC data:
+# 		sample_flow is the sample flow through the sample loops
+# 		sample_press is the sample pressure during flow through the sample loops NOT
+# 		the static pressure when injected
+#
+#	Turn manifold select because R0 not already on correct manifold. Duplicate call for other
+#	sample types but that's fine.
+0	TurnUniversalActuator 	ManifoldSelect 	@Manifold$1_port
+0  	TurnUniversalActuator 	Manifold$1	$2
+0	CloseRelay		hp34970		@pc_sample
+0   	OpenRelay              	hp34970      	@Sample_mks_close_valve
+#14   	ConfigChannel	   	hp34970		@sample_flow		DCVOLT
+#14   	ConfigChannel	   	hp34970		@sample_pressure 	DCVOLT
+15	SingleScan              hp34970         @sample_flow,@sample_pressure @sample_flow_scale,@sample_pressure_scale
+15  	LogData		   	hp34970         $3		Replace
+15 	TurnUniversalActuator  	GCbypass	@bypass

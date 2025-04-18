@@ -1,0 +1,12 @@
+# action file for monitoring LGR
+#  Action line syntax:
+#              0 MonitorAnswer device  command  
+#
+#
+#0	MonitorAnswer picarro _Meas_GetConc  
+#0	MonitorAnswer picarro _Meas_GetConcEx
+#0	MonitorAnswer picarro _Meas_GetScanTime
+#0	MonitorAnswer picarro _Instr_GetStatus
+#
+0	MonitorStreamingAnswer aerodyne None
+#0	MonitorStreamingAnswer picarro None

@@ -1,0 +1,98 @@
+#
+# Script to copy daily raw files and chromatogram files from
+# the flask analysis computer to ccg disc.
+# This script is started from the flask analysis computer after
+# analysis is complete.
+
+#set -x
+	gas=$1
+	sys=$2
+
+	homedir=/home/magicc
+
+	project=aircraft
+	prog=/home/magicc/src/ccgpro/ccgpro
+
+	cd /ccg/$gas/$project/$sys
+
+#	source=/home/magicc
+	dest=/ccg/$gas/$project/$sys/tmp
+	dest2=/ccg/$gas/$project/$sys/raw
+	dest3=/ccg/$gas/$project/$sys/data
+
+	sitedir=/ccg/$gas/$project/site
+
+
+#
+# Copy the raw file from the flask computer to here
+#
+
+	cp $homedir/????-??-??.????.$gas $dest
+	mv $homedir/????-??-??.????.$gas $homedir/aircraft/tmp
+
+#
+# Copy any chromatogram files to here
+
+	if [ $gas != "co2" ]
+	then
+		cp $homedir/*.$gas.a $dest
+		mv $homedir/*.$gas.a $homedir/aircraft/tmp
+	fi
+
+	cd $dest
+#	$prog -t *.$gas 2>/dev/null | lp -onb
+#	$prog -u -d $sitedir *.$gas
+	$prog -g $gas -w $project -u -d $sitedir *.$gas
+#	$prog -g $gas -w $project -b -d $sitedir *.$gas
+#	if [ $gas != "co2" ]
+#	then
+#		/usr/local/bin/gcstats *.$gas | lp -onb
+#	fi
+
+# Move raw files to correct directory
+
+	for i in `ls *.$gas`
+	do
+		year=`echo $i | cut -c1-4`
+		if [ ! -d $dest2/$year ]
+		then
+			mkdir -p $dest2/$year
+		fi
+		mv $i $dest2/$year
+	done
+
+# Move chromatogram archives to correct directory
+
+	if [ $gas != "co2" ]
+	then
+		for i in `ls *.$gas.a`
+		do
+			year=`echo $i | cut -c1-4`
+			if [ ! -d $dest3/$year ]
+			then
+				mkdir -p $dest3/$year
+			fi
+			mv $i $dest3/$year
+		done
+	fi
+
+# Move history file to correct location
+
+
+	cp $homedir/history/$year/* /ccg/aircraft/tmp
+	cd /ccg/aircraft/tmp
+	for file in `ls *.his`
+	do
+		site=`grep "Site Code" $file | awk '{print $3}' | tr "[A-Z]" "[a-z]"`
+		outfile=`echo $file | sed -e s/his/sum/`
+		dest=/ccg/aircraft/$site/history/$year
+		if [ ! -d $dest ]
+		then
+			mkdir -p $dest
+		fi
+		/ccg/aircraft/mksum.pl $file > $dest/$outfile
+		mv $file $dest
+	done
+
+
+	mv $homedir/history/$year/* $homedir/aircraft/tmp

@@ -1,0 +1,113 @@
+Unit History 
+serial_number: 3025 
+firmware: 3c
+site_code: WBI
+sample_mode: semi
+sys_minus_pfp_time: 6488 
+front_pressure: 12.2 
+avg_pressure: 12.2 
+
+Altitude History
+sample   plan         start/end            min/max/mean 
+  1     25000         --       --         --       --       -- 
+  2     22900         --       --         --       --       -- 
+  3     20800         --       --         --       --       -- 
+  4     18700         --       --         --       --       -- 
+  5     16600         --       --         --       --       -- 
+  6     14500         --       --         --       --       -- 
+  7     12400         --       --         --       --       -- 
+  8     10300         --       --         --       --       -- 
+  9      8200         --       --         --       --       -- 
+ 10      6100         --       --         --       --       -- 
+ 11      4000         --       --         --       --       -- 
+ 12      2000         --       --         --       --       -- 
+
+Location History
+sample    plan lat/lon           start lat/lon           end lat/lon 
+   1         --         --          --         --          --         -- 
+   2         --         --          --         --          --         -- 
+   3         --         --          --         --          --         -- 
+   4         --         --          --         --          --         -- 
+   5         --         --          --         --          --         -- 
+   6         --         --          --         --          --         -- 
+   7         --         --          --         --          --         -- 
+   8         --         --          --         --          --         -- 
+   9         --         --          --         --          --         -- 
+  10         --         --          --         --          --         -- 
+  11         --         --          --         --          --         -- 
+  12         --         --          --         --          --         -- 
+
+Time History
+sample    plan date/time         start date/time         end date/time 
+   1           --        --           --        --           --        -- 
+   2           --        --           --        --           --        -- 
+   3           --        --           --        --           --        -- 
+   4           --        --           --        --           --        -- 
+   5           --        --           --        --           --        -- 
+   6           --        --           --        --           --        -- 
+   7           --        --           --        --           --        -- 
+   8           --        --           --        --           --        -- 
+   9           --        --           --        --           --        -- 
+  10           --        --           --        --           --        -- 
+  11           --        --           --        --           --        -- 
+  12           --        --           --        --           --        -- 
+
+Fill History
+sample   manifold flush   sample flush   fill volume   fill pressure 
+  1             --              --             --              --
+  2             --              --             --              --
+  3             --              --             --              --
+  4             --              --             --              --
+  5             --              --             --              --
+  6             --              --             --              --
+  7             --              --             --              --
+  8             --              --             --              --
+  9             --              --             --              --
+ 10             --              --             --              --
+ 11             --              --             --              --
+ 12             --              --             --              --
+
+Flag History
+sample    flags 
+  1        (plan valid)
+  2        (plan valid)
+  3        (plan valid)
+  4        (plan valid)
+  5        (plan valid)
+  6        (plan valid)
+  7        (plan valid)
+  8        (plan valid)
+  9        (plan valid)
+ 10        (plan valid)
+ 11        (plan valid)
+ 12        (plan valid)
+
+Ambient History
+sample   temperature (C)   humidity (%RH)   pressure (mbar) 
+  1              --                --               -- 
+  2              --                --               -- 
+  3              --                --               -- 
+  4              --                --               -- 
+  5              --                --               -- 
+  6              --                --               -- 
+  7              --                --               -- 
+  8              --                --               -- 
+  9              --                --               -- 
+ 10              --                --               -- 
+ 11              --                --               -- 
+ 12              --                --               -- 
+
+GPS History
+sample    altitude    lat     lon         fix    prec    date     time 
+   1       --         --         --     --       --            --        -- 
+   2       --         --         --     --       --            --        -- 
+   3       --         --         --     --       --            --        -- 
+   4       --         --         --     --       --            --        -- 
+   5       --         --         --     --       --            --        -- 
+   6       --         --         --     --       --            --        -- 
+   7       --         --         --     --       --            --        -- 
+   8       --         --         --     --       --            --        -- 
+   9       --         --         --     --       --            --        -- 
+  10       --         --         --     --       --            --        -- 
+  11       --         --         --     --       --            --        -- 
+

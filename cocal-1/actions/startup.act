@@ -1,0 +1,21 @@
+#
+# Action list for setting up ch4 gc system.
+#
+# $1 is the a/d slice width in milliseconds.
+#
+
+#0       TurnUniversalActuator   ManifoldSelect        @ManifoldSelect_off
+#0      TurnUniversalActuator   H2_inject       Load
+0       SwitchValve             H2_load         Load #for old style injection valve actuator
+0       OpenRelay               hp34970         @H2_vent_valve
+#0       TurnUniversalActuator   SystemSelect       @SystemSelect_off
+0       SendCommand     HP35900 AVSP
+0       SendCommand     HP35900 AVRS
+0       SendCommand     HP35900 AVCL
+0       SendCommand     HP35900 AVDF DEC, 20
+0       SendCommand     HP35900 BVSP
+0       SendCommand     HP35900 BVRS
+0       SendCommand     HP35900 BVCL
+0       SendCommand     HP35900 BVDF DEC, 20
+0       SendCommand     HP35900 @slice_width_a
+0       SendCommand     HP35900 @slice_width_b

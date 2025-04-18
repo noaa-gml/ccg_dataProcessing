@@ -1,0 +1,37 @@
+************ USE OF NOAA GMD DATA ****************
+ 
+These data are made freely available to the public and the
+scientific community in the belief that their wide dissemination
+will lead to greater understanding and new scientific insights.
+The availability of these data does not constitute publication
+of the data.  We rely on the ethics and integrity of the user to
+assure that GMD receives fair credit for our work.  If the data
+are obtained for potential use in a publication or presentation,
+GMD should be informed at the outset of the nature of this work.
+If the GMD data are essential to the work, or if an important
+result or conclusion depends on the GMD data, co-authorship may
+be appropriate.  This should be discussed at an early stage in
+the work.  Manuscripts using the GMD data should be sent to GMD
+for review before they are submitted for publication so we can
+insure that the quality and limitations of the data are accurately
+represented. 
+
+<<<pi>>>
+
+<<<date>>>
+
+ **************** RECIPROCITY AGREEMENT ****************
+ 
+Use of these data implies an agreement to reciprocate.
+Laboratories making similar measurements agree to make their
+own data available to the general public and to the scientific
+community in an equally complete and easily accessible form.
+Modelers are encouraged to make available to the community,
+upon request, their own tools used in the interpretation
+of the GMD data, namely well documented model code, transport
+fields, and additional information necessary for other
+scientists to repeat the work and to run modified versions.
+Model availability includes collaborative support for new
+users of the models.
+ 
+***********************************************************

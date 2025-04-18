@@ -1,0 +1,20 @@
+# action file for flushing and measuring Picarro 
+#
+#	$1 is filename for aerodyne data 
+#	$2 is filename for QC data 
+#	Saving high freq data is set in picarro.ini and handled inside hm 
+#
+#
+#Action line syntax:
+#            0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+45	MonitorDevice           Picarro         None 30  0  0  $1 replace
+#75	ConfigChannel		hp34970		@sample_flow	 		DCVOLT
+#75      ConfigChannel           hp34970         @sample_pressure         	DCVOLT
+75	SingleScan		hp34970		@sample_flow,@sample_pressure  @sample_flow_scale,@sample_pressure_scale
+75	LogData			hp34970         $2		Replace
+75	ReadValue		hp34970		@manifold_pressure		DCVOLT
+75	ScaleValue		hp34970		@manifold_pressure_scale
+75	LogData			hp34970         $2		Append
+75	CloseRelay		hp34970		@Sample_mks_close_valve
+75	OpenRelay		hp34970		@pc_sample

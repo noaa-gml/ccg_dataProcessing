@@ -1,0 +1,9 @@
+## action file to test sample loop pressure to decide if should relax
+# sample loops to room pressure or not
+# 5 sec wait lest pressure stabalize
+#
+# measure sample loop pressure and room pressure, return results to calling program
+#5	ConfigChannel	hp34970	@sample_loop_pressure	DCVOLT
+#5	ConfigChannel	hp34970 @room_pressure		DCVOLT
+5	SingleScan	hp34970 @sample_loop_pressure,@room_pressure  @sample_loop_pressure_scale,@room_pressure_scale
+5	PrintData	hp34970 %d %12.4f

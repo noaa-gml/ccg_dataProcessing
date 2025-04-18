@@ -1,0 +1,4 @@
+# Action for switching a two positon valve
+# Must pass in valve name and position (A or B). 
+# SystemSelect etc
+0 TurnUniversalActuator		$1     $2

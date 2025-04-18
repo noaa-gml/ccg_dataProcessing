@@ -1,0 +1,19 @@
+# action file for measuring Aerodyne using datafile exchange
+# Uses MonitorDeviceFileTransfer in Aerodyne module. Requires source and read filenames to
+# be defined in the aerodyne.ini config file
+#
+#	$1 is datafile for temp storage of aerodyne averages
+#
+# Action line syntax:
+#            0 MonitorDeviceFileTransfer device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+#
+30 MonitorDeviceFileTransfer Aerodyne none 30 0 0 $1 replace
+#
+#
+#
+#
+#continuous for testing
+#0 MonitorDeviceFileTransfer Aerodyne none 10 1 10 $1 append
+#0 MonitorDeviceFileTransfer Aerodyne none 10 1 0 
+

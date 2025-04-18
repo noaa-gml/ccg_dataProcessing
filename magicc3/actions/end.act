@@ -1,0 +1,47 @@
+#
+# Action list for finishing up analysis
+#
+#0	StopRun		HP35900.1	@channel_ch4
+##0	StopRun		HP35900.2	@channel_h2
+#0	StopRun		HP35900.1	@channel_n2o
+#0 	MoveValve	SysSelect	8
+#0	MoveValve	SampleSelect	16
+#0 	MoveValve	TankCalSelect	10
+#0	SwitchValve     N2OVent         Load
+#0	SwitchValve	Ch4Load		Load
+#0	SwitchValve	N2oLoad		Load
+#0	SwitchValve	H2Load		Load
+#0	OpenRelay	hp34970.2	@TransferPump
+#0	OpenRelay	hp34970.2	@ZeroRelay
+#0	OpenRelay	hp34970.2	@He_vent_valve
+#0	MoveValve	Evac_Valco	 @system_off
+
+##
+0	SendCommand		hp34970		@abort_hp34970
+0       TurnUniversalActuator   GCbypass        @Include
+#0       TurnUniversalActuator   ManifoldSelect  @ManifoldSelect_off
+0	OpenRelay		HP34970		@PC_sample
+0	CloseRelay		HP34970		@Sample_mks_close_valve
+0	OpenRelay		HP34970		@regulator_purge
+0	TurnUniversalActuator	ManifoldA	@ManifoldA_off
+0	TurnUniversalActuator	ManifoldB	@ManifoldB_off
+0	TurnUniversalActuator	ManifoldC	@ManifoldC_off
+0	TurnUniversalActuator	ManifoldD	@ManifoldD_off
+3	TurnUniversalActuator	ManifoldA_Evac	@evac_off
+3	TurnUniversalActuator	ManifoldB_Evac	@evac_off
+3	StopRun			HP35900		@channel_h2
+3	StopRun			HP35900		@channel_sf6
+3	OpenRelay		HP34970		@sys_evac
+3	OpenRelay		HP34970		@gc_sample_loop_relax
+3	SwitchValve		H2_Load		Load
+3       TurnUniversalActuator   sf6_inject      Load
+3	OpenRelay		hp34970		@SF6_vent_valve
+3	OpenRelay		HP34970		@h2_vent_valve
+# let R0 into system so doesn't sit under vacuum
+3	TurnUniversalActuator	ManifoldSelect	@ManifoldD_port
+3	TurnUniversalActuator	ManifoldD	3
+3	OpenRelay		HP34970		@Sample_mks_close_valve
+8	TurnUniversalActuator	ManifoldD	@ManifoldD_off
+8	TurnUniversalActuator	ManifoldSelect	@ManifoldD_port_off
+8	CloseRelay		HP34970		@Sample_mks_close_valve
+9	SendCommand		aerodyne_comm_file	@aerodyne_stop_wd_runscript

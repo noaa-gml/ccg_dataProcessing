@@ -1,0 +1,16 @@
+#action file for sampling SF6 chromatogram
+#    $1 filename for chromatogram 
+#    $2 port
+#    
+#
+#0       LockInterface   hp34970  Lock
+#./test_read.act:1       LockInterface   hp34970  Unlock
+#	Put sample loop relax time in here
+#
+0       TurnUniversalActuator   sf6_inject      Inject
+0       StartRun                HP35900       	@channel_sf6
+0	CloseRelay		hp34970		@SF6_vent_valve
+30      TurnUniversalActuator   sf6_inject      Load
+30	OpenRelay		hp34970		@SF6_vent_valve
+200     StopRun                 HP35900       	@channel_sf6
+200     StoreData               HP35900       	@channel_sf6 $1 $2 @sample_rate

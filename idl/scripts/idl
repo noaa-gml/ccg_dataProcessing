@@ -1,0 +1,116 @@
+#!/bin/bash
+# Startup of idl 
+# This script should only be called from the 'idl'
+# script located in this directory.
+# The first arguement must be the display.
+# Any more arguements are passed on to idl.
+
+
+PATH=$PATH:/usr/bin/X11
+export PATH
+
+dir=`pwd`
+
+usepwd=0
+nox=0
+usex=0
+term=xterm
+useide=0
+ver=""
+
+for i in $*
+do
+	case $i in
+	-display) DISPLAY=$2; export DISPLAY; shift 2;;
+   -v) ver=$2; shift 2;;
+	-x) usex=1; shift;;
+	-nox) nox=1; shift;;
+	-d)  dir=$2;  shift 2;;
+	-w) useide="1"; shift;;
+	-t) term=$2; shift 2;;
+	esac
+done
+
+prog=bin/idl
+
+IDL_DEVICE=X
+
+
+if [ "$ver" != "" ]
+then
+
+   # If version is set ...
+
+   if [ -f "/opt/itt/$ver/$prog" ]
+   then
+      IDL_DIR="/opt/itt/$ver"
+   elif [ -f "/opt/rsi/$ver/$prog" ]
+   then
+      IDL_DIR="/opt/rsi/$ver"
+   else
+      echo "/opt/itt/$ver and /opt/rsi/$ver not found."
+   fi
+else
+
+   # Use default version
+
+   if [ -f "/opt/itt/idl/$prog" ]
+   then
+      IDL_DIR="/opt/itt/idl"
+   elif [ -f "/opt/rsi/idl/$prog" ]
+   then
+      IDL_DIR="/opt/rsi/idl"
+   elif [ -f "/opt/rsi/idl/idl/$prog" ] #jwm 10-18 - added for dir structure on vortex
+   then
+      IDL_DIR="/opt/rsi/idl/idl"
+   elif [ -f "/usr/local/harris/idl/$prog" ] #jwm 7/20 - for virga2 (centos7)
+   then 
+      IDL_DIR="/usr/local/harris/idl"
+   else
+      echo "idl  not found."
+   fi
+fi
+
+if [ -f $HOME/.idlrc ]
+then
+	IDL_STARTUP=$HOME/.idlrc
+	export IDL_STARTUP
+fi
+
+IDL_PATH=$IDL_PATH:+$HOME/idl:+`pwd`/idl:+/ccg/idl/lib:+$IDL_DIR/lib
+
+export IDL_DIR IDL_PATH IDL_DEVICE
+
+# If a batch file was specified, use the nox option, unless -x was also
+# specified
+
+if [ "$*" != ""  -a "$usex" != "1" ]
+then
+        nox="1"
+fi
+
+prog=$IDL_DIR/bin/idl
+# echo $prog
+
+cd $dir
+
+if [ $nox = "1" ]
+then
+	$prog $*
+else
+	if [ $useide != 0 ]
+	then
+		$prog -w $*
+	else
+		case $term in
+		xterm) /usr/bin/xterm -title "IDL" -name IDL -e $prog $* ;;
+		gnome-terminal) /usr/bin/gnome-terminal -t "IDL" --name IDL -x $prog $* ;;
+		konsole) /usr/bin/konsole -T "IDL" --name IDL -e $prog $* 2>/dev/null;;
+		aterm) /usr/bin/xterm -title "IDL" -name IDL -e $prog $* ;;
+		bxterm) /bin/xterm -title "IDL" -name IDL -e $prog $* ;;#jwm -10/21 added for nimbus2
+		*) /usr/bin/xterm -title "IDL" -name IDL -e $prog $* ;;
+		esac
+	fi
+fi
+
+exit

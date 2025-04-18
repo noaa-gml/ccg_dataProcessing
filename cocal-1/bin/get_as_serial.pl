@@ -1,0 +1,1 @@
+/home/ccg/cocal-1/src/as_comm/get_as_serial.pl

@@ -1,0 +1,262 @@
+2021-10-29 14:26:43,136: Unknown fileType10secAirMerge
+2021-10-29 14:41:17,327: Finding files to process:
+2021-10-29 14:41:17,361: Processing files.
+2021-10-29 14:53:00,048: Finding files to process:
+2021-10-29 14:53:00,052: Processing files.
+2021-10-29 14:53:43,375: Finding files to process:
+2021-10-29 14:53:43,385: Processing files.
+2021-10-29 14:53:54,347: Finding files to process:
+2021-10-29 14:53:54,349: Processing files.
+2021-10-29 14:54:13,949: Finding files to process:
+2021-10-29 14:54:13,952: Processing files.
+2021-10-29 14:55:08,232: Finding files to process:
+2021-10-29 14:55:08,234: Processing files.
+2021-10-29 14:55:25,011: Finding files to process:
+2021-10-29 14:55:25,016: Processing files.
+2021-10-29 14:56:03,719: Finding files to process:
+2021-10-29 14:56:03,721: Processing files.
+2021-10-29 14:59:12,842: Finding files to process:
+2021-10-29 14:59:12,847: Processing files.
+2021-10-29 14:59:25,689: Processed 17724 row(s)
+2021-10-29 15:02:58,870: Finding files to process:
+2021-10-29 15:02:58,874: Processing files.
+2021-10-29 15:03:11,453: Processed 17724 row(s)
+2021-10-29 15:04:03,050: Finding files to process:
+2021-10-29 15:04:03,054: Processing files.
+2021-10-29 15:06:41,976: Finding files to process:
+2021-10-29 15:06:41,981: Processing files.
+2021-10-29 15:08:37,693: Finding files to process:
+2021-10-29 15:08:37,697: Processing files.
+2021-10-29 15:12:19,623: Finding files to process:
+2021-10-29 15:12:19,631: Processing files.
+2021-10-29 15:13:59,307: Deleting all data for site_num 996
+2021-10-29 15:13:59,600: Finding files to process:
+2021-10-29 15:13:59,607: Processing files.
+2021-10-29 15:17:11,859: Processed 17724 row(s)
+2021-10-29 15:23:19,836: Deleting all data for site_num 996
+2021-10-29 15:23:22,505: Finding files to process:
+2021-10-29 15:23:22,512: Processing files.
+2021-10-29 15:26:37,109: Processed 17724 row(s)
+2022-03-01 18:04:25,744: Finding files to process:
+2022-03-01 18:04:26,080: Processing files.
+2022-03-01 18:07:36,236: Finding files to process:
+2022-03-01 18:07:36,242: No files to process.
+2022-03-01 18:07:36,242: Processed 0 row(s)
+2022-03-01 18:08:06,069: Finding files to process:
+2022-03-01 18:08:06,071: No files to process.
+2022-03-01 18:08:06,071: Processed 0 row(s)
+2022-03-01 18:10:46,336: Finding files to process:
+2022-03-01 18:10:46,348: Processing files.
+2022-03-01 18:11:04,372: Finding files to process:
+2022-03-01 18:11:04,374: Processing files.
+2022-03-01 18:14:22,797: Finding files to process:
+2022-03-01 18:14:22,808: Processing files.
+2022-03-01 18:18:06,053: Finding files to process:
+2022-03-01 18:18:53,970: Finding files to process:
+2022-03-01 18:18:53,972: Processing files.
+2022-03-01 18:19:16,888: Finding files to process:
+2022-03-01 18:19:16,900: Processing files.
+2022-03-01 18:20:36,816: Finding files to process:
+2022-03-01 18:20:36,830: Processing files.
+2022-03-01 18:21:15,324: Finding files to process:
+2022-03-01 18:21:15,327: Processing files.
+2022-03-01 18:21:43,456: Finding files to process:
+2022-03-01 18:21:43,468: Processing files.
+2022-03-01 18:22:00,219: Finding files to process:
+2022-03-01 18:22:00,222: Processing files.
+2022-03-01 18:22:17,778: Finding files to process:
+2022-03-01 18:22:17,784: Processing files.
+2022-03-01 18:22:33,854: Finding files to process:
+2022-03-01 18:22:33,857: Processing files.
+2022-03-01 18:22:50,672: Finding files to process:
+2022-03-01 18:22:50,683: Processing files.
+2022-03-01 18:23:09,228: Finding files to process:
+2022-03-01 18:23:09,231: Processing files.
+2022-03-01 18:23:55,149: Finding files to process:
+2022-03-01 18:23:55,161: Processing files.
+2022-03-01 18:25:40,806: Finding files to process:
+2022-03-01 18:25:40,818: Processing files.
+2022-03-01 18:26:24,418: Finding files to process:
+2022-03-01 18:26:24,420: Processing files.
+2022-03-01 18:27:13,158: Finding files to process:
+2022-03-01 18:27:13,169: Processing files.
+2022-03-01 18:27:52,533: Finding files to process:
+2022-03-01 18:27:52,536: Processing files.
+2022-03-01 18:28:41,417: Finding files to process:
+2022-03-01 18:28:41,428: Processing files.
+2022-03-01 18:29:26,437: Finding files to process:
+2022-03-01 18:29:26,439: Processing files.
+2022-03-01 18:30:45,711: Finding files to process:
+2022-03-01 18:30:45,717: Processing files.
+2022-03-01 18:31:19,777: Finding files to process:
+2022-03-01 18:31:19,778: Processing files.
+2022-03-01 18:31:46,047: Finding files to process:
+2022-03-01 18:31:46,052: Processing files.
+2022-03-01 18:32:36,229: Finding files to process:
+2022-03-01 18:32:36,231: Processing files.
+2022-03-01 18:33:13,552: Finding files to process:
+2022-03-01 18:33:13,558: Processing files.
+2022-03-01 18:33:36,312: Processed 2288 row(s)
+2022-03-01 18:34:36,126: Finding files to process:
+2022-03-01 18:34:36,132: Processing files.
+2022-03-01 18:35:09,609: Finding files to process:
+2022-03-01 18:35:09,610: Processing files.
+2022-03-01 18:35:31,343: Finding files to process:
+2022-03-01 18:35:31,345: Processing files.
+2022-03-01 18:36:28,194: Finding files to process:
+2022-03-01 18:36:28,200: Processing files.
+2022-03-01 18:37:48,930: Finding files to process:
+2022-03-01 18:37:48,937: Processing files.
+2022-03-01 18:38:58,703: Finding files to process:
+2022-03-01 18:38:58,709: Processing files.
+2022-03-01 18:39:59,315: Finding files to process:
+2022-03-01 18:39:59,321: Processing files.
+2022-03-01 18:40:39,567: Processed 2288 row(s)
+2022-03-03 11:32:45,365: Finding files to process:
+2022-03-03 11:32:45,387: Processing files.
+2022-03-03 11:33:24,286: Processed 2288 row(s)
+2022-03-03 11:49:45,599: Finding files to process:
+2022-03-03 11:49:45,602: Processing files.
+2022-03-03 11:50:59,084: Finding files to process:
+2022-03-03 11:50:59,091: Processing files.
+2022-03-03 11:51:29,053: Finding files to process:
+2022-03-03 11:51:29,058: Processing files.
+2022-03-03 11:52:05,910: Processed 2288 row(s)
+2022-03-03 12:02:28,845: Finding files to process:
+2022-03-03 12:02:28,847: Processing files.
+2022-03-03 12:02:49,715: Finding files to process:
+2022-03-03 12:02:49,717: Processing files.
+2022-03-03 12:04:50,657: Finding files to process:
+2022-03-03 12:04:50,664: Processing files.
+2022-03-03 12:08:16,218: Finding files to process:
+2022-03-03 12:08:16,225: Processing files.
+2022-03-03 12:08:39,278: Finding files to process:
+2022-03-03 12:08:39,282: Processing files.
+2022-03-03 12:09:16,618: Processed 2288 row(s)
+2022-03-03 12:17:31,230: Finding files to process:
+2022-03-03 12:17:31,232: Processing files.
+2022-03-03 12:18:31,714: Finding files to process:
+2022-03-03 12:18:31,719: Processing files.
+2022-03-03 12:19:11,765: Processed 2288 row(s)
+2022-03-03 12:25:03,145: Finding files to process:
+2022-03-03 12:25:03,147: Processing files.
+2022-03-03 12:26:39,799: Finding files to process:
+2022-03-03 12:26:39,803: Processing files.
+2022-03-03 12:27:51,211: Finding files to process:
+2022-03-03 12:27:51,214: Processing files.
+2022-03-03 12:28:53,536: Finding files to process:
+2022-03-03 12:28:53,542: Processing files.
+2022-03-03 12:29:32,284: Processed 2288 row(s)
+2022-03-03 12:30:32,934: Finding files to process:
+2022-03-03 12:30:32,937: Processing files.
+2022-03-03 12:30:52,333: Finding files to process:
+2022-03-03 12:30:52,335: Processing files.
+2022-03-03 12:32:01,393: Finding files to process:
+2022-03-03 12:32:01,399: Processing files.
+2022-03-03 12:32:48,956: Finding files to process:
+2022-03-03 12:32:48,959: Processing files.
+2022-03-03 12:33:52,491: Finding files to process:
+2022-03-03 12:33:52,499: Processing files.
+2022-03-03 12:34:26,895: Processed 2288 row(s)
+2022-03-03 12:35:46,161: Finding files to process:
+2022-03-03 12:35:46,168: Processing files.
+2022-03-03 12:36:19,333: Processed 2288 row(s)
+2022-03-03 14:03:21,576: Finding files to process:
+2022-03-03 14:03:21,594: Processing files.
+2022-03-03 14:04:21,695: Processed 2288 row(s)
+2022-03-03 14:09:36,816: Finding files to process:
+2022-03-03 14:09:36,829: Processing files.
+2022-03-03 14:52:29,579: Processed 107400 row(s)
+2022-08-02 11:46:04,737: Finding files to process:
+2022-08-02 11:51:12,537: Finding files to process:
+2022-08-02 11:51:12,545: Processing files.
+2022-08-02 11:57:25,752: Finding files to process:
+2022-08-02 11:57:25,761: Processing files.
+2022-08-02 11:58:13,149: Finding files to process:
+2022-08-02 11:58:13,151: Processing files.
+2022-08-02 11:59:56,783: Finding files to process:
+2022-08-02 11:59:56,791: Processing files.
+2022-08-02 12:01:25,341: Finding files to process:
+2022-08-02 12:01:25,351: Processing files.
+2022-08-02 12:01:43,603: Finding files to process:
+2022-08-02 12:01:43,604: Processing files.
+2022-08-02 12:02:19,895: Finding files to process:
+2022-08-02 12:02:19,896: Processing files.
+2022-08-02 12:03:41,400: Finding files to process:
+2022-08-02 12:03:41,411: Processing files.
+2022-08-02 12:04:21,428: Finding files to process:
+2022-08-02 12:04:21,429: Processing files.
+2022-08-02 12:04:30,937: Finding files to process:
+2022-08-02 12:04:30,938: Processing files.
+2022-08-02 12:06:37,649: Finding files to process:
+2022-08-02 12:06:37,659: Processing files.
+2022-08-02 12:06:47,943: Finding files to process:
+2022-08-02 12:06:47,945: Processing files.
+2022-08-02 12:07:43,371: Finding files to process:
+2022-08-02 12:07:43,380: Processing files.
+2022-08-02 12:12:39,386: Finding files to process:
+2022-08-02 12:12:39,388: Processing files.
+2022-08-02 12:12:43,644: Processed 6059 row(s)
+2022-08-02 12:19:11,065: Finding files to process:
+2022-08-02 12:19:11,069: Processing files.
+2022-08-02 12:19:15,371: Processed 6059 row(s)
+2022-08-02 12:19:26,763: Finding files to process:
+2022-08-02 12:20:57,313: Finding files to process:
+2022-08-02 12:20:57,320: Processing files.
+2022-08-02 12:56:33,437: Finding files to process:
+2022-08-02 12:56:33,445: No files to process.
+2022-08-02 12:56:33,445: Processed 0 row(s)
+2022-08-02 12:56:37,721: Finding files to process:
+2022-08-02 12:56:37,733: Processing files.
+2024-09-11 11:02:56,631: Finding files to process:
+2024-09-11 11:02:56,674: No files to process.
+2024-09-11 11:02:56,674: Processed 0 row(s)
+2024-09-11 11:03:14,637: Finding files to process:
+2024-09-11 11:03:14,659: No files to process.
+2024-09-11 11:03:14,659: Processed 0 row(s)
+2024-09-11 11:03:26,026: Finding files to process:
+2024-09-11 11:03:26,032: Processing files.
+2024-09-11 11:05:44,524: Finding files to process:
+2024-09-11 11:05:44,547: Processing files.
+2024-09-11 11:07:58,988: Finding files to process:
+2024-09-11 11:07:59,000: Processing files.
+2024-09-11 11:17:58,261: Processed 7006 row(s)
+2024-09-11 11:20:46,473: Finding files to process:
+2024-09-11 11:20:46,506: No files to process.
+2024-09-11 11:20:46,506: Processed 0 row(s)
+2024-09-11 11:21:15,868: Finding files to process:
+2024-09-11 11:21:15,873: No files to process.
+2024-09-11 11:21:15,873: Processed 0 row(s)
+2024-09-11 11:22:39,821: Finding files to process:
+2024-09-11 11:22:39,826: No files to process.
+2024-09-11 11:22:39,826: Processed 0 row(s)
+2024-09-11 11:22:48,232: Finding files to process:
+2024-09-11 11:22:48,235: No files to process.
+2024-09-11 11:22:48,235: Processed 0 row(s)
+2024-09-11 11:24:35,985: Finding files to process:
+2024-09-11 11:24:36,016: No files to process.
+2024-09-11 11:24:36,016: Processed 0 row(s)
+2024-09-11 11:25:25,402: Finding files to process:
+2024-09-11 11:25:25,403: No files to process.
+2024-09-11 11:25:25,403: Processed 0 row(s)
+2024-09-11 11:26:01,486: Finding files to process:
+2024-09-11 11:26:01,499: Processing files.
+2024-09-11 11:26:11,397: Finding files to process:
+2024-09-11 11:26:11,399: Processing files.
+2024-09-11 11:29:31,974: Finding files to process:
+2024-09-11 11:29:31,993: No files to process.
+2024-09-11 11:29:31,993: Processed 0 row(s)
+2024-09-11 11:29:41,651: Finding files to process:
+2024-09-11 11:29:41,653: No files to process.
+2024-09-11 11:29:41,653: Processed 0 row(s)
+2024-09-11 11:30:36,951: Finding files to process:
+2024-09-11 11:30:36,968: No files to process.
+2024-09-11 11:30:36,969: Processed 0 row(s)
+2024-09-11 11:30:49,503: Finding files to process:
+2024-09-11 11:30:49,506: Processing files.
+2024-09-11 11:33:09,846: Processed 1688 row(s)
+2024-09-16 13:17:34,885: Finding files to process:
+2024-09-16 13:17:34,913: Processing files.
+2024-09-16 13:18:37,640: Finding files to process:
+2024-09-16 13:18:37,655: Processing files.
+2024-09-16 13:30:34,483: Processed 8694 row(s)

@@ -1,0 +1,9 @@
+## action file to measure qc data during trap drying procedure
+#
+# measure sample loop pressure and room pressure, return results to calling program
+#0	ConfigChannel	hp34970	 @sample_flow	DCVOLT
+#0	ConfigChannel	hp34970  @room_temp	DCVOLT
+#0	ConfigChannel	hp34970  @chiller_temp	TC K 
+#0	ConfigChannel	hp34970  @trap_humidity  DCVOLT
+1	SingleScan	hp34970  @sample_flow,@room_temp,@chiller_temp,@trap_humidity @sample_flow_scale,@room_temp_scale,@chiller_temp_scale,@trap_humidity_scale
+1	PrintData	hp34970  %d %12.4

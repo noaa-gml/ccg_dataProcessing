@@ -1,0 +1,9 @@
+# Action file to start flushing for VURF and AeroLaser instruments
+#
+#      $1 manifold to use
+#
+
+0       TurnUniversalActuator   SystemSelect    @Sys_AeroLaser
+0       TurnUniversalActuator   ManifoldSelect  @Manifold$1_port
+0       CloseRelay               HP34970        @aerolaser_sample_valve
+5	Noop			None		None

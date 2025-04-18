@@ -1,0 +1,16 @@
+# action to start depressurize GC sample loops and tubing prior to
+# start of next aliquot
+#
+#evac back to manifold with purge
+# ***** ASSUMES MANIFOLD IS ON AN OFF PORT
+# $1 manifold 
+#
+#
+0	OpenRelay		hp34970		@pc_sample
+0 	TurnUniversalActuator	GCbypass	@Include
+3	OpenRelay		hp34970		@Sample_mks_close_valve 
+3	CloseRelay		hp34970		@Sample_mks_open_valve 
+3	CloseRelay		hp34970		@Sys_evac
+3	CloseRelay		hp34970		@gc_sample_loop_relax
+5	TurnUniversalActuator   ManifoldSelect	@Manifold$1_port
+

@@ -1,0 +1,69 @@
+<HTML>
+ <HEAD>
+  <LINK rel="stylesheet" type="text/css" href="/inc/jquery-themes/jquery-ui/jquery-ui.css">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <SCRIPT language='JavaScript' src="/inc/jquery-1.9.1.js"></SCRIPT>
+  <SCRIPT language='JavaScript' src="/inc/jquery-ui-1.10.2.js"></SCRIPT>
+  <script>
+   $(function() {
+    $( "#accordion" ).accordion({ collapsible: true, active: false, animate: false, heightStyle: "content" });
+   });
+  </script>
+ </HEAD>
+ <BODY>
+  <H2>Help page</H2>
+  <A href='index.php'><INPUT type='button' value='Return Home'></A>
+  <div id="accordion">
+   <h3>Printing cylinder label instructions</h3>
+   <div>
+    <ol>
+     <li>Locate a computer with a Brother label printer, P-Touch software, and network access. Make sure that the label printer is turned on.</li>
+     <li>Login to the computer if necessary.</li>
+     <li>Browse to image directory. There may be a ‘shortcut to labels’ shortcut. Otherwise, use Start Menu -> Run -> \\ccgg\ccg\refgas\label\labels\ -> OK</li>
+     <li>Select the image file(s) to print. Use the ‘Shift’ key to select a range. Use the ‘Ctrl’ to select multiple images. Right click on the images and select ‘Print’. A print dialog box should appear.</li>
+     <li>Print dialog first page is ‘Printing Options’.
+      <ol type='a'>
+       <li>Select the Brother printer (e.g., Brother PT-9600).</li>
+       <li>Select ‘Printing Preferences’. Format should be ‘Cylinder label’ ( tape: ½”,length: 2.25”, feed: 0.08”, orientation: landscape). Click ‘OK’.</li>
+       <li>Click ‘Next’.</li>
+      </ol>
+     </li>
+     <li>Print dialog second page is ‘Layout Options’.
+      <ol type='a'>
+        <li>Select ‘Full page photo print’.</li>
+        <li>Make sure that the label in the preview is correct. No text should be cut off. The image size and text looks normal. If there is a problem, please click ‘Back’ and re-do step 5.</li>
+        <li>Click ‘Next’ when ready.</li>
+      </ol>
+     </li>
+     <li>The label(s) should now print.</li>
+     <li>Once printing is complete, close all related dialog boxes.</li>
+     <li>Return computer to state you found it. This may mean logging off the computer and turning off the label printer.</li>
+    </ol>
+   </div>
+   <h3>Resetting mobile device password</h3>
+   <div>
+    <ol>
+     <li>Log into Refgas Manager on a mobile device using your Windows/Linux password.</li>
+     <li>From the Home screen, click 'Account'.</li>
+     <li>Type your Windows/Linux password in the current password.</li>
+     <li>Set your new password. Use the scanner if desired.</li>
+     <li>Verify your new password. Use the scanner if desired.</li>
+     <li>Click 'Update' to complete.</li>
+    </ol>
+   </div>
+   <h3>Mobile device can't connect to network</h3>
+   <div>
+    <ol>
+     <li>Restart the Wi-Fi
+      <ol type='a' >
+       <li>Click the Home icon at the bottom of the screen. It looks like a little house.</li>
+       <li>On the device desktop on the left tap on the Wi-Fi icon. It should turn from blue (ON) to gray (OFF).</li>
+       <li>Tap the Wi-Fi icon again to turn it back on.</li>
+       <li>Try to connect to Refgas Manager again.</li> 
+      </ol> 
+     </li>
+    </ol>
+   </div>
+  </div>
+ </BODY>
+</HTML>

@@ -1,0 +1,3 @@
+#0 CheckDevice   HP34970  @query_34970
+#0 CheckDevice   HP35900 @query_a/d
+0 CheckDevice   Aerolaser     @query_vurf

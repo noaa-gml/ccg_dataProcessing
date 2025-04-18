@@ -1,0 +1,6 @@
+Mode: 6
+Flask_System: Picarro - CO2 CH4
+Flask_System: Aerodyne - N2O CO
+Flask_System: GC1 - SF6
+Flask_System: GC2 - H2
+RunShots: 0

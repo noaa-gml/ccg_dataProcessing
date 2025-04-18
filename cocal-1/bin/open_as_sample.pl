@@ -1,0 +1,1 @@
+/home/ccg/cocal-1/src/as_comm/open_as_sample_w_log.pl

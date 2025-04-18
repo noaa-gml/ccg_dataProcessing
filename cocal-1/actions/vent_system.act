@@ -1,0 +1,8 @@
+# action file to release any captured pressure in the 
+# system before turning to next sample
+#
+#
+0	TurnUniversalActuator	SystemSelect	@Sys_GC
+0	CloseRelay		hp34970		@MFC_valve
+10	OpenRelay		hp34970		@MFC_valve
+10	TurnUniversalActuator	SystemSelect	@Sys_GC_off

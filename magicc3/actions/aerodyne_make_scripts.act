@@ -1,0 +1,21 @@
+# action file to setup Aerodyne before beginning analysis
+#
+#
+# Set up scripts on Aerodyen for setup, background, and filling cell. 
+# Write text files once on startup rather than each cycle
+#
+# write setup script
+0   SendMultilineCommand   aerodyne_setup_script_file  @aerodyne_wd_off @aerodyne_gl @aerodyne_ass @aerodyne_pn @aerodyne_rs_off @aerodyne_cal @aerodyne_flk4 @aerodyne_abg @aerodyne_abg_external @aerodyne_abg_duration @aerodyne_ebg @aerodyne_pl @aerodyne_stream
+#
+# write fill script
+3   SendMultilineCommand    aerodyne_fill_script_file     @aerodyne_fill 
+#
+# write fill and initiate write data script (assumes AR is configured to use transient data files for DEFT)
+6   SendMultilineCommand   aerodyne_fill_and_start_wd_script_file  @aerodyne_fill @aerodyne_wait_5 @aerodyne_wd_on
+#
+# write write data off script
+9   SendMultilineCommand   aerodyne_stop_wd_script_file    @aerodyne_wd_off
+
+# write write data on script
+12  SendMultilineCommand   aerodyne_start_wd_script_file    @aerodyne_wd_on
+

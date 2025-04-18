@@ -1,0 +1,10 @@
+# action to measure vacuum during manifold evac
+# Called from within loop so can stop evac once pressure limit is reached
+# and so can determine how long it takes to reach 1 Torr (used to detect 
+# open flasks in the pfp)
+#
+#	$1  manifold to read
+#
+#	Takes a reading once per second
+0 	ReadValue	   	hp34970		@$1_press	DCVOLT
+0 	PrintData	   	hp34970         %d %12.4f

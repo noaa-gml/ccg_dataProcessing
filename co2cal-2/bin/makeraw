@@ -1,0 +1,198 @@
+#!/usr/bin/python
+
+def usage():
+        print """
+Script to make raw file from the command line.  Uses new_makeraw
+script in utils.py
+
+usage:
+    makeraw --type=type  --inst=inst [-h] [--help]
+
+        -h|--help      Print help nessage.
+        --type          type (NL, CALS, QC)
+        --inst          inst (Picarro, LGR, NDIR)
+        --stdset        stdset (secondary, primary_a, primary_b)
+        --basefilename  creates rawfiles with this as the basename, else print to stdout
+	--usestart      Set to true to pick up basefilename from sys.start
+        --serialnum     serial number of sample tank.  Use for type = cals
+        --regulator     regulator on sample tank.  Use for type = cals
+	--valvename     Valvename
+        --portnum       port number of sample tank.  Use for type = cals
+        --pressure      pressure of sample tank.  Use for type = cals
+
+
+    """
+
+
+
+import sys
+import os
+sys.path.append("/home/co2cal")
+import getopt
+
+import utils
+from utils import get_rawfile_name
+# def get_rawfile_name(gas=False):
+
+HOMEDIR = os.environ["HOME"]
+
+rawfile = ""
+type = "cals"
+inst = ""
+stdset = ""
+system = "CO2CAL-2"
+basefilename = ""
+use_start = False
+serialnum = ""
+pressure = ""
+regulator = ""
+valvename = ""
+portnum = ""
+
+######################################################################
+# Determine which systems are to be used
+# gaslist will hold system names, 
+# processlist will hold gases that will be processed when finishing
+######################################################################
+def get_systems():
+
+	syslist = []
+	sysgases = {}
+
+	try:
+		f = open("sys.setup")
+	except:
+		return ["picarro"], {"picarro":"CO2"}
+
+	for line in f:
+		if "Cal_System" in line:
+			(a, systems) = line.split(":")
+			(sysname, gasstr) = systems.split("-")
+			sysname = sysname.strip()
+			sysname = sysname.lower()
+			gases = gasstr.strip().split()
+			sysgases[sysname] = gases
+
+	f.close()
+
+	# make sure syslist is in proper order of system names
+	# i.e., can't use sysgases.keys() because they might not be in correct order.
+	for name in ["picarro", "lgr", "aerodyne"]:
+		if name.lower() in sysgases: syslist.append(name.lower())
+
+	if len(syslist) == 0:
+		return ["picarro"], {"picarro":"CO2"}
+	else:
+		return syslist, sysgases
+
+######################################################################
+
+
+
+# Get the command-line options
+try:
+        opts, args = getopt.getopt(sys.argv[1:], "h", ['help','type=',
+                                                        'stdset=','inst=',
+                                                        'basefilename=', 'usestart',
+							 'serialnum=',
+                                                        'regulator=', 
+							'valvename', 'portnum=',
+                                                        'pressure='])
+   
+except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit()
+
+for o, a in opts:
+        if   o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o == "--type":  type = a
+        elif o == "--inst":  inst = a
+        elif o == "--stdset":  stdset = a
+	elif o == "--usestart": use_start = True
+        elif o == "--basefilename":  basefilename = a
+        elif o == "--serialnum": serialnum = a
+        elif o == "--regulator":  regulator = a
+        elif o == "--pressure":  pressure = a
+	elif o == "--valvename": valvename = a
+        elif o == "--port":  portnum = a
+        else:
+                assert False, "unhandled option"
+
+
+
+#get current sample info for cals
+if type.lower() == "cals":
+	current_sn = " "
+	current_press = " "
+	current_reg = " "
+	current_n = " "
+	current_valvename = " "
+	current_port = " "
+	
+	fn = "%s/sys.current_sample" % HOMEDIR
+
+        try:
+                #f = open("sys.current_sample")
+                f = open(fn, "r")
+		line = f.readline()
+		f.close()
+		(current_sn, current_press, current_reg, current_n, current_valvename, current_port, current_key) = line.split()
+		
+        except:
+		msg = "Can't get system current sample info"
+		#sys.exit(msg)
+                logging.error("Can't get system current sample info")
+
+	if not serialnum: serialnum = current_sn
+	if not regulator: regulator = current_reg
+	if not pressure: pressure = current_press
+	if not valvename: valvename = current_valvename
+	if not portnum: portnum = current_port
+
+#  new_makeraw(system, inst, type, stdset(required for nl), basefilename, serialnum, press, regulator, port)
+#new_makeraw(system=system, inst=inst, type=type, stdset=stdset, basefilename=basefilename, serialnum=serialnum,
+#            pressure=pressure, regulator=regulator, portnum=portnum)
+
+
+tmplist, sysgases = get_systems()
+
+if inst == "":
+	syslist = tmplist
+else:
+	syslist = [inst.lower()]
+
+for inst in syslist:
+
+	if type.lower() != "qc":
+
+	       # get instrument code
+		inst_id, sernum = utils.get_instrument_id(inst)
+
+		for gas in sysgases[inst.lower()]:
+
+			#get basefilename from sys.start if use_start = True
+			if use_start:
+				rawfile = get_rawfile_name(gas, inst_id)
+			else:
+				if basefilename:
+					rawfile = basefilename + "." + gas.lower()
+				
+
+			utils.make_raw(system, inst, type, qc=False, gas=gas, rawfile=rawfile, stdset=stdset,
+				    serialnum=serialnum, pressure=pressure, regulator=regulator, valvename=valvename, portnum=portnum)
+
+	else:
+		gas = "QC"
+		if use_start:
+			rawfile = get_rawfile_name(inst) + "_qc"
+		else:
+			rawfile = basefilename + "." + inst.lower() + "_qc"
+		utils.make_raw(system, inst, type, qc=True, gas=gas, rawfile=rawfile, stdset=stdset,
+			    serialnum=serialnum, pressure=pressure, regulator=regulator, valvename=valvename, portnum=portnum)
+		
+
+

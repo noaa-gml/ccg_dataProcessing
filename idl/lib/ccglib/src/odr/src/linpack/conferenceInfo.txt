@@ -1,0 +1,317 @@
+confdb/1006592
+
+Title: Third SIAM Conference on Applications of Dynamical Systems
+Submitted by: mcmahan@netlib2.cs.utk.edu
+Start Date: may 21 1995
+End Date: may 24 1995
+Location: Philadelphia, Pennsylvania
+
+SIAM
+Society for Industrial and Applied Mathematics
+3600 University City Science Center
+Philadelphia, PA 19104-2688
+
+Third SIAM Conference on Applications of Dynamical Systems
+
+Sponsored by SIAM Activity Group on Dynamical Systems
+
+May 21-24, 1995
+Snowbird Ski and Summer Resort
+Snowbird, Utah
+
+and immediately preceding the conference...
+SIAM Short Course 
+Chaos: Theory and Numerics
+May 20, 1995
+
+CALL FOR PAPERS
+
+Dynamical systems have had an impact in many areas including
+physics, chemistry, engineering, and biology. This conference
+will emphasize the interaction among disciplines that is a key
+feature of the advances in dynamical systems and its
+applications. It will bring together a diverse group of
+mathematicians, engineers, and scientists from industry,
+government, and academe.
+
+                   --Conference Themes-- 
+
+The themes of the conference include, but are not limited to:
+
+o Theory of:
+
+    Computational Algorithms and Effectiveness
+    Data Analysis, Prediction and Control
+    Extended Systems: Pattern Formation and Spatio-Temporal
+                      Chaos
+    Hyperbolicity and Nonuniform Hyperbolicity
+    Hamiltonian Dynamics
+    Infinite Dimensional Dynamics
+
+o Applications in:
+
+    Biology
+    Chemical Systems
+    Celestial Mechanics
+    Communications
+    Economics
+    Engineering
+    Fluid Dynamics
+    Nonlinear Optics
+
+                           --Organizing Committee--
+
+John David Crawford (Co-chair)
+Department of Physics and Astronomy
+University of Pittsburgh
+
+James D. Meiss (Co-chair)
+Program in Applied Mathematics
+University of Colorado, Boulder
+
+                            --Invited Presentations--
+
+The Role of Non-normal Dynamics in Turbulence 
+Brian F. Farrell
+Department of Applied Physics 
+Harvard University 
+
+An Introduction to Chemical Reaction Network Theory
+Martin Feinberg
+Department of Chemical Engineering 
+University of Rochester 
+
+Invariant Manifolds and Singularly Perturbed Equations
+Nancy J. Kopell
+Department of Mathematics 
+Boston University 
+
+Dynamics of Networks 
+Robert MacKay
+Department of Mathematics 
+University of Warwick, United Kingdom
+
+Pattern Evolution in Large Aspect Ratio Nonlinear Optical
+Systems
+Jerome V. Moloney
+Department of Mathematics 
+University of Arizona 
+
+Chaotic Attractors in Smooth Dynamical Systems 
+Sheldon Newhouse
+Department of Mathematics 
+University of North Carolina, Chapel Hill
+and Department of Mathematics, Michigan State University 
+
+Onset of Spatio-temporal Chaos in Unbounded Lattice Models
+Yakov B. Pesin
+Department of Mathematics 
+Pennsylvania State University 
+ 
+Control and Synchronization of Chaotic Emission of Radiation
+Rajarshi Roy
+Department of Physics 
+Georgia Institute of Technology
+
+Turbulent Vortex Rings in Excitable Media
+Arthur T. Winfree 
+Department of Ecology and Evolutionary Biology 
+University of Arizona 
+
+Recent Results on the Dynamics of the Solar System
+Jack Wisdom
+Earth, Atmosphere, and Planetary Sciences Department
+Massachusetts Institute of Technology
+
+                        --Minisymposia--
+A minisymposium is a two-hour session consisting of four
+presentations on a topic selected to augment the
+presentations of the plenary speakers or develop a conference
+theme. A partial list of minisymposia and organizers follows:
+
+Space-time Chaos, Coherent Structures and Intermittency in
+Extended Dynamical Systems
+Leonid Bunimovich
+Georgia Institute of Technology
+
+Dynamics of Complex Singularities 
+Russel Caflisch, University of California, Los Angeles
+and
+Nicholas Ercolani, University of Arizona
+
+Long Time Stability in Hamiltonian Systems 
+H. Scott Dumas
+University of Cincinnati
+
+Applications of the Conley Index 
+Robert W. Easton
+University of Colorado, Boulder
+
+Dynamics and Symmetry
+Martin Golubitsky
+University of Houston
+
+Control of Chaos 
+Celso Grebogi
+University of Maryland, College Park
+ 
+Dynamical Systems Software 
+John Guckenheimer
+Cornell University
+ 
+The Dynamics of Ecology 
+Alan Hastings
+University of California, Davis
+
+Complex Spatio-temporal Behavior in Excitable Media
+Alain Karma
+Northeastern University
+ 
+Diffusion in Multi-dimensional Hamiltonian Systems 
+Jacques Laskar
+Bureau de Longitudes, Paris, France
+
+Mechanical Systems with Symmetry 
+Jerrold E. Marsden
+University of California, Berkeley
+
+Celestial Mechanics 
+Kenneth R. Meyer
+University of Cincinnati
+
+Communicating with Chaos
+Louis Pecora
+Naval Research Laboratory
+
+Numerical Trajectories 
+Timothy Sauer
+George Mason University
+
+Coupled Oscillators
+Steven Strogatz
+Massachusetts Institute of Technology
+
+Reaction Diffusion Patterns
+Harry Swinney
+University of Texas, Austin
+
+Time Series Analysis: Methods and Applications 
+James Theiler
+Los Alamos National Laboratory
+
+Non-normal Dynamics: Instability Without Unstable Modes
+Lloyd N. Trefethen
+Cornell University
+
+Rigorous Results on Spatially Extended Systems
+Clarence Eugene Wayne
+Pennsylvania State University
+
+Ergodic Theory of Chaotic Systems 
+Lai-Sang Young
+University of California, Los Angeles
+ 
+The N-body Problem: Recent Progress 
+Zhihong Xia
+Georgia Institute of Technology
+
+                     --  How to Contribute  --
+You are invited to contribute a presentation in either of the
+following formats:
+
+Contributed Presentations in Lecture or Poster Format
+
+A lecture consists of a 15-minute oral presentation with an
+additional five minutes for discussion. A poster presentation
+consists of the use of visual aids, such as 8-1/2" x 11" sheets,
+mounted on a 4' x 6' poster board. A poster session is two hours
+long. Each contributor must submit a title and a brief abstract
+not exceeding seventy five words. SIAM encourages electronic
+submission of abstracts. To help in formatting your submission,
+plain TeX or LaTeX macros are available by contacting SIAM at
+meetings@siam.org. 
+
+The organizing committee reserves the right to limit the number
+of contributed presentations a single speaker may present.
+
+Deadline for submission of contributed abstracts: November 7,
+1994.
+
+Minisymposia
+
+A minisymposium consists of four 25-minute presentations with an
+additional five minutes for discussion. Prospective minisymposium
+organizers are asked to submit a proposal consisting of a title,
+a description (not exceeding one-hundred words), and a list of
+speakers and titles of their presentations. Each minisymposium
+speaker must submit a 75-word abstract. To obtain a minisymposium
+proposal form, instructions and abstract forms, send your request
+to meetings@siam.org.
+
+Deadline for submission of minisymposium proposals: October 7,
+1994.
+
+Registration
+
+The conference program and registration information will be
+available in early March, 1995. To ensure receiving your copy,
+please complete the form below and return it via e-mail to
+meetings@siam.org.
+
+SIAM Short Course
+Chaos: Theory and Numerics
+May 20, 1995
+
+Instructors: 
+Robert L. Devaney, Department of Mathematics, Boston University
+James A. Yorke, Institute of Physical Science and Technology,
+University of Maryland, College Park
+
+Please return this form to:
+meetings@siam.org
+
+Third SIAM Conference on Applications of Dynamical Systems 
+May 21-24, 1995
+Snowbird Ski and Summer Resort
+Snowbird, Utah
+
+I am interested in giving a presentation. 
+     [ ] Enclosed is a 75-word abstract. I prefer to give a      
+         poster presentation.
+     [ ] Enclosed is a 75-word abstract. I prefer to give a
+         20-minute presentation.
+
+[   ] I am interested in organizing a minisymposium.   
+      Send me a minisymposium proposal form.
+
+[   ] I am interested in attending the conference. Send
+      me the conference program, with the hotel and registration
+      information.
+
+I am a member      [  ] AMS      [  ] APS
+                   [   ] ASME     [  ] SIAM 
+                    [  ] Other                 
+
+Send me information about membership in SIAM.
+     [  ] Individual     [  ] Academic Institution
+     [  ] Corporate      [  ] SIAM Activity Group on Dynamical
+                              Systems
+
+[   ] Send me a SIAM poster to display on my institution's
+      bulletin board.
+[   ] Send me a free issue of SIAM News.
+[   ] Send me exhibit information.
+
+Name
+           First                    Middle Initial   Last
+Organization
+Department
+Address
+City                       State              Zip
+Country
+E-Mail
+Telephone
+Fax
+
+
+
