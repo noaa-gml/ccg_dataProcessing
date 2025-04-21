@@ -1,0 +1,10 @@
+# action file for flushing and sampling the Picarro analyzer
+# 
+# $1 = temp data filename
+#
+# Assumes the StandardSelect and SampleSelect valves are already in 
+# the correct position and Flush cycle is finished
+#
+## Action line syntax:
+#  0 MonitorNonPolledData device  time_avg  forever?  reg_time_interval? sp_col? water_corrected? filename replace|append
+0   	MonitorNonPolledData Picarro      5 1 0 6 0 $1 append

@@ -1,0 +1,7 @@
+# get current position from valco valve
+#
+#	$1 = valvename
+#
+0	LockInterface		ValcoValves 	Lock
+0	ValcoCurrentPosition   	$1   		none
+0	LockInterface		ValcoValves 	Unlock

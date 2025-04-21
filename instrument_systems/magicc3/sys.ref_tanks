@@ -1,0 +1,28 @@
+ co_dilution    S1          FF32810            C     1        500              ff32810
+ co_dilution    S2          FB03876            C     3        500              fb03876
+ co_dilution    S3          FB03884            C     5        300              fb03884
+ co_dilution    S4          FB04080            C     7        500              fb04080
+ co_dilution    S5          FB04095            C     9        300              fb04095
+ co_dilution    S6          FB03850            C    11        500              fb03850
+ co_dilution    S7          FB03851            C    13        300              fb03852
+ co_dilution    S8          FB03888            C    15        300              fb03869
+   Reference    R0          CA05730            D     1       1800             ch4cal30
+Normal_range    S1          CA07502            C     1       1400           MAGICC3-S1
+Normal_range    S2          CA04403            C     3       1230           MAGICC3-S2
+Normal_range    S3          CB11270            C     5       1350           MAGICC3-S3
+Normal_range    S4          CA05680            C     7       1340           MAGICC3-S4
+Normal_range    S5          CA01414            C     9       1310           MAGICC3-S5
+Normal_range    S6          CA06388            C    11       1250           MAGICC3-S6
+Normal_range    S7          CA07987            C    13       1400           MAGICC3-S7
+Normal_range    S8          CA08251            C    15       1450           MAGICC3-S8
+Normal_range    S9          CB11034            C    17       1280           MAGICC3-S9
+Normal_range   S10          CA05773            C    19       1270          MAGICC3-S10
+Normal_range   S11          CB11405            C    21       1200          MAGICC3-S11
+      Manual    S1         CC327050            C     1       9999                  rrr
+      Manual    S2         CC312012            C     3       9999                  rrr
+      Manual    S3          CA06835            C     5       9999                  rrr
+      Manual    S4          CA06843            C     7       9999                  rrr
+      Manual    S5          CA06956            C     9       9999                  rrr
+      Manual    S6          CA06774            C    11       9999                  rrr
+      Manual    S7          CA06796            C    13       9999                  rrr
+      Manual    S8          CA06998            C    15       9999                  rrr

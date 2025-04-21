@@ -1,0 +1,5 @@
+IP Address	Port	Device
+140.172.195.88	nport3	/dev/ttyr100
+140.172.195.89	nport4	/dev/ttyr200
+140.172.195.90	nport3	/dev/ttyr300
+140.172.195.91	nport2	/dev/ttyr400

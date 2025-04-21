@@ -1,0 +1,10 @@
+Version 7.3
+
+In isedit, 
+  Use single systdata.py class for all systems.  Determine choice parameters by looking
+  in the system qc directory, for example /ccg/insitu/mlo/picarro/qc
+
+In grapher,
+- converted insitu raw plot to use insitu_data table
+- converted flask-insitu comparision to use insitu_data table
+

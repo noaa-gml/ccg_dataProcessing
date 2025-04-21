@@ -1,0 +1,4 @@
+# action file to send command to a device
+# use for pfp comms
+# $1 device
+0	QueryDevice	$1 	@query_pfp_splitter_control

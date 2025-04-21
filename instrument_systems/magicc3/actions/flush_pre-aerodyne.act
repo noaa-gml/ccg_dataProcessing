@@ -1,0 +1,3 @@
+# flush system prior to taking Aerodyne (basically just pause and let PC pull sample)
+#60	Noop	none	none
+20	Noop	none	none

@@ -1,0 +1,2 @@
+# configure DAQ channels
+0	ConfigChannel	hp34970	     @sample_flow   DCVOLT

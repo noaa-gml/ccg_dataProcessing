@@ -1,0 +1,197 @@
+<title>CCGVU Changes</title>
+
+<h2>
+Changes to CCGVU Version 5.3.1<br>
+June 25, 2003
+</h2>
+<ul>
+<li>
+	Fixed export option for including the hour in the
+	exported data in calendar format.  This never was
+	implemented.  Also required changing ccgcrv a bit
+	to accept a new -hr option.
+</li>
+</ul>
+
+<h2>
+Changes to CCGVU Version 5.3.0<br>
+January 31, 2003
+</h2>
+<ul>
+<li>
+	Data is now obtained from the CCGG MySQL database, 
+	instead of the standard text files.
+</li>
+<li>
+	Modified the Open dialog.  There are no longer multiple
+	pages depending on the data type.  A single combo box
+	is used for selecting the data type.
+</li>
+<li>
+	Added character validation on
+	entry boxes requiring only a float or integer number.
+</ul>
+
+<h2>
+Changes to CCGVU Version 5.2.1<br>
+September 13, 2002
+</h2>
+
+<ul>
+<li>
+	Modified the Import dialog.  Included options for 
+	specifying the number of lines to skip at the
+	beginning of the file, and optionally specify values
+	to ignore while reading the file.
+</li>
+<li>
+	Fixed bug where statistics dialog could be destroyed
+	by user having window manager destroy window, instead
+	of using the 'Close' menu button.  This caused an error
+	when opening new data files and trying to update the
+	statistics window, which no longer existed.
+</li>
+
+<li>
+	Fixed In-situ open dialog so that it will properly handle 
+	an entry of the station code instead of a station name.
+</li>
+</ul>
+
+<h2>
+Changes to CCGVU Version 5.2.0<br>
+August 2, 2002
+</h2>
+
+<ul>
+<li>
+	Added another tab on the stats window to show 
+	monthly means computed from the smooth curve
+	in a date value column format.  This is in addition
+	to the table format already present.
+
+<li>
+	Revised program for reading in-situ hourly data to
+	handle new ch4 format that includes flags.
+
+<li>
+	Added a warning popup dialog in case user tries to
+	export but hasn't choosen any data sets.  Prevents
+	user from getting an empty export file.
+
+</ul>
+
+<h2>
+Changes from version 5.1.0 to 5.1.1<br>
+May 21, 2002
+</h2>
+
+<ul>
+<li>
+	Modified the grid dialog for changing the parameters
+	of the grid lines.  Added options for turning off
+	the grid lines for either the x or y axis.
+
+<li>
+	Modified the graph options dialog to add a button
+	allowing the user to change the background color
+	of the graph.
+
+<li> 
+	Modified ccgcrv program to print out an error and stop
+	if there are too many equally-spaced data points to
+	filter.
+
+<li>
+	Added a catch for the ccgcrv program if it does not exit
+	cleanly.  A dialog will pop up and give the output of
+	the ccgcrv program.
+
+<li>
+	Modified Grid toolbar so axis mapping combo boxes now work.
+
+<li>
+	Modified dialogs so program doesn't attempt to create duplicates.
+	If dialog already exists, it is raised to top of window stack.
+
+</ul>
+
+<h2>
+Changes from version 5.0.2 to 5.1.0<br>
+May 8, 2002
+</h2>
+
+<ul>
+<li>
+	Revised the Open dialog,  adding a notebook for the
+	different data type options, adding options for binned
+	shipboard data and binned aircraft data.  Also split
+	up the in-situ and flask options to different pages.
+	Revised flask and in-situ pages to allow entering a
+	different file name instead of using the standard site
+	directory.  This replaces using the 'Import' dialog for
+	this choice.
+
+<li>
+	Made some minor fixes to the graph title, so the title
+	will remain after changing filter parameters.
+
+<li>
+	Fixed bug in ccgvuread helper program to read 
+	in-situ data from a user specified file.
+
+<li>
+	Added binship and binair helper programs for new
+	'Open' options.
+
+<li>
+	Modified the Open help pages to reflect the changes made.
+
+</ul>
+
+<h2>
+Changes from version 5.0.1 to 5.0.2<br>
+April 24, 2002
+</h2>
+
+<ul>
+<li>
+Changed the method for getting a list of station codes 
+for flask data in the Open dialog.  Program now looks at
+all the codes listed in the directory '/projects/network/flask/site'
+instead of using a static list of site codes.
+
+<li>
+Made some minor modifications to the import dialog.
+
+<li>
+Added a title to the graphs, based on either the station code
+for data obtained from the 'Open' dialog, or the file name for
+data obtained from the 'Import' dialog.
+
+</ul>
+
+
+<h2>
+Changes from version 5.0.0 to 5.0.1<br>
+April 23, 2002
+</h2>
+
+<ul>
+<li>
+Fixed bug in ccgcrv program for calculating monthly means
+from smoothed curve.
+</ul>
+
+
+<h2>
+Changes from version 4.40 to 5.0.0<br>
+April 2002
+</h2>
+
+ccgvu has undergone a complete change from a C/Motif based 
+application to a tcl/tk front end with C backend programs.
+The front end graphical interface uses the blt graph widget
+for displaying the data, and the BWidget toolkit for tcl/tk.
+This has resulted in a simpler interface, additional features,
+and faster development.

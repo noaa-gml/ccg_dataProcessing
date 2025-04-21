@@ -1,0 +1,5 @@
+     /*
+     Pass serial port device driver
+     November 8, 2004 - kam
+     */
+     strcpy(serialport, argv[2]);

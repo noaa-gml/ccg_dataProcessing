@@ -1,0 +1,188 @@
+<title>CCGvu Menus</title>
+<h1>CCGvu Menus</h1>
+<hr>
+
+The Menubar contains all commands available to ccgvu.  It is divided into 4 categories.
+
+<p>
+<center>
+<img src=menubar.gif>
+</center>
+
+
+<ul>
+<li>
+<a name="file"></a>
+<b>The File Menu</b>
+
+<p>
+The File menu provides commands that let you work with files in a variety 
+of ways.  You can open existing data files from the CO2, CH4, CO, H2 data
+base, or import any type of data from a file containing dates and
+concentrations.  Various data sets, calculated from the results of the 
+curve fits, can be exported to a text file for further manipulation or
+viewing.  The current graph can be sent to a hard copy device, or to a file.
+
+<p>
+The options in this menu are:
+<dl>
+<dt>
+
+	<b>New</b> 	
+		<dd>
+		Erases all data and results from the program, allowing you to start with a
+		new data set.  When you choose this command, the drawing area is cleared.
+		Parameter values for the function and filter are not changed.  This
+		command is not strictly necessary before using the 'Open' or 'Import' file
+		options, since these commands reset data also.
+
+<dt>
+	<b><a href="open.html">Open...</a></b>
+		<dd>
+		Opens an existing data file by specifying the species,
+		data type and time period to use.
+
+<dt>
+	<b><a href="import.html">Import...</a></b>
+		<dd>
+		Reads a data file by specifying the filename and format type.
+
+<dt>
+	<b><a href="export.html">Export...</a></b>
+		<dd>
+		Exports various data sets based on the results of the
+		curve fitting.
+
+<dt>
+	<b><a href="print.html">Print...</a></b>
+		<dd>
+		Send postcript print of current graph to specified printer or file.
+
+<dt>
+	<b>Exit</b>
+		<dd>
+		Quits ccgvu.
+
+</dl>
+
+<p>
+<li>
+<a name="edit"></a>
+<b>The Edit Menu</b>
+<p>
+The Edit menu contains options for editing function and filter
+parameters, and for changing the configuration of the graphs.
+<p>
+The options in this menu are:
+<dl>
+<dt>
+
+	<b><a href="param.html">Parameters</a></b> 
+		<dd>
+		Modify the parameters of the function fit and for 
+		the digital filtering of the residuals from the 
+		function fit.
+
+<dt>
+	<b><a href="goptions.html">Graph Options...</a></b>
+		<dd>
+		Modify some options for the currently selected graph
+		in the main window.
+
+<dt>
+	<b><a href="goptions.html#axis">Axis Options...</a></b>
+		<dd>
+		Modify axis options for the currently selected graph
+		in the main window.
+<dt>
+	<b><a href="goptions.html#legend">Graph Legend...</a></b>
+		<dd>
+		Modify legend options for the currently selected graph
+		in the main window.
+<dt>
+	<b><a href="goptions.html#title">Graph Title...</a></b>
+		<dd>
+		Modify the title for the currently selected graph
+		in the main window.
+<dt>
+	<b><a href="goptions.html#grid">Grid Options...</a></b>
+		<dd>
+		Modify the grid for the currently selected graph
+		in the main window.
+
+</dl>
+
+
+<p>
+<li>
+<a name="view"></a>
+<b>The View Menu</a></b>
+
+<p>
+The View menu lets you display the different toolbars in the main window, and allows you to view a dialog containing statistics from the curve fits.
+<p>
+The options in this menu are:
+<dl>
+<dt>
+
+	<b><a href="toolbars.html">Toolbars</a></b> 
+		<dd>
+		The Toolbar menu lets you select which toolbars are to be displayed
+		in the main window.  The toolbars are:
+		<ul>
+		<li><b><a href="toolbars.html#file">File Toolbar</a></b> - This toolbar shows icon buttons for the Open, Export and Print menu options.
+		<li><b><a href="toolbars.html#zoom">Zoom Toolbar</a></b> - This toolbar shows icon buttons allowing the user to zoom in and out of the graph, and to pan the graph.
+		<li><b><a href="toolbars.html#grid">Grid Toolbar</a></b> - This toolbar allows the user to modify the grid configuration of the graph.  This contains the same options as the <a href="goptions.html#grid">Grid Options...</a>menu option.
+		</ul>
+<dt>
+	<b>Zoom</b>
+		<dd>
+		This menu option provides the same commands that are in the <a href="toolbars.html#zoom">zoom toolbar</a>, allowing the user to zoom in or out and to pan the current graph.
+
+<dt>
+	<b>Statistics</b>
+		<dd>
+		Open up a dialog which showing statistics and results from the curve fit. This dialog has several tabs which show:
+		<ul>
+		<li>Filter Statistics<br>
+			Shows the parameters of the function fit, and the variances 
+			of the parameters.  Also shows the variances of each of the 
+			digital filters.
+		<li>Annual Cycle<br>
+			Shows the values of the peak to peak amplitude of the seasonal 
+			cycle for each year, the dates of the maximum and minimum,
+			and the dates when the detrended cycle crosses the trend line.
+		<li>Monthly Means (Table)<br>
+			Computed monthly averages from the smoothed data curve.  
+			These means are computed by averaging the values from the smooth 
+			curve at each <i>sampleinterval</i> data point within that month.
+			Data is displayed as table, 1 year per line.
+		<li>Monthly Means (Column)<br>
+			Computed monthly averages from the smoothed data curve.  
+			These means are computed by averaging the values from the smooth 
+			curve at each <i>sampleinterval</i> data point within that month.
+			Data is displayed as year month value columns, 1 line per value.
+		</ul>
+
+</dl>
+
+
+<p>
+<li>
+<a name="help"></a>
+<b>The Help Menu</b>
+<p>
+The Help menu lets you display the help dialog, and to show information about the programs.
+<p>
+The options in this menu are:
+<dl>
+<dt>
+
+	<b>Help Contents.</b> 
+		<dd>
+		Contents of the help documentation.
+<dt>
+	<b>About...</b>
+		<dd>
+		Show the version and contact information for ccgvu.
+</dl>

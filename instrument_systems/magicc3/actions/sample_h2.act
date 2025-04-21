@@ -1,0 +1,24 @@
+#action file for sampling SF6 chromatogram
+#    $1 filename for chromatogram 
+#    $2 port
+#
+##0       LockInterface   hp34970  Lock
+#./test_read.act:1       LockInterface   hp34970  Unlock
+
+# for inst H8
+#0       SwitchValve     H2_Load          Inject
+#0       StartRun        HP35900       @channel_h2
+#0       CloseRelay      hp34970       @H2_vent_valve
+#130     SwitchValve     H2_Load          Load
+#130     OpenRelay       hp34970       @H2_vent_valve
+#250     StopRun         HP35900       @channel_h2
+#250     StoreData       HP35900       @channel_h2 $1 $2 @sample_rate
+#
+# for inst H11
+0       SwitchValve     H2_Load       Inject
+0       StartRun        HP35900       @channel_h2
+0       CloseRelay      hp34970       @H2_vent_valve
+132     SwitchValve     H2_Load       Load
+132     OpenRelay       hp34970       @H2_vent_valve
+250     StopRun         HP35900       @channel_h2
+250     StoreData       HP35900       @channel_h2 $1 $2 @sample_rate

@@ -1,0 +1,127 @@
+
+<title>CCGVU - Introduction</title>
+<h2>Introduction</h2>
+<hr>
+<p>
+
+  The Carbon Cycle Group (CCG) of the Climate Monitoring and Diagnostics 
+Laboratory (CMDL) of the National Oceanic and Atmospheric Administration (NOAA) 
+has been making measurements of atmopheric carbon dioxide (CO2) mixing ratios 
+since 1967.  There are currently four continuous in-situ monitoring stations and
+more than 40 flask sampling sites worldwide monitoring not only CO2 but also methane (CH4),
+carbon monoxide (CO), Hydrogen (H2), Nitrous Oxide (N2O) and Sulpher Hexaflouride (SF6).  
+
+<p>
+The resulting time series from these measurements are
+examined in order to try and understand the global cycles and budgets of these 
+species so that better information can be provided for predicting associated 
+climate changes.  The objective of analysis of time series data at CMDL is to 
+decompose the signals into separate long term trends, annual cycles and short 
+term variations.  This is normally accomplished by fitting a curve to the data 
+and mathematically manipulating this curve to obtain the desired signal 
+parameters.
+
+
+<p>
+   Early uses of curve fitting involved knotted cubic splines (Komhyr et al.,
+1985).  The disadvantages of this type of curve fitting were that the
+resulting curve depended highly on the placement of the knots, which could be
+arbitrarily adjusted until the desired fit was obtained.  Problems with
+possible phase shifts were also found <i>(Enting, 1986)</i>.  Cubic splines with
+knots every 12 months for determining the long term trend were subject to
+large end effects.  
+
+<p>
+An improvement on spline fits was used by <i>Conway et al.
+(1988)</i> in examining flask data for 1981 through 1984.  This spline was a
+modification of the smoothing spline presented by <i>De Boor (1978)</i>.  The
+modification <i>(M. Manning, personal communication)</i> involved using a statistical
+criterion, the runs test, for determining the stiffnes of the spline.  This
+resulted in an objective method for fitting a curve to the data.  However,
+this type of curve had difficulty in following data which showed a large
+seasonal cycle, such as the far norhtern hemisphere sites, so that
+determinations of the annual cycle amplitude may have been underestimated.  In
+addition, this spline was too flexible for large amounts of closeley spaced
+data such as daily averaged data from the in-situ stations since the stiffness
+criterion was not easily changed.
+
+
+<p>
+  A different type of curve fit was used by <i>Thoning et al. (1989)</i> for
+examining the in-situ CO2 data from the Mauna Loa Observatory (MLO) in Hawaii. 
+This method used the Fast Fourier Transform (FFT) to convert the data from the
+time domain into the frequency domain, applied a low-pass filter in the
+frequency domain to separate the CO2 signal into its separate components, then
+performed an invers FFT to convert the filtered data back into the time
+domain.  This method had the advantage of explicitlydefining the frequency
+response of the filter, as well as computationally being faster than a spline
+fit.  In addition, the statistical uncertainty of the filter could be
+determined, so that estimates of the uncertainties of the decomposed signals
+was possible.  The main disadvantage of this technique was that large end
+effects could occur, requiring padding of the data at each end of the record.
+
+
+<p>
+  A curve fit which was a combination of a trend function and a series of
+annual harmonics with FFT filtering of the residuals showd the best results of
+a comparison of several curve fitting methods <i>(Tans et al., 1989)</i>.  Current
+curve fitting methods at CMDL are based on this type of filter.  The inclusion
+of a trend plus yearly harmonic functions reduces the problem of end effects,
+as well as providing seasonal cycle parameters that are useful in carbon cycle
+models.  The determination of uncertainties has been extended to include a
+variance estimate for all of the parameters derived for the signal, which
+is very important when trying to determine small changes in a large, noisy
+signal.
+
+<p>
+
+
+
+<hr>
+<h2>References</h2>
+<hr>
+
+<p>
+<b>Conway, T.J., P. Tans, L.S. Waterman, K.W. Thoning, K.A. Masarie, and R.H. Gammon,</b>
+	 <i> Atmospheric carbon dioxide measurements in the remote global troposphere, 1981-1984,</i>
+	Tellus, 40B, 81-115, 1988.
+
+<p>
+<b>De Boor, C.,</b>
+	<i>A practical guide to splines.</i>
+	 New York, USA,SPringer-Verlag, 392 pp.  1978, 
+
+<p>
+<b>Enting, I.G.,</b>
+	<i>Potential problems with the use of least squares spline
+	fits to filter CO2 data.</i>
+	J. Geophys. Res. 91, 6668-6670. 1986, 
+
+
+<p>
+<b>Komhyr, W.D., R.H. Gammon, T.B. Harris, L.S. Waterman, 
+	T.J. Conway, W.R. Taylor, and K.W. Thoning,</b> 
+	<i> Global atmospheric CO2 distributions and variations from 1968-1982 
+	NOAA/GMCC CO2 flask-sample data,</i> 
+	J. Geophys. Res., 90, 5567-5596, 1985.
+
+
+<p>
+<b>Press, W.H., Flannery, B.P., Teukolsky, S.A., and Vetterling, W.T.,</b>
+	<i>Numerical Recipes, The art of scientific computing,</i>
+	 New York, USA, Cambridge University Press, 818 pp.  1986,
+
+
+<p>
+<b>Tans, P.P., Thoning, K.W., Elliot, W.P., and Conway, T.J.,</b>
+	<i> Background atmospheric CO2 patterns from weekly flask samples at Barrow, Alaska:
+	Optimal signal recovery and error estimates,</i>
+	NOAA Tech. Memo. (ERL-ARL-173). Environ. Res. Lab., Boulder, Colo., 131 pp. 1989, 
+
+
+<p>
+<b>Thoning, K.W., P.P. Tans, and W.D. Komhyr,</b> 
+	<i>  Atmospheric carbon dioxide at Mauna Loa Observatory 2. 
+	Analysis of the NOAA GMCC data, 1974-1985,</i> 
+	J. Geophys. Res., 94, 8549-8565, 1989.
+

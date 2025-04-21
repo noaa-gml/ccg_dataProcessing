@@ -1,0 +1,14 @@
+# action file for the flush cycle 
+#
+# Sets up the QC scan and waits till the end of the flush time 
+# before returning
+#
+0   LockInterface       hp34970     Lock
+0   ConfigChannel       hp34970     @room_temp  DCVOLT
+0   ConfigChannel       hp34970     @chiller_temp  TC K
+0	ConfigChannel		hp34970		@sample_pressure   DCVOLT
+0	ConfigChannel		hp34970		@sample_flow   DCVOLT
+0	ConfigChannel		hp34970		@reference_pressure   DCVOLT
+0	ConfigChannel		hp34970		@reference_flow   DCVOLT
+30	StartScan		    hp34970		@sample_pressure,@sample_flow,@reference_pressure,@reference_flow,@room_temp,@chiller_temp
+150	Noop			    None		None

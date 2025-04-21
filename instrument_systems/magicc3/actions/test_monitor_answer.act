@@ -1,0 +1,10 @@
+# test device comms by reading one line
+
+#0	MonitorOutput Picarro none
+#0	MonitorOutput Aerodyne none
+#
+#
+##Action line syntax:
+#            0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+0	MonitorDevice           Picarro         None 10  1  0  

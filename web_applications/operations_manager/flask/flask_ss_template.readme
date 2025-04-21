@@ -1,0 +1,16 @@
+jwm  - 2.17 - superseeded by new logic in flask_ss_template.php.  See that file for details.
+--2.23 - for testing, I edit in ftdev.php, cp flask_ss_template.php to a .bak, then cp ftdev.php to flask_ss_template.php, check out and then overwrite with original (.bak) when done.
+
+
+To create a sample sheet in another language:
+
+1. Secure copy (scp) flask_ss_template1.php to a location accessible by Tornado (Windows). In this example, I use /home/ccg/chao/tmp/
+2. Rename flask_ss_template1.php to the new filename with a text file extension. For example, flask_ss_template6.txt
+3. On Tornado, open flask_ss_template1.txt. Use the file conversion of "Windows (Default)".
+4. Copy over english words with the words in the new language. It is best to use the Replace function because certain words can occur many times. For example, WIND DIRECTION is in more than one location in the file.
+5. Once you are done inserting new language, Save the file. A popup dialog will display saying that there are features that are incompatible with Plain Text Format. Click No to preserve formatting.
+6. Now the file manager dialog is displayed with the file name of flask_ss_templae1 and the save type set to word document. Change the save type to Plain Text.
+7. When you click save, the file conversion dialog will display again. This time, set the text encoding to UTF-8, which is under "Other encoding". Click OK and the file is saved.
+8. Now, secure copy the text file that you just created (/home/ccg/chao/tmp/flask_ss_template1.txt) back to the OM server with the appropriate filename and PHP file extension. For example, scp /home/ccg/chao/tmp/flask_ss_template1.txt ccg@om:/var/www/html/om/flask/flask_ss_template1.php
+9. Now, update the site_shipping table for the affected sites to the new samplesheet.
+10. In the OM menu, go to View -> Forms -> Samplesheets. Click on the affected sites and the new sample sheet should display!

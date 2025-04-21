@@ -1,0 +1,4 @@
+#
+# Check if devices respond.
+#
+0 CheckDevice	hp34970	@query_34970

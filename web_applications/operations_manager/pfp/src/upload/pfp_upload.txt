@@ -1,0 +1,950 @@
+CMDL/CCG Programmable Flask Package
+Firmware Version 3.03
+Serial Number 3009
+17:55:39  2005-08-12
+Assigned Site Code  CMA
+
+  checking memory... memory okay
+  checking calibrations... calibrations okay
+AS> Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> SETUP> SETUP> Q
+Q
+SETUP> Q
+       AS>
+           Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> H
+H
+HISTORY> N
+
+
+          Serial Number  3009
+HISTORY>
+         Q
+
+          AS>
+              Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> D
+         year is now 2005, enter new:
+                                      200
+
+                                           month is now 8, enter new:
+                                                                      00
+
+                                                                         day is now 12, enter new:
+                   10           ��ѕɁ�)11
+
+                                          minute is now 56, enter new:
+                                                                       50
+
+                                                                        Date and Time now set to 17:58:30  2005-08-12
+SETUP>
+
+ (S)ample Plan
+ (L)imits
+ (D)ate
+ Site (C)ode
+ (Q)uit
+SETUP>
+       Q
+
+        AS>
+            Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> C
+
+current site code is  CMA
+ enter new site code:
+55)5MQUA)             CAAȫ�ѕ͕сѽ
+ (S)ample Plan
+ (L)imits
+ (D)ate
+ Site (C)ode
+ (Q)uit
+SETUP>
+       Q
+
+        AS>
+            Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+
+          1           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+
+              sample (1-12):
+
+
+                               Sample Plan will be erased - are you sure? (Y/N):
+ Y
+
+          2           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+
+          3           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+
+
+                             Sample Plan will be erased - are you sure? (Y/N):
+                                                                               Y
+                                                                                 4           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+
+              sample (1-12):
+
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+         5           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+         6           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+
+
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+         7           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+
+              sample (1-12):
+
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+
+          8           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+
+              sample (1-12):
+
+
+                                Sample Plan will be erased - are you sure? (Y/N):
+  Y
+
+          9           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+                            10hqAݥɅ͕ɕ��ɕe9�Y
+
+                                                 10           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+
+               (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+                            11
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+        11           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             S
+              (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             D
+             sample (1-12):
+                            10
+
+                              Sample Plan will be erased - are you sure? (Y/N):
+                                                                                Y
+        12           ---- ft      --- lat      --- lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+
+              SETUP>
+                     Q
+                     AS>
+                         Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+
+        SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             00
+
+                               plan altitude (ft):
+                                                   20   A!.+�+�ɕ�31(A!.+���Ցɕ�-%$*A!.+�)�)9990A� 1 (valid)  25000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+
+              SETUP>
+                     Q
+                     AS>
+                         Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+             sample (1-12):
+                            00
+
+                              plan altitude (ft):
+                                                  20   A!.+�+�ɕ�31"A!.+���Ցɕ�-%5*A!.+�)�)9900A� 2 (valid)  20000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+
+              SETUP>
+                     Q
+
+                      AS>
+                          Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+             sample (1-12):
+                            00
+
+                              plan altitude (ft):
+                                                  11   A!.+�+�ɕ�31"A!.+���Ցɕ�-%$*A!.+�)�)9900A� 3 (valid)  17000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+
+        SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+             sample (1-12):
+                            00
+
+                              plan altitude (ft):
+                                                  11   A!.+�+�ɕ�31"A!.+���Ցɕ�-%5*A!.+�)�)9990A� 4 (valid)  13000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             00
+
+                               plan altitude (ft):
+                                                   11   A!.+�+�ɕ�31"A!.+���Ցɕ�-%5*A!.+�)�)9990A� 5 (valid)  13000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             00
+
+
+                               plan altitude (ft):
+                                                   10   A!.+�+�ɕ�31(A!.+���Ցɕ�-%5*A!.+�)�)9900A� 6 (valid)  10000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             00
+
+
+                               plan altitude (ft):
+                                                   700 A!.+�+�ɕ�31"A!.+���Ցɕ�-%5*A!.+�)�)9990A� 7 (valid)   7000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             0ѥ�ѥ�700 A!.+�+�ɕ�31(A!.+���Ցɕ�-%5*A!.+�)�)9990A� 8 (valid)   7000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+             sample (1-12):
+                            0ѥ�ѥ�50  A!.+�+�ɕ�31"A!.+���Ցɕ�-%$*A!.+�)�)9990A� 9 (valid)   5000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+                    AS>
+                        Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+
+        SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+             sample (1-12):
+                            1ѥ�ѥ�300 A!.+�+�ɕ�31"A!.+���Ցɕ�-%5*A!.+�)�)9900A�10 (valid)   3000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+
+                     AS>
+                         Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             11
+
+                               plan altitude (ft):
+                                                   10  A!.+�+�ɕ�31"A!.+���Ցɕ�-%$*A!.+�)�)9900A�11 (valid)   1000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+
+                     AS>
+                         Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+
+        SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             A
+
+              sample (1-12):
+                             10
+
+                               plan altitude (ft):
+                                                   10  A!.+�+�ɕ�31(A!.+���Ցɕ�-%5*A!.+�)�)9990A�12 (valid)   1000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             Q
+
+              SETUP>
+                     Q
+                     AS>
+                         Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS> S
+S
+SETUP> S
+       SAMPLE PLAN>
+
+ (A)dd
+ (D)elete
+ (L)ist
+ (Q)uit
+SAMPLE PLAN>
+             L
+
+             Sample Plan
+  1 (valid)  25000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  2 (valid)  20000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  3 (valid)  17000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  4 (valid)  13000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  5 (valid)  13000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  6 (valid)  10000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  7 (valid)   7000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  8 (valid)   7000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+  9 (valid)   5000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+ 10 (valid)   3000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+ 11 (valid)   1000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+ 12 (valid)   1000 ft   39.000 lat  -75.000 lon    --:--:--  ---- -- --
+SAMPLE PLAN>
+             Q
+             SETUP>
+                    Q
+
+                     AS>
+                         Q
+Q
+ (T)est
+ (S)etup
+ (P)rep
+ (M)anual
+ (H)istory
+ (U)nload
+ (C)al
+ (F)ix Memory
+AS>
+

@@ -1,0 +1,15 @@
+#
+# List of flask extensions that
+# can be used as filters when 
+# checking flasks out.
+#
+# March 19, 1998 - kam
+#
+%-99
+%-98
+%-91
+%-66
+T%-%
+%-33
+%-%
+%

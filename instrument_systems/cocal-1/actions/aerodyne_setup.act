@@ -1,0 +1,7 @@
+# action file for settting up the Aerodyne
+#
+# Need to wait a little before looking for acknowledgment of command so use
+# 3 Noop None step
+#
+0	SendCommand		aerodyne_comm_file	@aerodyne_setup_runscript
+3	Noop			None			None

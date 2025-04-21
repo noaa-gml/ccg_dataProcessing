@@ -1,0 +1,32 @@
+# action file for the flush cycle 
+#
+# Sets up the QC scan and waits till the end of the flush time 
+# before returning
+#
+#0	ConfigChannel		hp34970		@sample_pressure   DCVOLT
+#0	ConfigChannel		hp34970		@sample_flow   DCVOLT
+#0	ConfigChannel		hp34970		@reference_pressure   DCVOLT
+#0	ConfigChannel		hp34970		@reference_flow   DCVOLT
+#0	ConfigChannel		hp34970		@room_temp  DCVOLT
+#0	ConfigChannel		hp34970		@chiller_temp  TC K
+#30	StartScan		hp34970		@sample_pressure,@sample_flow,@reference_pressure,@reference_flow,@room_temp,@chiller_temp
+#150	Noop			None		None
+
+
+# end_cycle.act
+# Use to end the measurement cycle by collecting the qc data
+# sample pressures, flow rates, room temp, etc.
+
+#0	StopScan   hp34970   @sample_pressure_scale,@sample_flow_scale,@reference_pressure_scale,@reference_flow_scale,@room_temp_scale,@chiller_temp_scale
+#0 	LogData	   qc_raw.dat    Replace
+
+
+0	ConfigChannel		hp34970		@sample_pressure   DCVOLT
+0	ConfigChannel		hp34970		@sample_flow   DCVOLT
+0	ConfigChannel		hp34970		@reference_pressure   DCVOLT
+0	ConfigChannel		hp34970		@reference_flow   DCVOLT
+0	ConfigChannel		hp34970		@room_temp  DCVOLT
+0	ConfigChannel		hp34970		@chiller_temp  TC K
+5	StartScan		hp34970		@sample_pressure,@sample_flow,@reference_pressure,@reference_flow,@room_temp,@chiller_temp
+15	StopScan   hp34970   @sample_pressure_scale,@sample_flow_scale,@reference_pressure_scale,@reference_flow_scale,@room_temp_scale,@chiller_temp_scale
+20 	LogData	   hp34970 qc_raw.dat    Replace

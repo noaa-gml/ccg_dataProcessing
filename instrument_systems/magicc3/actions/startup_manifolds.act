@@ -1,0 +1,12 @@
+
+#
+# Action list for setting up the valves in the sample manifolds. Need this
+# to run first so any prep manifold process started soon after starting system will
+# not be affected
+#
+#
+0	TurnUniversalActuator	ManifoldSelect	@ManifoldSelect_off
+0	TurnUniversalActuator	ManifoldD	@ManifoldD_off
+0	TurnUniversalActuator 	ManifoldA_Evac	@system_on
+0	TurnUniversalActuator 	ManifoldB_Evac	@system_on
+5	Noop	None	None

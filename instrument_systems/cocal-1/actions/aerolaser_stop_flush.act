@@ -1,0 +1,6 @@
+# Action file to stop VURF flushing
+#
+#
+0     OpenRelay               HP34970          @aerolaser_sample_valve
+0     TurnUniversalActuator   SystemSelect    @Sys_AeroLaser_off
+

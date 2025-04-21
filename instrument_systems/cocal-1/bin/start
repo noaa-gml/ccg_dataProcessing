@@ -1,0 +1,5 @@
+#!/bin/bash
+
+    cd /home/ccg/cocal-1
+
+    exec python cocal-1.py

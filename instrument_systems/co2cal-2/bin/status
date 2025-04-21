@@ -1,0 +1,114 @@
+#!/bin/bash
+#set -x
+
+
+#######################################################################
+mode1_status()
+{
+	echo "                    PRE_ANALYSIS CHECK"
+	echo
+
+	printf "Number of $i Aliquots measured: "
+	if [ -f data.lgr ]
+	then
+		n=`wc -l < data.lgr`
+		echo $n
+	else
+		echo 0
+	fi
+	if [ -f data.flow.ch4 ]
+	then
+		printf "Last co2 Ref. Gas flow rate: "
+		f=`awk '{print $2}' data.flow.co2`
+		printf "%10.2f\n\n" $f
+	fi
+
+	echo
+}
+
+
+#######################################################################
+single()
+{
+	echo Single Reference Aliquot of CO2
+	echo
+}
+
+
+###########################################################################
+tnkcal()
+{
+	gas=$1
+	upgas=`echo $gas | tr "[a-z]" "[A-Z]"`
+	echo "               OPERATIONS STATUS FOR $upgas Tank Calibration"
+	echo
+	echo -n "Number of Samples so far: "
+	if [ -f data.$gas ]
+	then
+		cat data.$gas | wc -l
+		echo 
+#		echo "Last 5 measurements:"
+#		tail -5 data.$gas
+		cat data.$gas
+	else
+		echo 0
+	fi
+
+}
+
+###########################################################################
+n2o_lincheck()
+{
+	echo "               OPERATIONS STATUS FOR N2O Linearity Check"
+	echo
+	echo "Number of Samples so far: "
+	if [ -f data.n2o ]
+	then
+		cat data.n2o | wc -l
+		echo 
+		echo "Last 5 measurements:"
+		tail -5 data.n2o
+	else
+		echo 0
+	fi
+
+}
+###########################################################################
+
+	cd /home/co2cal
+
+
+ 	mode=`grep Mode sys.setup | awk '{print $2}'`
+
+	echo `date`
+	echo Analysis started at `cat sys.start`
+	echo
+	if [ -f .pid ]
+	then
+		read pid < .pid
+		a=`ps -ef | awk '{print $2}' | grep $pid`;
+		if [ "$a" = "" ]
+		then
+			echo System is stopped.
+		else
+			echo System is running.
+		fi
+	else
+		echo System is stopped.
+	fi
+	echo
+
+	echo "Last status line:"
+	cat < sys.status
+	echo
+
+#	case $mode in
+#		1) mode1_status;;
+#		2) tnkcal ch4;;
+#		3) tnkcal n2o;;
+#		4) single;;
+#		5) n2o_lincheck;;
+#	esac
+
+
+

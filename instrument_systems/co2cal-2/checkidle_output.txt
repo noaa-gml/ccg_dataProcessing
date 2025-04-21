@@ -1,0 +1,5 @@
+checkidle.sh started
+pid:  5800503 
+time diff:  61
+past_delay: 1
+switch idle gas

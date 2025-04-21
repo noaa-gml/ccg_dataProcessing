@@ -1,0 +1,6 @@
+VSTART  VSTART  START character
+VSTOP   VSTOP   STOP character
+
+termios c_cc array "Control Characters"
+
+Pg. 484 of The GNU C Library Reference Manual, Sandra Loosemore, 1993

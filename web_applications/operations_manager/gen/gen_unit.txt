@@ -1,0 +1,5 @@
+gen_unit.php
+
+Label all data fields with 'data~' prefix.
+
+Then, in SaveData() search for 'data~'. So, we will get 'data~gen_inv:date_inuse'. Get the element name and value, cut off the 'data~ prefix'. Separate the name and value by '|' and the different fields by '~'.

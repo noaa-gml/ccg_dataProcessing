@@ -1,0 +1,6 @@
+1. doxygen -g
+   This creates configuration file 'Doxyfile'
+2. Edit Doxyfile to set GENERATE_HTML = YES
+   (should be YES by default)
+3. doxygen Doxyfile
+4. View output in html/

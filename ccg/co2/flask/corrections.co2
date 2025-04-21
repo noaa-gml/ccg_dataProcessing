@@ -1,0 +1,110 @@
+######################################################
+#  corrections to Carbon Cycle Group CO2 data	
+######################################################
+#
+# There's lots of ways of putting in comments
+# Only if the first character of a line is not #
+# is the line is treated as data for a correction
+#
+# correction information fields
+#
+# start ......... start date for correction
+# stop .......... stop date for correction
+# by ............ date (sdate = sample date; adate = analysis date)
+# site .......... site (* = all sites)
+# m ............. method (* = all methods)
+# in ............ instrument code (** = all instruments)
+# type .......... type of correction (must match a defined type)
+# np ............ number of parameters
+# parameters .... parameter list
+#
+# All flasks with SAMPLE date equal to or after the start date AND
+#                 SAMPLE date equal to or before the end date will 
+#                 be adjusted by the offset
+#
+#site    start       stop    by   id m in type     function   tzero  np  parameters
+# - ---------- ---------- ----- ---- - -- ------ ---------- ------- --- -----------
+
+#
+# Pressure broadening corrections for flasks analyzed by LIRA 1
+#
+# Because the raw files were back-calculated from the site file mixing ratios for L1,
+# this correction is embedded in the voltages in the raw files.  So don't actually
+# apply this correction when reprocessing.
+
+#*   1967 01 01 1975 04 04 adate  *   *  LR1  value  polynomial  0.0   3  -43.47241 0.25763 -.00034895
+
+
+# Corrections for flasks analyzed by LIRA 2
+#
+# Pressure broadening corrections for flasks analyzed by LIRA 2
+# Because the raw files were back-calculated from the site file mixing ratios for L2,
+# this correction is embedded in the voltages in the raw files.  So don't actually
+# apply this correction when reprocessing.
+
+#*   1975 04 05 1979 01 31 adate  *   *  LR2  value  polynomial     0.0   3  -223.9698 1.38524 -.002106075
+
+# Adjustment to pressure broadening due to bias.
+
+*   1975 04 05 1977 11 03 adate  *   *  LR2  adate  polynomial  1900.0   1  -0.45
+
+# Adjustment to pressure broadening due to detector change.  This is a decreasing
+# polynomial from Nov.4 1977 to 31 Aug 1978.  The first line is the coefficients 
+# given in Komhyr et al 1985, which are based on number of days since November 3.
+# This line should be commented out always.
+# The second line has the coefficients for the dates based on decimal year.
+
+#*   1977 11 04 1978 08 31 adate  *   * LR2  adate  polynomial  ??????   3  1.12776 -0.00675 0.00001
+*   1977 11 04 1978 08 31 adate  *  *  LR2  adate  polynomial  1977.8411 3  1.12776 -2.46375 1.3325
+
+# Corrections for hand aspirated high altitude sites analyzed on Lira 2
+
+SPO 1978 01 01 1978 12 31 sdate  *   N LR2  sdate  polynomial  1900.0   1  -0.38
+COS 1979 01 01 1979 12 31 sdate  *   N LR2  sdate  polynomial  1900.0   1  -0.38
+MLO 1979 01 01 1979 12 31 sdate  *   N LR2  sdate  polynomial  1900.0   1  -0.38
+NWR 1979 01 01 1979 12 31 sdate  *   N LR2  sdate  polynomial  1900.0   1  -0.38
+PSM 1979 01 01 1979 12 31 sdate  *   N LR2  sdate  polynomial  1900.0   1  -0.38
+
+*   1980 01 01 1980 02 20 adate  *   N LR2  adate  polynomial  1900.0   1  -1.00
+AMS 1979 01 01 1979 12 31 adate  *   N LR2  adate  polynomial  1900.0   1  +1.00
+
+MLO 1980 03 01 1980 12 31 adate  *   N LR2  adate  polynomial  1900.0   1  -1.00
+COS 1980 03 01 1980 12 31 adate  *   N LR2  adate  polynomial  1900.0   1  -1.00
+NWR 1980 03 01 1980 12 31 adate  *   N LR2  adate  polynomial  1900.0   1  -1.00
+SPO 1980 03 01 1980 12 31 adate  *   N LR2  adate  polynomial  1900.0   1  -1.00
+
+NWR 1980 01 01 1982 04 06 adate  *   N LR2  adate  polynomial  1900.0   1  -0.80
+SPO 1980 01 01 1982 04 06 adate  *   N LR2  adate  polynomial  1900.0   1  -0.80
+COS 1982 02 17 1982 04 08 adate  *   N LR2  adate  polynomial  1900.0   1  -0.80
+
+#  
+# Corrections for flasks analyzed on Komhyr Semi-automatic flask apparatus
+#
+
+*   1979 01 01 1983 07 31 adate  *-* * U1  adate polynomial  1900.0   1  0.24
+*   1985 07 12 1987 09 21 adate  *-* *  *  adate polynomial  1900.0   3  699.94884 -16.30249 0.09494
+*   1987 09 22 1988 12 07 adate  *-* *  *  adate polynomial  1900.0   1  0.14
+PSA 1979 01 01 1979 12 31 sdate  *-* *  *  sdate polynomial  1900.0   1  -3.20
+AMS 1979 01 01 1980 01 31 sdate  *-* *  *  sdate polynomial  1900.0   1  -3.20
+
+#
+# Corrections for Siemens flask apparatus
+#
+
+*   1988 12 01 1993 11 17 adate  *-* * S1  adate polynomial  1900.0   1  +0.10 
+*   1993 11 18 1999 12 31 adate  *-* * S1  adate polynomial  1900.0   1  +0.24 
+*   1993 11 18 1999 12 31 adate  *-* * S2  adate polynomial  1900.0   1  +0.24 
+
+# Corrections for Halley Bay storage time offset
+
+HBA 1997 01 24 1998 01 15 sdate  *   * *   stime polynomial    300    2  0 0.00246
+HBA 1998 12 23 2000 01 26 sdate  *   * *   stime polynomial    300    2  0 0.00224
+
+# Corrections for South Pole storage time offset
+
+SPO 1993 03 28 2050 12 30 sdate  *   * *   stime polynomial    0      2  0 0.000586878201675 # ppm/day of storage
+
+# Corrections for Syowa, Antarctica storage time offset
+
+SYO 1993 02 05 2050 12 30 sdate  *   * *   stime polynomial    0      2  0 0.000236660575979 # ppm/day of storage
+

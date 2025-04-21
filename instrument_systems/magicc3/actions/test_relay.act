@@ -1,0 +1,7 @@
+# test comms conflict with relay closures
+0	CloseRelay    hp34970      103
+5	CloseRelay    hp34970      120
+5       OpenRelay     hp34970      103
+5.3	OpenRelay     hp34970      120
+8	CloseRelay    hp34970      117
+8.3     OpenRelay     hp34970      117

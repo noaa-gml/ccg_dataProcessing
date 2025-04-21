@@ -1,0 +1,10 @@
+# action file for waiting to allow Aerodyne cell to fill
+# and collecting qc data
+#
+# $1 is aerodyne qc file
+#
+#0	ConfigChannel    hp34970  @manifold_pressure    DCVOLT
+#0	ConfigChannel    hp34970  @sample_flow        	DCVOLT
+#0	ConfigChannel    hp34970  @sample_pressure      DCVOLT
+1	SingleScan       hp34970  @manifold_pressure,@sample_flow,@sample_pressure @manifold_pressure_scale,@sample_flow_scale,@sample_pressure_scale
+1	LogData          hp34970  $1      Replace

@@ -1,0 +1,18 @@
+# Action file to measure VURF
+#       $1 temp file for data line
+#       $2 temp file for QC data
+#
+# Action line syntax:
+#           0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+0      MonitorDevice         AeroLaser     @aerolaser_temp_query   5   0   0  $2 replace 
+5      MonitorDevice         AeroLaser     @aerolaser_press_query  5   0   0  $2 append 
+10     StartScan             hp34970       @sample_flow
+10     MonitorDevice         AeroLaser     @aerolaser_sig_query    45   0   0  $1 replace  
+55     StopScan              hp34970       @sample_flow_scale
+55     LogData               hp34970       $2  Append 
+
+#testing
+#0      MonitorDevice         AeroLaser     @aerolaser_temp_query  5
+#0      MonitorOutput         AeroLaser     @aerolaser_temp_query  
+#0      MonitorOutput         AeroLaser     @aerolaser_sig_query   

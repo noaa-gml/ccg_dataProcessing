@@ -1,0 +1,14 @@
+#
+# Action list for finishing up analysis
+#
+0       SendCommand             hp34970         @abort_hp34970
+0       TurnUniversalActuator   ManifoldSelect  @ManifoldSelect_off
+0       TurnUniversalActuator   SystemSelect  	@SystemSelect_off
+0       TurnUniversalActuator   ManifoldC       @ManifoldC_off
+0       OpenRelay               HP34970         @h2_vent_valve
+0       OpenRelay               HP34970         @aerolaser_sample_valve
+0       OpenRelay               HP34970         @aeris_sample_valve
+0       StopRun                 HP35900         @channel_h2
+0       SwitchValve             H2_Load         Load
+
+                                                                                     

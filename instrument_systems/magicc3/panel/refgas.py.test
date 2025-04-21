@@ -1,0 +1,198 @@
+
+import os
+import wx
+import datetime
+
+import config
+from utils import *
+
+#--------------------------------------------------------------
+class mkRefgasPage(wx.Panel):
+    def __init__(self, parent, gas ):
+	wx.Panel.__init__(self, parent, -1)
+
+	self.gas = gas
+
+        box = wx.StaticBox(self, -1, "Reference Gases",size=(10,10))
+        sizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+
+        self.SetSizer(sizer)
+        title = wx.StaticText(self, -1, "Enter correct serial number and mixing ratio.  Press 'Save' when done.")
+        title.SetFont(wx.Font(11, wx.SWISS, wx.NORMAL, wx.ITALIC))
+        sizer.Add(title, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+#	self.sernum = wx.TextCtrl(self, -1, "", size=(250,-1))
+	box = self.create()
+	sizer.Add(box, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+	SetSaveButton(self, sizer, self.ok)
+
+
+
+    #--------------------------------------------------------------
+    def create(self):
+
+	sizer = wx.FlexGridSizer(0, 5, 2, 2)
+
+	label = wx.StaticText(self, -1, "Tank")
+	sizer.Add(label, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
+	label = wx.StaticText(self, -1, "Serial Number")
+	sizer.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+	label = wx.StaticText(self, -1, "Mixing Ratio")
+	sizer.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+	label = wx.StaticText(self, -1, "Start Date")
+	sizer.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+	label = wx.StaticText(self, -1, "Start Hour")
+	sizer.Add(label, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
+
+	lines = self.getRefgases()
+	self.tank_id = []
+	self.tank_sernum = []
+	self.tank_mr = []
+	self.tank_date = []
+	self.tank_hour = []
+
+	print "lines = ", lines
+
+	# if we don't have any info yet, create some lines with default values
+	if len(lines) == 0:
+		now = datetime.datetime.now()
+		for name in config.refgas_labels[self.gas]:
+			t = [config.stacode, name, now.year, now.month, now.day, now.hour, "", 0, 1, ""]
+			lines.append(t)
+
+	for line in lines:
+		(code, name, yr, mn, dy, hour, sernum, tz, n, mr) = line
+		date = wx.DateTimeFromDMY (int(dy), int(mn)-1, int(yr))
+		self.setRefgas(sizer, name, sernum, mr, date, hour)
+
+	return sizer
+
+    #--------------------------------------------------------------
+    def setRefgas(self, sizer, name, sernum, mr, date, hour):
+
+		label = wx.StaticText(self, -1, name)
+		self.tank_id.append(label)
+		sizer.Add(label, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 5)
+
+		tx = wx.TextCtrl(self, -1, sernum)
+		self.tank_sernum.append(tx)
+		sizer.Add(tx, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 5)
+
+		tx = wx.TextCtrl(self, -1, mr,  validator = Validator(V_FLOAT))
+		self.tank_mr.append(tx)
+		sizer.Add(tx, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 5)
+
+		tx = wx.DatePickerCtrl(self, -1, date)
+		self.tank_date.append(tx)
+		sizer.Add(tx, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 5)
+
+		tx = wx.SpinCtrl(self, -1, str(hour), min=0, max=23, size=(40, -1))
+		self.tank_hour.append(tx)
+		sizer.Add(tx, 0, wx.ALIGN_LEFT|wx.LEFT|wx.RIGHT, 5)
+
+    #--------------------------------------------------------------
+    def getRefgases(self):
+
+	file = config.datadir + "/" + self.gas.lower() + "/worktanks"
+
+	tanklist = []
+	if os.path.exists(file):
+		f = open(file, "r")
+		lines = f.readlines()
+		lines.sort(reverse=True)
+
+		a = []
+		for line in lines:
+			list = line.strip('\n').split()
+			if not list[1] in a:
+				a.append(list[1])
+				tanklist.append(list)
+
+		tanklist.sort()
+
+	return tanklist
+
+
+    #--------------------------------------------------------------
+    def ok(self, event):
+
+	file = config.datadir + "/" + self.gas.lower() + "/worktanks"
+	if os.path.exists(file):
+		f = open(file, "r")
+		tanklist = f.readlines()
+		f.close
+	else:
+		tanklist = []
+
+	tanklist.sort()
+
+	newtanks = []
+	for i in range(len(self.tank_id)):
+		id = self.tank_id[i].GetLabel()
+		sn = self.tank_sernum[i].GetValue()
+		dt = self.tank_date[i].GetValue()
+		hr = self.tank_hour[i].GetValue()
+		year = dt.GetYear()
+		month = dt.GetMonth() + 1
+		day = dt.GetDay()
+		if len(sn) == 0:
+			config.main_frame.SetStatusText ("ERROR: Need serial number for %s" % id)
+			return
+
+		try:
+			mr = float(self.tank_mr[i].GetValue())
+		except:
+			config.main_frame.SetStatusText ("ERROR: Need float value for mixing ratio of %s" % id)
+			return
+			
+		s = "%3s %3s %4d %02d %02d %02d %8s     0.00  1 %8.2f\n" % (config.stacode, id, year, month, day, hr, sn, mr)
+#		print s
+		newtanks.append(s)
+
+	newlist = self.merge_worktanks(tanklist, newtanks)
+	newlist.sort()
+
+	file = config.datadir + "/" + self.gas.lower() + "/worktanks"
+	f = open(file, "w")
+	f.writelines(newlist)
+	f.close
+
+	config.main_frame.SetStatusText ("Updated reference tanks")
+
+    #--------------------------------------------------------------
+    # Merge tank information from form into existing tank info.
+    # Dont keep lines that have same tank, date and time as previous, 
+    # or have same mixing ratio as previous
+    def merge_worktanks(self, tanklist, newtanks):
+
+	if len(tanklist) == 0:
+		return newtanks
+
+	tanklist = tanklist + newtanks
+	tanklist.sort()
+	newlist = []
+	prev_line = tanklist[0]
+	prev_list = prev_line.split()
+	for line in tanklist:
+		
+		# first check for duplicate
+		if line == prev_line: continue
+
+		# check if gas is the same and serial number is the same.
+		# use the prev_line since it has the earlier date
+		s = "%3s %3s %4d %02d %02d %02d %8s     0.00  1 %8.2f\n" % (config.stacode, id, year, month, day, hr, sn, mr)
+		list = line.split()
+		if list[1] == prev_list[1] and list[6] == prev_list[6]: continue
+
+		
+	
+
+	# See which of the new entries don't match existing lines.
+	newlist = []
+	for line in newtanks:
+		if line not in tanklist:
+			tanklist.append(line)
+
+
+	return tanklist

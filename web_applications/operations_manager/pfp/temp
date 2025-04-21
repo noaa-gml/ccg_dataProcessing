@@ -1,0 +1,18 @@
+ 		exec("${omdir}pfp/src/download/pfp_download.pl ${serialport} ${historyfile}",$arr,$ret);
+
+		if ($ret)
+		{
+			#
+			# Download Failed
+			#
+			$str = implode("\n", $arr);
+			UpdateLog($log,"Download from ${serialport} to ${id} failed.");
+			if ($str) { UpdateLog($log,"Download Error:  ${str}."); }
+			JavaScriptAlert($str);
+		}
+		else
+		{
+			#
+			# Download Succeeded
+			#
+			$summary = MakePFPSummary($code,$historyfile);

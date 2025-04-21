@@ -1,0 +1,150 @@
+<title>Workspace</title>
+<h1>ccgvu Workspace</h1>
+<hr>
+<p>
+
+The ccgvu user interface is divided up into several areas.  These are:
+
+<ul>
+<li><a href="menus.html">The Menu Bar</a>
+<dd>The Menu Bar provides access to all of ccgvu's functions and options.
+</li>
+
+<li><a href="toolbars.html">Tool Bars</a>
+<dd>The Tool Bars provide shortcuts to commonly used functions, with similar
+functions grouped together.
+</li>
+
+<li><a href="mainwindow.html#graph">The Graph Area</a>
+<dd>
+The main graph area is divided into several different tabs, each displaying
+a separate graph with different parts from the results of the curve fit.
+
+
+<img src="mainwindow.gif">
+<hr>
+
+<p>
+<a name="graph"></a>
+<h2>CCGVU Graphs</h2>
+The different graph tabs in the main window are:
+<dl>
+
+
+<p>
+<dt>
+	<b>Data</b> 
+		<dd>
+		The Data graph displays the following data curves:
+
+		<ul>
+		<li>
+		Original Data - The original data set
+
+		<li>
+		Function - The function fit to the data.
+
+		<li>
+		Polynomial - The polynomial part of the function.
+
+		<li>
+		Smoothed Curve - The best fit curve, that is, the function plus
+				short term filtering of the residuals.
+
+		<li>
+		Trend Curve - The deseasonalized data, that is, the polynomial
+				part of the function plus long term filtering of the
+				residuals.
+		</ul>
+
+
+
+<p>
+<dt>
+	<b>Seasonal Cycle</b>
+		<dd>
+		The Seasonal Cycle graph displays the following data curves:
+
+		<ul>
+		<li>
+		Detrended Data - The original data minus the long term trend line.
+
+		<li>
+		Smoothed Seasonal Cycle - 
+				The short term filter results plus the harmonics
+				part of the function.
+
+		<li>
+		Seasonal Cycle Harmonics - 
+				The harmonics part of the function.  This is
+				the average seasonal cycle.
+		</ul>
+
+
+<p>
+<dt>
+	<b>Residuals</b>
+		<dd>
+		The Residuals graph displays the following data curves:
+
+		<ul>
+		<li>
+		Residuals from Function - 
+				The difference between the original data and
+				the function fit.
+
+		<li>
+		Smoothed residuals - 
+				The short term filter results of the function
+				residuals.
+
+		<li>
+		Trend of residuals - 
+				The long term filter results of the function
+				residuals.
+
+		<li>
+		Residuals from Smoothed Curve - 
+				The difference between the original data and 
+				the final, best fit smoothed curve.
+		</ul>
+
+
+<p>
+<dt>
+	<b>Growth Rate</b>
+		<dd>
+		The Growth Rate graph displays the derivative of the long term 
+		trend.
+
+<p>
+<dt>
+	<b>Amplitude</b>
+		<dd>
+		The Amplitude graph displays the peak to peak amplitudes
+		for each yearly cycle.  The amplitude is calculated by computing
+		first the difference between the maximum value of the smooth best fit 
+		curve minus the value of the trend.  Then the difference between the
+		minimum value of the smooth curve and the trend is calculated.  The
+		sum of these two differences is the peak to peak amplitude.
+
+<p>
+<dt>
+	<b>Filter Response</b>
+		<dd>
+		This graph plots the response of the filter function using the
+		short term cutoff value and the long term cutoff value.  It displays 
+		the following data curves:
+
+		<ul>
+		<li>
+		Short Term Filter - The response function using the short
+		term cutoff value.
+
+		<li>
+		Long Term Filter - The response function using the long
+		term cutoff value.
+		</ul>
+
+
+</dl>

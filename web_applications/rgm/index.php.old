@@ -1,0 +1,249 @@
+<?PHP
+
+require_once "CCGDB.php";
+require_once "utils.php";
+require_once "DB_CalServiceManager.php";
+require_once "menu_utils.php";
+
+session_start();
+
+$database_object = new CCGDB();
+
+$user_obj = ( isset($_SESSION['user']) ) ? $_SESSION['user'] : '';
+ValidateAuthentication($database_object, $user_obj);
+?>
+
+<HTML>
+ <HEAD>
+  <LINK rel="stylesheet" type="text/css" href="/inc/jquery-themes/jquery-ui/jquery-ui.css">
+  <LINK rel="stylesheet" type="text/css" href="mobile.css" media="screen and (max-device-width:800px)" />
+  <LINK rel="stylesheet" type="text/css" href="desktop.css" media="screen and (min-device-width:801px)">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <SCRIPT language='JavaScript' src="/inc/jquery-1.9.1.js"></SCRIPT>
+  <SCRIPT language='JavaScript' src="/inc/jquery-ui-1.10.2.js"></SCRIPT>
+ </HEAD>
+ <BODY>
+<?PHP
+CreateMenu($database_object, $user_obj);
+
+?>
+  <TABLE>
+   <TR>
+    <TD>
+     <TABLE style='border:1px solid black; background-color:#C7FFC1'>
+      <TR>
+       <TH>Cylinder Location Management</TH>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_checkin.php'><INPUT type='button' value='Check-In Cylinder'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_checkin_file.php'><INPUT type='button' value='Check-In Cylinder from File'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_ship.php'><INPUT type='button' value='Ship Cylinder'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_ship_file.php'><INPUT type='button' value='Ship Cylinder from File'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_find.php'><INPUT type='button' value='Find Cylinder'></A>
+       </TD>
+      </TR>
+     </TABLE>
+    </TD>
+   </TR>
+   <TR>
+    <TD>
+     <TABLE style='border:1px solid black; background-color:#CED6FF'>
+      <TR>
+       <TH>Cylinder Inventory Management</TH>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_update.php'><INPUT type='button' value='Update Cylinder'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_update_file.php'><INPUT type='button' value='Update Cylinder from File'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_edit.php'><INPUT type='button' value='Add Cylinder'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='cylinder_add_file.php'><INPUT type='button' value='Add Cylinder from File'></A>
+       </TD>
+      </TR>
+     </TABLE>
+    </TD>
+   </TR>
+   <TR>
+    <TD>
+     <TABLE style='border:1px solid black; background-color:#CEF6EC'>
+      <TR>
+       <TH>Calibrations Management</TH>
+      </TR>
+      <tr><td><a href='todo_list2.php'><input type='button' value='Todo List'></a></td></tr>
+<?PHP
+/*Removing for above todo_list2.php - jwm 8/16
+try
+{ $calservice_objects = DB_CalServiceManager::searchByUser($database_object, $user_obj); }
+catch ( Exception $e )
+{ $calservice_objects = array(); }
+
+foreach ( $calservice_objects as $calservice_object )
+{
+   echo "<TR>\n";
+   echo " <TD>\n";
+   echo "  <A href='todo_list.php?cs_num=".$calservice_object->getNum()."&showresults=1'>\n";
+   echo "   <INPUT type='button' value='Todo Task - ".$calservice_object->getAbbreviation()."'>\n";
+   echo "  </A>\n";
+   echo " </TD>\n";
+   echo "</TR>\n";
+   echo "<TR>\n";
+   echo " <TD>\n";
+   echo "  <A href='todo_list.php?cs_num=".$calservice_object->getNum()."&showresults=0'>\n";
+   echo "   <INPUT type='button' value='Todo View - ".$calservice_object->getAbbreviation()."'>\n";
+   echo "  </A>\n";
+   echo " </TD>\n";
+   echo "</TR>\n";
+}
+*/
+?>
+      <TR>
+       <TD>
+        <A href='cylinder_fill.php'>
+         <INPUT type='button' value='Cylinder fill'>
+        </A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='orders_details.php'>
+         <INPUT type='button' value='Orders details'>
+        </A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='orders_overview.php'>
+         <INPUT type='button' value='Orders overview'>
+        </A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='orders_overview.php?type=pending'>
+         <INPUT type='button' value='Pending Orders overview'>
+        </A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='order_creation.php'>
+         <INPUT type='button' value='Create Order'>
+        </A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='product_extras.php'>
+         <INPUT type='button' value='Product Extras'>
+        </A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='orders_search.php'>
+         <INPUT type='button' value='Search Orders'>
+        </A>
+       </TD>
+      </TR>
+     </TABLE>
+    </TD>
+   </TR>
+   <TR>
+    <TD>
+     <TABLE style='border:1px solid black; background-color:#FFCECE'>
+      <TR>
+       <TH>Location Management</TH>
+      </TR>
+      <TR>
+       <TD>
+        <A href='location_update.php'><INPUT type='button' value='Update Location'></A>
+       </TD>
+      </TR>
+      <TR>
+       <TD>
+        <A href='location_edit.php'><INPUT type='button' value='Add Location'></A>
+       </TD>
+      </TR>
+     </TABLE>
+    </TD>
+   </TR>
+   <TR>
+    <TD>
+     <TABLE style='border:1px solid black; background-color:#FFF0CE'>
+      <TR>
+       <TH>Account Management</TH>
+      </TR>
+      <TR>
+       <TD>
+        <A href='account.php'><INPUT type='button' value='Account'></A>
+       </TD>
+      </TR>
+     </TABLE>
+    </TD>
+   </TR>
+   <TR>
+    <TD>
+     <TABLE style='border:1px solid black; background-color:#FFCC66'>
+      <TR>
+       <TH>Help guides</TH>
+      </TR>
+      <TR>
+       <TD>
+        <A href='help.html'><INPUT type='button' value='Help'></A>
+       </TD>
+      </TR>
+     </TABLE>
+    </TD>
+   </TR>
+   <TABLE class='MenuTable' cellspacing='5' cellpadding='5'>
+    <TR>
+     <TD align='left' width='50%'>
+      <INPUT type='button' value='Reload' onClick='window.location.href=window.location.href.substring(0, window.location.href .indexOf("?"));'>
+     </TD>
+     <TD align='right' width='50%'>
+     </TD>
+    </TR>
+    <TR>
+     <TD align='left' width='50%'>
+     </TD>
+     <TD align='right' width='50%'>
+     </TD>
+    </TR>
+   </TABLE>
+   <?PHP # This is for the menu that pops up at the bottom of the android screen. ?>
+   <BR>
+   <BR>
+   <BR>
+
+<?PHP NoCacheLinks(); ?>
+
+ </BODY>
+</HTML> 

@@ -1,0 +1,236 @@
+ Installation Instructions for
+ ODRPACK 2.01 -- Software for Weighted Orthogonal Distance Regression
+
+
+ *******************************************************************************
+ *                                                                             *
+ *    If you have not already installed ODRPACK Version 2.00, then you MUST    *
+ *    follow the installation instructions below, which describe the           *
+ *    necessary steps for installing the current version, 2.01.  If you        *
+ *    have already installed Version 2.00 and would prefer to only update      *
+ *    those subprograms that have changed between Version 2.00 and Version     *
+ *    2.01, then follow the instructions in file README.UPDATE. File           *
+ *    CHANGES identifies how ODRPACK 2.01 differs from earlier releases.       *
+ *                                                                             *
+ *******************************************************************************
+
+
+
+ Direct questions to
+
+      Janet E. Rogers
+      Optimization Group/Applied and Computational Mathematics Division (881)
+      National Institute of Standards and Technology
+      325 Broadway
+      Boulder, CO 80303-3328
+
+      e-mail:  internet -- jrogers@bldr.nist.gov
+      phone:   (303) 497-5114 
+      fax:     (303) 497-3012
+
+
+
+
+ *** INTRODUCTION
+
+ ODRPACK is a portable collection of Fortran subprograms for fitting a model to
+ data.  It is designed primarily for instances when the explanatory as well as
+ the response variables have significant errors, implementing a highly
+ efficient algorithm for solving the weighted orthogonal distance regression
+ problem, i.e., for minimizing the sum of the squares of the weighted
+ orthogonal distances between each data point and the curve described by the
+ model equation.  It can also be used to solve the ordinary least squares
+ problem where all of the errors are attributed to the observations of the
+ dependent variable.  File CHANGES identifies how the current version of
+ ODRPACK differs from earlier releases.
+
+ ODRPACK is written in Fortran as defined in the 1978 standard (ANSI X3.9-
+ 1978), commonly called Fortran 77.  The code has been analyzed using the PFORT
+ verifyer in TOOLPACK, and based on this analysis we believe that ODRPACK is
+ compatible with the ANSI X3.9-1978 full language standard.
+
+
+ *** INSTALLING ODRPACK
+
+ The following describes the necessary steps for installing ODRPACK.  On most
+ UNIX systems, simply invoking the command
+
+    make -f makefile
+
+ will result in the creation of a library containing the ODRPACK code, and the
+ execution of all of the test problems.  On others systems, the installer will
+ need to proceed with the installation "by hand."
+
+
+ Step 1.  Select Single or Double Precision Version 
+
+ ODRPACK software is available in both single and double precision versions.
+ Both versions are complete as they stand, and except for precision are
+ identical.  They can be combined in a single library, if desired.  ODRPACK is
+ sensitive to the machine precision, however, and requires approximately 14
+ decimal places.  Somewhat fewer places should still work, but six or seven
+ decimal places are definitely too few for general use, since only the simplest
+ problems could be solved correctly at such reduced precisions.  The installer
+ must therefore choose which version of ODRPACK to use based upon which version
+ supplies adequate precision on the target machine.  To our knowledge, at
+ present only Cray and CDC machines offer sufficient precision to permit
+ general use of the single precision version of ODRPACK.  For other machines,
+ we recommend the double precision version.  
+
+ Note that, as supplied with the release, makefile MAKEFILE installs both
+ versions of the code into a single library;  the changes necessary to install
+ only one version are documented within MAKEFILE.
+
+
+ Step 2:  Select ODRPACK Code Necessary for Installation on the Target System
+
+ The code for each version of ODRPACK is separated into three sections to
+ facilitate installation.  These three sections are in files D_ODR.F,
+ D_LPKBLS.F and D_MPREC0.F for the double precision version, and in files
+ S_ODR.F, S_LPKBLS.F and S_MPREC0.F for the single precision version.
+
+   *  Files D_ODR.F and S_ODR.F include all subprograms written especially for
+      ODRPACK.  The two user callable ODRPACK subprograms of each version are
+      listed first, followed by the remaining subprograms listed in
+      alphabetical order.  The code in these files should not require any
+      modification unless the installer wishes to customize the user callable
+      subprograms.
+
+   *  Files D_LPKBLS.F and S_LPKBLS.F include the subprograms used by ODRPACK
+      from the public domain packages LINPACK and BLAS, also listed in
+      alphabetical order.  The installer can use local versions of these
+      packages if available.  This would be particularly beneficial if the
+      installer's machine has specially optimized versions of LINPACK or BLAS.
+
+   *  Files D_MPREC0.F and S_MPREC0.F include the only machine dependent
+      subprograms in ODRPACK.  Changes required to these files are described in
+      Step 3, below.
+
+ Each ODRPACK subprogram follows the SLATEC Source File Format and provides a
+ standardized prologue describing the purpose of the subprogram and what other
+ subprograms are called, an alphabetical list of all variables referenced by
+ the subprogram and how they are used, as well as comments explaining the major
+ sections of the code.  Furthermore, each ODRPACK subprogram begins with a
+ comment line consisting of an asterisk followed immediately by the subprogram
+ name, i.e., *name.  This is the only use of an asterisk in column 1 of the
+ ODRPACK source code, and is done to aid the installer in separating the
+ subprograms into individual files.  For example, the following Fortran program
+ could be used to split source code file D_ODR.F into files each consisting of
+ one subprogram each.
+
+           PROGRAM FSPLIT
+           CHARACTER TEST1*1,TEST2*6,LINE*73
+           INTEGER IUNIT1,IUNIT2,LAST
+
+           IUNIT1 = 30
+           IUNIT2 = 31
+
+           OPEN (UNIT=IUNIT1,FILE='D_ODR.F')
+
+           READ (UNIT=IUNIT1,FMT=1000,END=999) TEST1,TEST2,LINE
+           LAST = INDEX(TEST2,' ')-1
+           IF (LAST.LE.0) LAST = 6
+           OPEN (UNIT=IUNIT2,FILE=TEST2(1:LAST)//'.F')
+           WRITE (UNIT=IUNIT2,FMT=1000) TEST1,TEST2,LINE
+
+       100 READ (UNIT=IUNIT1,FMT=1000,END=999) TEST1,TEST2,LINE
+           IF (TEST1.EQ.'*') THEN
+              CLOSE (UNIT=IUNIT2)
+              LAST = INDEX(TEST2,' ')-1
+              IF (LAST.LE.0) LAST = 6
+              OPEN (UNIT=IUNIT2,FILE=TEST2(1:LAST)//'.F')
+           END IF
+           WRITE (UNIT=IUNIT2,FMT=1000) TEST1,TEST2,LINE
+           GO TO 100
+
+       999 CONTINUE
+           CLOSE (UNIT=IUNIT2)
+
+      1000 FORMAT (A1,A6,A73)
+           END
+
+
+ Step 3.  Set Necessary Machine Dependent Values 
+
+ Files D_MPREC0.F and S_MPREC0.F supply the machine dependent subprograms used
+ by ODRPACK.  Comment statements within these files document the modifications
+ required.  They also list the necessary machine dependent constants for a
+ number of common machines.  If the constants for the target machine are
+ included, then the installer need only "uncomment" the appropriate DATA
+ statements.  These subprograms will return an undefined value until they are
+ updated; the installer must update them into files D_MPREC.F and S_MPREC.F,
+ respectively, before compiling and running ODRPACK.
+
+
+ Step 4.  Compile ODRPACK Code and Generate Object Code Library If Desired
+
+ ODRPACK code conforms to the ANSI X3.9-1978 full Fortran standard and has been
+ successfully installed on a CDC Cyber 855, CDC Cyber 205, Concurrent 3230, DEC
+ VAX 11/780, IBM PC/AT and IBM RS6000, and Sun 3 and Sparc2 Workstations.  We
+ believe it is possible to install ODRPACK on any system with an ANSI Fortran
+ 77 compiler and adequate memory.
+
+
+ Step 5.  Test ODRPACK
+
+ The ODRPACK supplied software includes drivers and data sets for running
+ ODRPACK in both double and single precision.  There are four drivers for each
+ version of the code.
+
+   *  Files D_DRIVE1.F, D_DRIVE2.F, and D_DRIVE3.F, and files S_DRIVE1.F,
+      S_DRIVE2.F and S_DRIVE3.F, each contain simple programs that users can
+      modify to form their own ODRPACK drivers.  The data necessary to run
+      these drivers are in files DATA1.DAT, DATA2.DAT and DATA3.DAT; the
+      reports generated by these drivers are shown in the Reference Guide (file
+      GUIDE.PS), Section 2.C.
+
+      The names of the data file specified in the "OPEN" statement in these
+      drivers are "DATA1", "DATA2", and "DATA3", respectively.  The data file
+      name and/or the file name specified in the "OPEN" statement might have to
+      be changed in order for the drivers to run properly on the target
+      machine.
+
+   *  Files D_TEST.F and S_TEST.F contain drivers that exercise ODRPACK's main
+      features and can be used to verify that the installation was completed
+      successfully.  The ODRPACK output generated by D_TEST.F when run on a
+      Sparc2 Workstation using the double precision version of ODRPACK is
+      listed in file TEST.TXT.  No data files are required for these two
+      drivers.
+
+      These two programs each call the ODRPACK user callable subprograms
+      several times, with each call testing one or more features of the
+      package.  The results of each call are automatically compared to the
+      results obtained by the authors using the double precision version of
+      ODRPACK run on a Cray YMP (128 bits per double precision value).  The
+      ODRPACK reports generated by these drivers are written to files REPORT
+      and SUMMARY.  (When using ODRPACK's MAKEFILE, both REPORT and SUMMARY are
+      copied to file D_TEST.OUT after execution of D_TEST.F, and S_TEST.OUT
+      after executing S_TEST.F.) By running these demonstration programs and
+      then comparing file REPORT with TEST.TXT, the installer can easily
+      ascertain whether the package is performing as it should.
+
+      If the REPORT files indicate that the results generated by the target
+      machine disagree significantly with the expected results, the installer
+      should attempt to determine why.  The 3 most common causes of
+      disagreement between the computed results and the expected results are:
+
+      1.  incorrectly specified machine dependent constants (see Step 3 above);
+
+      2.  use of the single precision version of ODRPACK on a target machine
+          that requires double precision accuracy (see Step 1 above); and
+
+      3.  compiler "bugs."
+
+      We suggest that these potential problem areas be investigated before
+      accepting a questionable installation as adequate.  If you are unable to
+      find the cause of the reported disagreement, please feel free to contact
+      the developers at the address given above.
+
+
+ Step 6.  Distribute ODRPACK documentation
+
+ The ODRPACK User's Reference Guide, NISTIR 92-4834, is supplied in PostScript
+ format in file GUIDE.PS.  A "hard copy" of this 100 page document can also be
+ obtained from the developers at the address cited above.  The ODRPACK
+ documentation can be reproduced and distributed as necessary for local users.
+

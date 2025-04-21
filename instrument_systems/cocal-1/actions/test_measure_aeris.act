@@ -1,0 +1,15 @@
+# Action file to measure LGR
+#
+#	$1 temp file for data line
+#	$2 temp file for flow rate
+#
+#
+#        Action line syntax:
+#            0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+#        Action line syntax:
+#             0 MonitorOutput device None [Filename] [Append|Replace]
+#
+#
+#0 	MonitorOutput 	aeris    None	
+0	MonitorDevice	aeris    None  10 0  0 aeris.dat Replace

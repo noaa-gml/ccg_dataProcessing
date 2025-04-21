@@ -1,0 +1,11 @@
+# action to measure sample pressure during system evac
+# Called from within loop so can stop evac once pressure limit is reached
+#
+#
+#	Takes a reading once per second
+
+0 	ReadValue	   	hp34970		@sample_pressure	DCVOLT
+0 	ScaleValue             	hp34970      	@sample_pressure_scale
+0 	PrintData	        hp34970         %d %12.4f
+
+

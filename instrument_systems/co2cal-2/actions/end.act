@@ -1,0 +1,13 @@
+#
+# Action list for finishing up analysis
+#
+0	SendCommand		hp34970			@abort_hp34970
+0	OpenRelay		hp34970			@Isotope_idle
+0	OpenRelay		hp34970			@Picarro_idle
+0	TurnUniversalActuator	ManifoldSelect		4
+0	TurnUniversalActuator	ManifoldA		16
+0	TurnUniversalActuator	ManifoldB		16
+0	TurnUniversalActuator	ManifoldC		16
+0       CloseRelay      	hp34970     		@Reference_mks_valve
+0       CloseRelay      	hp34970     		@Sample_mks_valve
+

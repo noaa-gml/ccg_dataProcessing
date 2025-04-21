@@ -1,0 +1,2 @@
+cc     as_fplan_v2.c   -o as_fplan_v2
+cc     as_fplan_v3.c   -o as_fplan_v3

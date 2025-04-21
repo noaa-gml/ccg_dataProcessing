@@ -1,0 +1,17 @@
+#CC = g77
+CC = gfortran
+
+#WORKDIR = /home/ccg/ken/idllib/linux/ccglib/src/loess/src/
+WORKDIR = /ccg/idl/lib/ccglib/src/loess/src/
+
+INCL = -L $(WORKDIR)lib -I $(WORKDIR)lib
+LIB = -lloess -lm
+OBJ = ccg_loess.o
+
+ccg_loess:	$(OBJ)
+		$(CC) $(OBJ) $(INCL) $(LIB) -o ./ccg_loess
+		rm -f *.o
+
+$(OBJ):
+
+		$(CC) -Wall -c $*.c -o$@

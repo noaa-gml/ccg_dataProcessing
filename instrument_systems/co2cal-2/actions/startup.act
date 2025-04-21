@@ -1,0 +1,7 @@
+
+#
+# Action list for setting up co2 cal system.
+#
+#
+0	CloseRelay	hp34970 @Idle
+

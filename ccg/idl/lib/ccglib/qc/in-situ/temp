@@ -1,0 +1,55 @@
+;
+; Site-specific parameters
+;
+CASE site OF
+'mlo':	BEGIN
+	eng = CREATE_STRUCT( $
+	'_102',        'NDIR Temperature (!eo!nC)', $
+	'_109',        'Room Temperature (!eo!nC)', $
+	'_110',        'H!i2!nO Trap Temperature (!eo!nC)', $
+	'_103',        'Sample Gas Flow Rate (ml min!e-1!n)', $
+	'_104',        'Reference Gas Flow Rate (ml min!e-1!n)', $
+	'_111',        'P1 Bleed Flow Rate (L min!e-1!n)', $
+	'_112',        'P2 Bleed Flow Rate (L min!e-1!n)', $
+	'_113',        'P1 Pressure (psi)', $
+	'_114',        'P2 Pressure (psi)')
+	END
+'spo':	BEGIN
+	eng = CREATE_STRUCT( $
+	'_102',        'NDIR Temperature (!eo!nC)', $
+	'_109',        'Room Temperature (!eo!nC)', $
+	'_110',        'H!i2!nO Trap Temperature (!eo!nC)', $
+	'_103',        'Sample Gas Flow Rate (ml min!e-1!n)', $
+	'_104',        'Reference Gas Flow Rate (ml min!e-1!n)', $
+	'_111',        'P1 Bleed Flow Rate (L min!e-1!n)', $
+	'_112',        'P2 Bleed Flow Rate (L min!e-1!n)', $
+	'_113',        'P1 Pressure (psi)', $
+	'_114',        'P2 Pressure (psi)', $
+	'_117',        'Room Pressure (psi)')
+	END
+'brw':	BEGIN
+	eng = CREATE_STRUCT( $
+	'_102',        'NDIR Temperature (!eo!nC)', $
+	'_108',        'Room Temperature (!eo!nC)', $
+	'_109',        'H!i2!nO Trap Temperature (!eo!nC)', $
+	'_103',        'Sample Gas Flow Rate (ml min!e-1!n)', $
+	'_104',        'Reference Gas Flow Rate (ml min!e-1!n)', $
+	'_110',        'P1 Bleed Flow Rate (L min!e-1!n)', $
+	'_111',        'P2 Bleed Flow Rate (L min!e-1!n)', $
+	'_112',        'P1 Pressure (psi)', $
+	'_113',        'P2 Pressure (psi)')
+	END
+'smo':	BEGIN
+	eng = CREATE_STRUCT( $
+	'_102',        'NDIR Temperature (!eo!nC)', $
+	'_108',        'Room Temperature (!eo!nC)', $
+	'_109',        'H!i2!nO Trap Temperature (!eo!nC)', $
+	'_103',        'Sample Gas Flow Rate (ml min!e-1!n)', $
+	'_104',        'Reference Gas Flow Rate (ml min!e-1!n)', $
+	'_110',        'P1 Bleed Flow Rate (L min!e-1!n)', $
+	'_111',        'P2 Bleed Flow Rate (L min!e-1!n)', $
+	'_112',        'P1 Pressure (psi)', $
+	'_113',        'P2 Pressure (psi)')
+	END
+ELSE:	CCG_FATALERR, "Don't yet know about " + site + "."
+ENDCASE

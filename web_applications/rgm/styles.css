@@ -1,0 +1,108 @@
+.label{
+   font-size: medium;
+   text-align: right;
+   font-weight: normal;
+   vertical-align: top;
+}
+.data{
+   font-size: medium;text-indent: 5px;font-weight: bold;
+}
+.sm_data{
+   font-size: smaller;font-weight: normal;
+}
+.title1{
+    font-size: xx-large;font-weight: bolder
+}
+.title2{
+    font-size: x-large;font-weight: bold;
+}
+html,body{
+    height:100%;
+    width: 100%;
+    margin:0;
+}
+.page{
+    display:table;
+    height: 100%;
+    width: 99%;
+    margin: 5px;
+    #background: yellow;
+    
+}
+.header,.footer{
+    display: table-row;
+    #background: red;
+}
+.footer{
+   display: table-row;
+}
+.content{
+    height:100%;
+    display: table-row;
+    overflow:auto;
+    width:100%;
+    #background-color: green;
+    border: inset thin solid;
+}
+.statusbox{
+    width:10px;
+    height: 10px;
+    min-width: 10px;
+    border:thin outset black;
+    vertical-align: middle;
+    display:inline;
+}
+
+.yellow{
+    background-color: yellow;
+}
+.green{
+    background-color: green;
+}
+.red{
+    background-color: red;
+}
+.black {
+    background-color: black;
+}
+.species {
+    border-collapse:collapse;
+    width: 90%;
+}
+.species th{
+    font-size: medium;
+    font-weight: normal;
+    border:thin solid grey;
+}
+.species td{
+    font-size:medium;
+    font-weight: normal;
+    border:thin solid grey;     
+}
+.hidden{
+    display:none;
+}
+.noborder{
+    border: none;
+}
+.noborder td{border:none;}
+
+.borderbot{
+    border-bottom: thin grey solid;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+.datatable{
+    border-collapse:collapse;
+    margin: 5px;
+    width:100%;
+    padding: 10px;
+}
+.datatable tr{
+    border-right:none;
+   border-top: none;
+    border-left:none;
+}
+.datatable td{vertical-align: middle;}
+

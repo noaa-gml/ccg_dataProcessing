@@ -1,0 +1,86 @@
+ ******************************************************* 
+ * ODRPACK VERSION 2.01 OF 06-19-92 (DOUBLE PRECISION) * 
+ ******************************************************* 
+
+
+ *** INITIAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- PROBLEM SIZE:
+            N =    20          (NUMBER WITH NONZERO WEIGHT =    20)
+           NQ =     1
+            M =     2
+           NP =     5          (NUMBER UNFIXED =     5)
+
+ --- CONTROL VALUES:
+          JOB = 00001
+              = ABCDE, WHERE
+                       A=0 ==> FIT IS NOT A RESTART.
+                       B=0 ==> DELTAS ARE INITIALIZED TO ZERO.
+                       C=0 ==> COVARIANCE MATRIX WILL BE COMPUTED USING
+                               DERIVATIVES RE-EVALUATED AT THE SOLUTION.
+                       D=0 ==> DERIVATIVES ARE ESTIMATED BY FORWARD DIFFERENCES.
+                       E=1 ==> METHOD IS IMPLICIT ODR.
+       NDIGIT =    16          (ESTIMATED BY ODRPACK)
+       TAUFAC =     1.00E+00
+
+ --- STOPPING CRITERIA:
+        SSTOL =     1.49E-08   (SUM OF SQUARES STOPPING TOLERANCE)
+       PARTOL =     6.06E-06   (PARAMETER STOPPING TOLERANCE)
+        MAXIT =   100          (MAXIMUM NUMBER OF ITERATIONS)
+
+ --- INITIAL SUM OF SQUARED WEIGHTED DELTAS =                    0.00000000E+00
+         INITIAL PENALTY FUNCTION VALUE     =   8.39823392E-01
+                 PENALTY TERM               =   8.39823392E-01
+                 PENALTY PARAMETER          =   1.0E+01
+
+ --- FUNCTION PARAMETER SUMMARY:
+
+       INDEX         BETA(K)    FIXED           SCALE    DERIVATIVE
+                                                          STEP SIZE
+         (K)                  (IFIXB)          (SCLB)        (STPB)
+
+           1 -1.00000000E+00       NO  1.00000000E+00   1.00000E-10
+           2 -3.00000000E+00       NO  3.33333333E-01   1.00000E-10
+           3  9.00000000E-02       NO  1.11111111E+01   1.00000E-10
+           4  2.00000000E-02       NO  5.00000000E+01   1.00000E-10
+           5  8.00000000E-02       NO  1.25000000E+01   1.00000E-10
+
+ --- EXPLANATORY VARIABLE AND DELTA WEIGHT SUMMARY:
+
+       INDEX      X(I,J)  DELTA(I,J)    FIXED     SCALE    WEIGHT    DERIVATIVE
+                                                                      STEP SIZE
+       (I,J)                          (IFIXX)    (SCLD)      (WD)        (STPD)
+
+         1,1   5.000E-01   0.000E+00       NO  2.00E+00  1.00E+00   1.00000E-10
+         N,1  -3.440E+00   0.000E+00       NO  2.91E-01  1.00E+00   1.00000E-10
+ 
+         1,2  -1.200E-01   0.000E+00       NO  8.33E+00  1.00E+00   1.00000E-10
+         N,2  -4.860E+00   0.000E+00       NO  2.06E-01  1.00E+00   1.00000E-10
+
+ *** FINAL SUMMARY FOR FIT BY METHOD OF ODR ***
+
+ --- STOPPING CONDITIONS:
+         INFO =     2 ==> PARAMETER CONVERGENCE.
+        NITER =    18          (NUMBER OF ITERATIONS)
+         NFEV =   217          (NUMBER OF FUNCTION EVALUATIONS)
+        IRANK =     0          (RANK DEFICIENCY)
+        RCOND =     3.18E-02   (INVERSE CONDITION NUMBER)
+        ISTOP =     0          (RETURNED BY USER FROM SUBROUTINE FCN)
+
+ --- FINAL SUM OF SQUARED WEIGHTED DELTAS =                     8.82420346E-02
+         FINAL PENALTY FUNCTION VALUE     =    8.82445616E-02
+               PENALTY TERM               =    2.52700922E-06
+               PENALTY PARAMETER          =    1.0E+05
+
+ --- RESIDUAL STANDARD DEVIATION          =                     7.66994283E-02
+         DEGREES OF FREEDOM               =   15
+
+ --- ESTIMATED BETA(J), J = 1, ..., NP:
+
+                     BETA      S.D. BETA    ---- 95%  CONFIDENCE INTERVAL ----
+
+       1  -9.99380926E-01     1.1138E-01    -1.23682174E+00 TO -7.61940115E-01
+       2  -2.93104845E+00     1.0977E-01    -3.16504287E+00 TO -2.69705404E+00
+       3   8.75730499E-02     4.1061E-03     7.88200045E-02 TO  9.63260954E-02
+       4   1.62299711E-02     2.7500E-03     1.03676366E-02 TO  2.20923055E-02
+       5   7.97537978E-02     3.4962E-03     7.23007336E-02 TO  8.72068620E-02

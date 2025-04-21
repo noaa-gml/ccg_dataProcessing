@@ -1,0 +1,15 @@
+#  action file to stabalize gc sample loop pressure and measure sample loop pressure
+#
+#	$1  gc qc data file.  Append sample loop pressure to file that
+#			already contains sample pressure and flow rate during flushing	
+#
+#	Need to measure room pressure here to redetermine transducer offset each cycle
+#	
+#		
+#  Either relax to room pressure or not.  Time is taken out of time 
+#  for flush prior to AR measurement
+#14	ConfigChannel	hp34970		@sample_loop_pressure	DCVOLT
+#14	ConfigChannel	hp34970		@room_pressure	DCVOLT
+15	SingleScan	hp34970		@sample_loop_pressure,@room_pressure @sample_loop_pressure_scale,@room_pressure_scale
+15	LogData		hp34970         $1		Append
+15 	PrintData	hp34970         %d %12.4f

@@ -1,0 +1,223 @@
+/*Layout*/
+.body{
+    height: 100vh;/*100% viewport height*/
+    margin: 0;
+    padding: 0;
+    overflow:hidden;/*added because some browsers (chrome) add a few pixels for some reason and that caused a vert scroll to appear.*/
+}
+.bs_contentWrapper{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+}
+.bs_header{flex:none;}
+
+/*header overlay text formatting*/
+.bs_headerText{
+    height: 80px;
+    border: thin solid black;
+    color: white;
+    font-size: medium;
+}
+
+.bs_mainContentWrapper {/*between header and footer*/
+    display: flex;
+    flex:1 1 auto;/*grow, shrink, default size*/
+    flex-direction: row;
+    min-height:0px;/*Needed to enable the vertical scroll in child (left container)*/
+}
+.bs_leftContent {
+    /*Flex is set in style (dynamically based on configured width)*/
+    overflow-y:auto;
+}
+
+.bs_rightContent {
+    /*Wrapper for fixed and adj divs.*/
+    flex:1 1 auto;/*grow, shrink*/
+    display:flex;
+    flex-direction: column;
+    min-width:0;/*Needed to enable horz scroll in children (maybe just the adj child div)*/
+}
+.bs_contentDivs{
+    text-align:left;
+    vertical-align: top;
+    overflow:auto;
+    border: thin solid silver;
+}
+
+.bs_footer{flex:0 0 auto}
+
+
+/*Styling*/
+.bs_border{border: thin solid silver;}
+.bs_border th{
+    border: thin solid silver;
+
+}
+.bs_border td{border: thin solid silver;}
+
+.bs_selectable{cursor: pointer;}
+.bs_scrolling{overflow:auto;}
+.readonly-input {
+    background-color: #e9ecef; /* Light grey (same as disabled) */
+    opacity: 1; /* Ensure it's still readable */
+    cursor: not-allowed; /* Show a disabled cursor */
+}
+/*Tables*/
+.bs_thinTable{
+	border-collapse:collapse;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+.bs_printTableContainer{
+    border:thin solid silver;
+    overflow:auto;
+}
+
+.bs_success{border:thin solid green;}
+.bs_fail{border:thin solid red;}
+
+/*Plots*/
+.dg_containerDiv{
+    width:calc(100% - 20px);
+    height:100%;
+    max-height:100%;
+    max-width:100%;
+    padding-right: 12px;
+    padding-left: 12px;
+    padding-top: 5px;
+    padding-bottom:5px;
+}
+.dg_yLabel{/*didn't work...*/
+    display: inline;
+    width:20px;
+    height:100%;
+    text-align: center;
+    writing-mode: vertical-lr;
+    direction: rtl;
+    transform: rotate(180deg);
+}
+/*text*/
+.bs_ital{font-size: medium; font-weight: normal; font-style: italic;}
+
+.bs_sm_data{
+   font-size: small;font-weight: normal;
+}
+.bs_tiny_ital{
+    font-size: xx-small;font-weight: normal;font-style: italic;
+}
+.bs_sm_ital{
+    font-size: small;font-weight: normal;font-style: italic;
+}
+
+.bs_title1{
+    font-size: x-large;font-weight: bolder;
+}
+.bs_title2{
+    font-size: large;font-weight: bold;
+}
+.bs_title3{
+    font-size: medium;font-weight: bold;
+
+}
+.bs_title4{
+    font-size: 12px;font-weight: bold;
+    color:#4D4650;
+}
+.bs_title5{
+    font-size: small;font-weight: bold;color:#4D4650;}
+.bs_underline{
+	text-decoration: underline;
+}
+.bs_bold{font-weight:bold;}
+.bs_disabledText{color:grey;}
+.bs_hidden{visibility:hidden;}
+.ms_max{
+	height:100%;
+	width:100%;
+}
+.bs_textHighlight{
+    color:red;font-weight: bold;
+}
+.bs_textHighlightB{
+    color:blue;font-weight: bold;
+}
+.bs_label{
+    font-size: medium;font-weight: bold;
+    text-align: right;
+}
+.bs_data{
+    font-size: medium;font-weight: bold;
+    text-align: left;
+}
+.bs_labelH{
+    font-size: large;
+    text-align: right;
+}
+.bs_dataH{
+    font-size: large;font-weight: bold;
+    text-align: left;
+    color:#002D62;/*dark blue*/
+}
+datalist option {
+  font-size: 0.8em;
+  padding: 0.3em 1em;
+  background-color: #ccc;
+  cursor: pointer;
+}
+.nowrap{
+    white-space: nowrap;
+}
+
+/*Nice informational layout
+<div class="info-container"><h4>Scale Conversion</h4>
+					<div class="info-grid">
+						<div class="info-name">Input Scale Name</div><div class="info-value">'.$json['input']['scale_name'].'</div>...*/
+/* Isolated container */
+.info-container {
+    width: 100%;
+    max-width: 800px; /* Adjust as needed */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto; /* Centers it */
+}
+
+/* Force a strict 2-column layout */
+.info-grid {
+    display: grid !important; /* Override any inherited flex */
+    grid-template-columns: auto 1fr; /* First column auto-sized, second column flexible */
+    gap: 8px 16px; /* Adjusts spacing between name-value pairs */
+    align-items: center; /* Ensures vertical alignment */
+}
+
+/* Name column */
+.info-name {
+    font-weight: bold;
+    color: #333;
+    text-align: right;
+    padding-right: 10px;
+    white-space: nowrap; /* Prevents wrapping */
+    min-width: 100px; /* Ensures minimum width */
+}
+
+/* Value column */
+.info-value {
+    color: #555;
+    text-align: left;
+    min-width: 0; /* Prevents flex interference */
+    max-width: 100%; /* Ensures it doesn't overflow */
+    word-break: break-word; /* Handles long values */
+}
+
+/* Responsive: Switch to one column on small screens */
+@media (max-width: 500px) {
+    .info-grid {
+        grid-template-columns: 1fr; /* Stack in one column */
+    }
+    .info-name {
+        text-align: left;
+        padding-right: 0;
+    }
+}

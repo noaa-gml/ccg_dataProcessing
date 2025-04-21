@@ -1,0 +1,15 @@
+.air_reject{
+    background-color:#FE3044;
+    border:thin outset black;
+    padding: 2px;
+}
+.air_warn{
+    background-color:#00FF80;
+    border:thin outset black;
+    padding: 2px;
+}
+.air_right{float:right;}
+
+.ui-slider-range  {
+    background:transparent;/*Remove the gradient image.*/
+}

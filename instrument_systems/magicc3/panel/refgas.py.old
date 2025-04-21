@@ -1,0 +1,143 @@
+
+import os
+import wx
+from datetime import datetime
+
+import config
+from utils import *
+
+#--------------------------------------------------------------
+class mkRefgasPage(wx.Panel):
+    def __init__(self, parent, gas ):
+	wx.Panel.__init__(self, parent, -1)
+
+	self.gas = gas
+	self.tankfile = config.sysdir + "/sys.tanks"
+#	self.worktankfile = config.datadir + "/" + self.gas.lower() + "/worktanks"
+
+        box = wx.StaticBox(self, -1, "Reference Gases", size=(10,10))
+        sizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+
+        self.SetSizer(sizer)
+        title = wx.StaticText(self, -1, "Enter correct serial number and mixing ratio.  Press 'Save' when done.")
+        title.SetFont(wx.Font(11, wx.SWISS, wx.NORMAL, wx.ITALIC))
+        sizer.Add(title, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+	box = self.create()
+	sizer.Add(box, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+	SetSaveButton(self, sizer, self.ok)
+
+
+
+    #--------------------------------------------------------------
+    def create(self):
+
+
+#	sizer = wx.FlexGridSizer(0, 2+len(config.gases), 2, 2)
+	sizer = wx.FlexGridSizer(0, 2, 2, 2)
+
+	label = wx.StaticText(self, -1, "Tank")
+	sizer.Add(label, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 10)
+	label = wx.StaticText(self, -1, "Serial Number")
+	sizer.Add(label, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 10)
+#	for gas in ["CH4"]:
+#		label = wx.StaticText(self, -1, "%s" % gas)
+#		sizer.Add(label, 0, wx.ALIGN_CENTER|wx.ALL, 0)
+
+	lines = self.getRefgases()
+#	print lines
+	self.tank_id = []
+	self.tank_sernum = []
+	self.tank_mr = []
+	sernum = ""
+
+	for name in config.refgas_labels:
+#		print name
+
+		values = []
+		for (gas1, label, sn, press, regulator) in lines:
+			if label == name:
+				sernum = sn
+
+		# make sure we get gases in the right order
+#		for gas in config.gases:
+#			for (gas1, label, sn) in lines:
+#				if gas1 == gas and sn == sernum:
+#					values.append(mr)
+			
+                label = wx.StaticText(self, -1, name)
+                self.tank_id.append(label)
+                sizer.Add(label, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 5)
+
+                tx = wx.TextCtrl(self, -1, sernum, size=(100, -1))
+                self.tank_sernum.append(tx)
+                sizer.Add(tx, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 5)
+
+#		for mr in values:
+#			tx = wx.TextCtrl(self, -1, mr,  validator = Validator(V_FLOAT))
+#			self.tank_mr.append(tx)
+#			sizer.Add(tx, 0, wx.ALIGN_RIGHT|wx.LEFT|wx.RIGHT, 5)
+
+	return sizer
+
+
+    #--------------------------------------------------------------
+    def getRefgases(self):
+
+	tanklist = []
+	if os.path.exists(self.tankfile):
+		f = open(self.tankfile, "r")
+		for line in f:
+			a = line.strip('\n').split()
+			tanklist.append(a)
+
+
+	else:
+		# if we don't have any info yet, create some lines with default values
+		for name in config.refgas_labels:
+			t = [name, "", "", ""]
+			tanklist.append(t)
+
+	return tanklist
+
+
+    #--------------------------------------------------------------
+    def ok(self, event):
+
+	tanklist = []
+	mrlist = []
+	for i in range(len(self.tank_id)):
+#		print i
+		id = self.tank_id[i].GetLabel()
+		sn = self.tank_sernum[i].GetValue()
+#		print id, sn
+		if len(sn) == 0:
+			config.main_frame.SetStatusText ("ERROR: Need serial number for %s" % id)
+			return
+
+
+#		for n, gas in enumerate(config.gases):
+#			idx = i*len(config.gases)
+#			try:
+#				mr = float(self.tank_mr[idx+n].GetValue())
+#			except:
+#				msg = "ERROR: Need float value for mixing ratio of %s" % id
+#				dlg = wx.MessageDialog(self, msg, 'Error', style=wx.OK | wx.ICON_ERROR)
+#				dlg.ShowModal()
+#				dlg.Destroy()
+#				return
+
+		s = "%s %s %s" % ("CH4", id, sn)
+		tanklist.append(s)
+
+#	print tanklist
+
+	f = open(self.tankfile, "w")
+	for line in tanklist:
+		f.write(line + "\n")
+	f.close
+
+	config.main_frame.SetStatusText ("Updated reference tanks")
+
+	return

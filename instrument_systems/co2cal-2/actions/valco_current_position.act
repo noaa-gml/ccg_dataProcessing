@@ -1,0 +1,3 @@
+# get the current position from a valco valve
+0   ValcoCurrentPosition  $1  none
+

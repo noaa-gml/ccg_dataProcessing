@@ -1,0 +1,6 @@
+# get current position from valco valve
+#
+#	$1 = valvename
+#
+0 	ValcoFindStops	  	$1   	None
+15	Noop			None	None

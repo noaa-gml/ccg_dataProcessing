@@ -1,0 +1,10 @@
+tag_num   group_name                description                                                                                                                                         
+6         Collection issues         (F..) Insufficient flushing of sample collection system  [6]                                                                                        
+10        Collection issues         (L..) Leak in sample collection system, results certainly adversely affected [10]                                                                   
+11        Collection issues         (..l) Leak in sample collection system, results *may* be somewhat affected [11]                                                                     
+12        Collection issues         (N..) Known sample collection problem/protocol error that is not described in any other collection tag, results certainly adversely affected [12]   
+13        Collection issues         (..n) Known sample collection problem/protocol error that is not described in any other collection tag, results *may* be somewhat affected [13]     
+19        Collection issues         (V..) Insufficient sample pressure, results certainly adversely affected [19]                                                                       
+23        CCGG Measurement issues   (A..) Known measurement problem/protocol error that is not described in any other measurement tag, results certainly adversely affected [23]        
+32        Collection issues         (V..) Insufficient sample pressure, results certainly adversely affected (automatic) [32]                                                           
+161       Collection issues         (H..) High humidity in sample adversely impacts results for some gases and isotopes [161]                                                           

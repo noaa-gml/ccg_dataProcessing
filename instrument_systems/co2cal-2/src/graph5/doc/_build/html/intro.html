@@ -1,0 +1,155 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; WxPython Graph Widget v1 documentation</title>
+    <link rel="stylesheet" href="_static/gmd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="WxPython Graph Widget v1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to WxPython Graph Widget’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to WxPython Graph Widget’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">WxPython Graph Widget v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#what-is-wxgraph">What is wxgraph?</a></li>
+<li><a class="reference internal" href="#features">Features?</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to WxPython Graph Widget&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-wxgraph">
+<h2>What is wxgraph?<a class="headerlink" href="#what-is-wxgraph" title="Permalink to this headline">¶</a></h2>
+<p>Graph is a wxPython widget</p>
+</div>
+<div class="section" id="features">
+<h2>Features?<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<p>Amongst the core features of pyqtgraph are:</p>
+<ul class="simple">
+<li>Basic data visualization primitives: Images, line and scatter plots</li>
+<li>Fast enough for realtime update of video/plot data</li>
+<li>Interactive scaling/panning, averaging, FFTs, SVG/PNG export</li>
+<li>Widgets for marking/selecting plot regions</li>
+<li>Widgets for marking/selecting image region-of-interest and automatically slicing multi-dimensional image data</li>
+<li>Framework for building customized image region-of-interest widgets</li>
+<li>Docking system that replaces/complements Qt&#8217;s dock system to allow more complex (and more predictable) docking arrangements</li>
+<li>ParameterTree widget for rapid prototyping of dynamic interfaces (Similar to the property trees in Qt Designer and many other applications)</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<span id="id1"></span><h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>This is the simplest way to make a graph in a wx application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">graph</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MainApp</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">OnInit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;tst2&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">700</span><span class="p">,</span><span class="mi">500</span><span class="p">))</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">createDataset</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span> <span class="s">&quot;Random Numbers&quot;</span><span class="p">)</span>
+
+        <span class="n">frame</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">MainApp</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">MainLoop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and it produces a window that looks like</p>
+<div class="figure">
+<img alt="_images/example.png" src="_images/example.png" />
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to WxPython Graph Widget’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">WxPython Graph Widget v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Kirk Thoning.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

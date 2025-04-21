@@ -1,0 +1,3 @@
+The tar.gz files in this directory are tracked using git large file storage (LFS).  You must install git-lfs in order to be able to clone these files.  Alternately, you can navigate to the file's page on github and download it individually.
+https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage
+

@@ -1,0 +1,362 @@
+/*float header tables*/
+.fh{
+    overflow:auto;
+    position:relative;
+}
+.fh_table{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+
+    border-collapse:collapse;
+	border: thin solid silver;
+}
+
+.fh_table thead th{
+    font-weight:bold;
+	color:black;
+    position: sticky;
+	background: #e6e6e6 url("/inc/dbutils/th_bg.png") 50% 50% repeat-x;
+	border: thin solid grey;
+	padding-left:4px;
+	padding-right:4px;
+	padding-top: 4px;
+    padding-bottom: 4px;
+	text-align: center;
+	vertical-align: top;
+	font-weight: normal;
+    color: #212121;
+
+	font-size:14px;
+	white-space: nowrap;
+}
+
+.fh_table td{
+    border: thin solid silver;
+
+	color:#515151;
+	font-size: 1em;/*10px;*/
+	padding: 2px 2px 2px 2px;
+}
+/*standard table style for printing query results*/
+.dbutils{
+	border-collapse:collapse;
+	border: thin solid silver;
+
+	/*border-bottom: 1px Silver solid;
+	border-right: 1px Silver solid;*/
+	padding:2px 2px 2px 2px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	/*background-color: white;*/
+}
+.dbutils_selectedRow{
+	background-color:#9CCFFF;
+	border:2px solid black;
+}
+.dbutils_highlightedRow{
+	background-color:yellow;
+	border:2px solid black;
+}
+.dbutils td{
+	/*border: 1px Silver solid;
+*/
+	border: thin solid silver;
+
+	color:#515151;
+	font-size: 1em;/*10px;*/
+	padding: 2px 2px 2px 2px;
+}
+
+.dbutils_selectable tr:hover{
+	background-color:#C4E2FF;
+	border: 2px solid Grey;
+	cursor: pointer;
+}
+.dbutils tr:hover td{
+	/*background-color:#9CCFFF;
+	border-left: thin solid Grey;
+	border-top: thin solid transparent;
+	border-bottom: thin solid transparent;
+	border-right: thin solid Grey;*/
+}
+.dbutils tr:first-child:hover{
+	border: none;
+}
+.dbutils_red{
+	background-color:#FE3044;
+}
+.dbutils_green{
+	background-color:#00FF80;
+}
+.dbutils_highlightBG{
+    background-color:#f1f2d8;
+}
+.dbutils thead th{
+	/*border: thin solid black;*/
+
+}
+.dbutils th{
+	font-weight:bold;
+	color:black;
+
+	background: #e6e6e6 url("/inc/dbutils/th_bg.png") 50% 50% repeat-x;
+	border: thin solid grey;
+	padding-left:4px;
+	padding-right:4px;
+	padding-top: 4px;
+   padding-bottom: 4px;
+	text-align: center;
+	vertical-align: top;
+	font-weight: normal;
+   color: #212121;
+
+	font-size:14px;
+	white-space: nowrap;
+	text-transform: capitalize;
+
+	position: sticky;
+    top: 0;
+
+}
+.dbutils th a{	color: #515151;}
+.dbutils th a:link{
+	text-decoration: none;
+	color: black;
+}
+.dbutils th a:hover{
+	text-decoration: underline;
+	color: blue;
+}
+.txtTable{
+    padding:2px 2px 2px 2px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+.txtTable th{
+    font-weight:bold;
+}
+.txtTable td{
+    text-align: left;
+}
+
+.largeFont{font-size:large;}
+.navBtn{
+	font-size:small;
+	text-align: center;
+	font-weight: 500;
+	border:thin silver outset;
+}
+.navBtn_selected{
+	border: inset thin #7FFF00;
+	font-weight: 600;
+	background-color: LightGrey;/*#9AFD9A;*/
+}
+.navBtn_table{
+	border:thin silver solid;
+	/*background-color:LightGrey;*/
+}
+
+/*Text formats*/
+html *{
+
+	font-family: Arial,sans-serif;
+
+}
+select {
+	font-size: small;
+	font-family: Arial,serif;
+}
+.label{
+   font-size: small;
+   text-align: right;
+   font-weight: bolder;
+   vertical-align: top;
+
+}
+.leftlabel{
+   font-size: small;
+   text-align: left;
+   font-weight: bolder;
+   vertical-align: top;
+
+}
+.lightlabel{
+   font-size: small;
+   text-align: right;
+   font-weight: normal;
+   vertical-align: top;
+
+}
+.href_noline{
+text-decoration: none;
+}
+.data{
+   font-size: small;text-indent: 5px;font-weight: normal;
+
+}
+
+.sm_data{
+   font-size: smaller;font-weight: normal;
+}
+.tiny_ital{
+    font-size: xx-small;font-weight: normal;font-style: italic;
+}
+.sm_ital{
+    font-size: small;font-weight: normal;font-style: italic;
+}
+.ital{font-size: medium; font-weight: normal; font-style: italic;}
+.title1{
+    font-size: x-large;font-weight: bolder;
+}
+.title2{
+    font-size: large;font-weight: bold;
+}
+.title3{
+    font-size: medium;font-weight: bold;
+
+}
+.title4{
+    font-size: 12px;font-weight: bold;
+    color:#4D4650;
+}
+.title5{
+    font-size: small;font-weight: bold;color:#4D4650;}
+.underline{
+	text-decoration: underline;
+}
+.bold{font-weight:bold;}
+.disabledText{color:grey;}
+
+.help{
+    cursor: help;
+}
+.helpContent{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    color:#005167;
+}
+
+/*Layout shortcuts*/
+.border{border: thin solid silver;}
+.scrolling{
+	overflow:auto;
+}
+.max{
+	height:100%;
+	width:100%;
+}
+.right{float:right;}
+.left{float:left;}
+.thinBorderedTable{
+    border-collapse:collapse;
+    border:thin solid silver;
+    text-align: center;
+    vertical-align: top;
+    font-weight: normal;
+}
+.top{
+    vertical-align:top;
+}
+.thinTable{
+	border-collapse:collapse;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+.thinBorderlessTable{
+    border-collapse:collapse;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	border:none;
+}
+.thinBorderlessTable td{border:none;}
+.hidden{
+	visibility:hidden;
+}
+.spanbtn{cursor:pointer;border:thin silver solid;margin: 1px 1px 1px 1px;}
+.spanbtn :hover{background-color:#C4E2FF;border: thin outset Grey;}
+.spanbtn :active{background-color:grey;border: thin inset black;}
+
+.clickable{cursor: pointer;}
+.clickable div:hover{/*Note div is inside of clickable object. <div class='clickable'><div>asdf</div></div>*/
+	background-color:#C4E2FF;
+	border: 2px solid Grey;
+	cursor: pointer;
+}
+.clickableTD td:hover{/*Note td is inside of clickable object. <tr class='clickable'><td>asdf</td></tr>*/
+	background-color:#C4E2FF;
+	border: 2px solid Grey;
+	cursor: pointer;
+}
+/*One of the plot tables (single plot 2)*/
+.sp2_plotTable{
+	border-collapse:collapse;
+	padding: 0px;
+	margin: 0px;
+}
+.sp2_plotTable td{
+	padding: 0px;
+	margin: 0px;
+}
+.sp2_plotDiv{
+	border:thin outset silver;
+}
+.editableTableTD{
+	background-color:#FFFEE4;
+	border:thin inset black;
+}
+.savebtn{
+	cursor:pointer;
+	padding: 0px;
+	margin: 0px;
+	border:none;
+	padding:none;
+	height: 20px;
+	width:20px;
+	max-height: 20px;
+	max-width: 20px;
+}
+.saveText{
+    cursor:pointer;
+    text-decoration: underline;
+	color: blue;
+}
+.i_refreshBtn{
+    display:inline-block;
+    transform:rotate(90deg);
+}
+.lightyellow{
+    background-color:lightyellow;
+}
+input[readonly] {
+  background-color: #f2f2f2;
+  cursor: not-allowed;
+}
+.highlight{
+    background-color:Yellow;
+    /*border:thin solid Yellow;*/
+}
+.borderhighlight{
+    border:2px solid green;
+}
+.textHighlight{
+    color:red;font-weight: bold;
+}
+/*vertical tabs*/
+.vertical_tabLabels{
+    border-collapse:collapse;
+	padding: 4px 4px 4px 4px;
+	margin: 4px 0px 4px 4px;
+}
+.vertical_tabLabels td{
+    cursor: pointer;
+}
+.vertical_tabLabels_unsel{
+    border:solid thin silver;
+}
+.vertical_tabLabels_sel{
+    border-left:outset thin black;
+    border-top:none;
+    border-bottom:none;
+    border-right:outset thin black;
+    background-color:lightblue;
+}
+.titleLink a {font-size: 14px;font-weight: bold;}
+.input_text{
+    width:3em;
+}

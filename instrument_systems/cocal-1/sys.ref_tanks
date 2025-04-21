@@ -1,0 +1,75 @@
+N2O_Secondary    S1          JA02387            C     1        950                   B6
+N2O_Secondary    S2          JB02925            C     2       1200                 2925
+N2O_Secondary    S3          JB02908            C     3        775                  229
+N2O_Secondary    S4          FA03054            C     4        900                  B-6
+N2O_Secondary    S5          JA02179            C     5       1225                 2179
+H2_Secondary    S1         CC327035            C    11       1900                co-39
+H2_Secondary    S2          CB10943            C    12       2015                co-39
+H2_Secondary    S3         CC311842            C    13       1825                co-39
+H2_Secondary    S4         CC121971            C    14       1800                co-39
+H2_Secondary    S5          CA06194            C    15       1350                co-39
+H2_Secondary    S6          CA07490            C    16       1950                co-39
+H2_Secondary    S7          CA08247            C     1       1800                co-39
+H2_Reference    R0          CB09737            A     1       1925                H2-02
+  H2_PRIMARY    S1          SX-3543            C     1        500              FB03876
+  H2_PRIMARY    S2          SX-3558            C     2        625              FB03851
+  H2_PRIMARY    S3       SX-0614470            C     3        925              FF32810
+  H2_PRIMARY    S4          SX-3540            C     4        725              FB03856
+  H2_PRIMARY    S5       SX-0614471            C     5        900              FB03869
+  H2_PRIMARY    S6          SX-3523            C     6        625              FB03850
+  H2_PRIMARY    S7          SX-3554            C     7        725              FB03888
+  H2_PRIMARY    S8       SX-0614472            C     8        900              FB03861
+CO_Secondary    S1          ND46739            C     1       1350                CO-03
+CO_Secondary    S2          ND39723            C     2        800                  286
+CO_Secondary    S3          ND39910            C     3        925                CO-45
+CO_Secondary    S4          ND39908            C     4       1175                CO-43
+CO_Secondary    S5          ND39900            C     5       1150                  162
+CO_Secondary    S6          ND39376            C     6        750                  277
+CO_Secondary    S7          ND39134            C     7       1275                  127
+CO_Secondary    S8          ND39901            C     8       1200                CO-25
+CO_Secondary    S9          ND39375            C     9       1200                CO-08
+CO_Secondary   S10          ND39902            C    10       1150                CO-22
+CO_Secondary   S11          ND39907            C    11       1300                   97
+CO_Reference    R0          ND38954            B     1       1375                   83
+CO_PRIMARY_2015_B   S1B         CC105875            C     1       1500                  124
+CO_PRIMARY_2015_B   S2B         CC122001            C     2       1275             cc122001
+CO_PRIMARY_2015_B   S3B          CA08108            C     3       1350              ca08108
+CO_PRIMARY_2015_B   S4B         CC105928            C     4       1300             cc105928
+CO_PRIMARY_2015_B   S5B           CC1785            C     5       1300               cc1785
+CO_PRIMARY_2015_B   S6B          CC71587            C     6       1400               co-03b
+CO_PRIMARY_2015_A   S1A          CA08519            C     1       1500                co-62
+CO_PRIMARY_2015_A   S2A           CC2505            C     2       1550                co-61
+CO_PRIMARY_2015_A   S3A          CA07610            C     3       1300                co-50
+CO_PRIMARY_2015_A   S4A          CC71619            C     4       1300                co-58
+CO_PRIMARY_2015_A   S5A          CA05670            C     5       1320                co-56
+CO_PRIMARY_2015_A   S6A          CA02823            C     6       1250                co-59
+CO_PRIMARY_2011_B   S1B          CA03447            C     1       1300                co-54
+CO_PRIMARY_2011_B   S2B          CA06531            C     2       1150                co-55
+CO_PRIMARY_2011_B   S3B          CA08136            C     3       1100                co-51
+CO_PRIMARY_2011_B   S4B         CC115008            C     4       1100                co-57
+CO_PRIMARY_2011_B   S5B          CA01790            C     5       1000                co-53
+CO_PRIMARY_2011_B   S6B         CC114988            C     6       1050                co-52
+CO_PRIMARY_2011_B   S7B          CC71649            C     7       1000                co-63
+CO_PRIMARY_2011_A   S1A          CA06529            C     1       1350                CO-62
+CO_PRIMARY_2011_A   S2A         CC113562            C     2       1100                CO-61
+CO_PRIMARY_2011_A   S3A          CA08161            C     3       1100                CO-50
+CO_PRIMARY_2011_A   S4A          CA02862            C     4       1100                CO-58
+CO_PRIMARY_2011_A   S5A          CA08179            C     5       1100                CO-56
+CO_PRIMARY_2011_A   S6A          CA08193            C     6       1080                CO-59
+CO_PRIMARY_2011_A   S7A          CA02984            C     7       1100                CO-60
+CO_Dilution_B   S1B          FF32779            C     1        525              ff32779
+CO_Dilution_B   S2B          FB03856            C     2        475              fb03856
+CO_Dilution_B   S3B          FB03861            C     3        300              fb03861
+CO_Dilution_B   S4B          FB04083            C     4        425              fb04083
+CO_Dilution_B   S5B          FB04096            C     5        300              fb04096
+CO_Dilution_B   S6B          FB03852            C     6        300              fb03851
+CO_Dilution_B   S7B          FB03869            C     7        300              fb03869
+CO_Dilution_B   S8B          FB04059            C     8        300              fb04059
+CO_Dilution_A   S1A          FF32810            C     1        500              ff32810
+CO_Dilution_A   S2A          FB03876            C     2        450              fb03876
+CO_Dilution_A   S3A          FB03884            C     3        300              fb03884
+CO_Dilution_A   S4A          FB04080            C     4        475              fb04080
+CO_Dilution_A   S5A          FB04095            C     5        225              fb04095
+CO_Dilution_A   S6A          FB03850            C     6        475              fb03850
+CO_Dilution_A   S7A          FB03851            C     7        275              fb03852
+CO_Dilution_A   S8A          FB03888            C     8        300              fb03888

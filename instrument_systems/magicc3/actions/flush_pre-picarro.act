@@ -1,0 +1,5 @@
+# flush system prior to taking Picarro measurement (basically just pause and let PC pull sample)
+# Lets pressure stabalize after pulling sample into Aerodyne
+#30	Noop	none	none
+#15	Noop	none	none
+10	Noop	none	none

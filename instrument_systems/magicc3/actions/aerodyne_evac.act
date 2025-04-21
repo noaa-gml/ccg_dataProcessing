@@ -1,0 +1,9 @@
+# action file for evacuating Aerodyne cell
+# 15 secs gets cell to < 1 Torr
+# 12 secs ~ 1.2 Torr
+# 10 secs ~ 1.5 Torr
+#  8 secs ~ 2 Torr
+# 4-5 secs gets cell to ~ 5 Torr
+#
+0	CloseRelay	hp34970		@aerodyne_evac
+15	OpenRelay	hp34970		@aerodyne_evac

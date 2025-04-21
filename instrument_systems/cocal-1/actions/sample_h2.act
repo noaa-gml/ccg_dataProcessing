@@ -1,0 +1,16 @@
+# action file to run H2 chromatography
+#
+#	$1 filename for chromatogram
+#	$2 port
+# 30 sec relax period included here
+#
+30       StartRun        HP35900         @channel_h2
+30       SwitchValve     H2Load          Inject
+30       CloseRelay      hp34970         @h2_vent_valve
+162     SwitchValve     H2Load          Load
+162     OpenRelay       hp34970         @h2_vent_valve
+#167     SwitchValve     H2Load          Load
+#167     OpenRelay       hp34970         @h2_vent_valve
+355     StopRun         HP35900         @channel_h2
+355     StoreData       HP35900         @channel_h2 $1 $2 @sample_rate          
+

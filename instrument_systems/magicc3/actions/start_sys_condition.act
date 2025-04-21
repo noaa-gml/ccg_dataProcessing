@@ -1,0 +1,8 @@
+#  Action file to start the conditioning of the system
+#
+#	$1 manifold
+#	$2 port_num
+#
+0  	TurnUniversalActuator 	Manifold$1	$2
+5   	OpenRelay              	hp34970      	@Sample_mks_close_valve
+8	Noop			none 		none

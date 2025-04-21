@@ -1,0 +1,14 @@
+# action file for flushing and sampling the Picarro analyzer
+# 
+# $1 = temp data filename
+#
+# Assumes the StandardSelect and SampleSelect valves are already in 
+# the correct position and Flush cycle is finished
+#
+# action file for monitoring Picarro
+#Action line syntax:
+#       0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+#
+0   MonitorDevice picarro None 30  0  0  $1 replace
+

@@ -1,0 +1,169 @@
+v8.0 March 10, 2025
+===================
+Main change was to make pydv run natively on MacOS.  This required
+- assumed drives were mounted under /Volumes, so paths needed to be modified
+- the ComboListBox didn't work, so had to revert to standard ComboBox
+
+In order to quickly access target data from the insitu_data database table,
+added an index to the table for site_num, parameter_num, target
+
+Added flagged target data to target plots.
+
+Lots of general syntax clean up to satisfy the spyder ide syntax
+
+v7.1 June 9, 2022
+=====================
+changes to fl module to plot flagged flask data as a separate dataset, and
+to not include them in the determination of the y axis scale.  They will be
+plotted on the axis line if off scale instead. Also synced axis for graphs in
+fl module.
+
+Fixed graph5 so that syncAxis takes an id number, and only graphs with that id
+number will sync.  This will prevent a syncAxis in the fledit module to not
+affect graphs in the caledit module for example.
+
+v7.0 Winter 2022
+=====================
+converted to python 3
+Major changes in a lot of different areas.
+
+
+v6.0 May 2019
+===============================
+Major rewrite of a lot of things.  Cleaned up code to be more consistent with
+spaces vs tabs for indentation.  Put import for each of the  modules into
+the callback when module icon button is clicked, instead of at top.  This
+means code is imported when called, not at startup.
+Improved structure of nledit, fledit, caledit
+programs.  Updated isedit to handle mlo picarro system.  Updated fledit, to i
+handle magicc-3.  Updated fledit, nledit, caledit to include qc files
+available on magicc-3 and co2cal-2. Many more changes
+
+v5.3.5 July 28, 2016
+===============================
+Changed the 'get' dialog to allow selecting different flask methods, and an
+option to plot different methods in different symbols.
+
+v5.3.4 July 6, 2016
+===============================
+Changes to flask flagging module:
+
+- Call fledit to plot raw file data instead of using RawFilePlot.py
+- Revisions to get.py to fix problems with binning when during flask
+flagging.
+- Changed fledit.py to accept raw file name on startup to use.
+
+Changes to ccgvu:
+
+- Added option to include column names in export of ccgvu data to file.
+- When exporting data to grapher, convert decimal date values to datetime
+values.
+- when using Get dialog, if both checkboxes for soft flags and different
+symbols are checked, then plot flagged data on Data tab graph.  The flagged
+data is not used in the curve fit.
+
+v5.3.2 August 13, 2015
+===============================
+Revamped the 'get' dialog in common to allow getting flagged data as separate
+datasets.
+
+Removed usage of the common/data.py module for creating graph datasets,
+instead use the built in graph createDataset routine.
+
+
+v5.3.1 July 01, 2015
+===============================
+Cleaned up code to remove usage of db() class from /ccg/src/python/db.py
+Replaced with dbutils module
+
+v5.3.0
+===============================
+Removed the 'Flask Raw Files' module. This is better handled by the program
+/ccg/src/fledit/.
+
+Replaced the Get Data dialog in grapher and ccgvu.  Instead of a wizard based
+dialog, used a more common form type dialog.  This new dialog remembers your
+current settings, so don't have to go through all the steps that were required
+with the wizard dialog.
+
+Replaced the grapher Target cals dialog with new dialog.
+
+Removed grapher 'GC/NDIR raw data' and 'Insitu QC data' options from the
+grapher 'Add Data' menu.  These are handled better by the isedit
+program. 
+
+Added another format type to import data, 'Y1', which will read a single
+column of values, using the line number as the x value.
+
+v.5.2.4 12 Aug 2013
+===============================
+Modified the automated flask selection to include date, time, id, and method
+in the results table. Also added a summary to the table, listing final flag
+changes.  Fixed data input to take into account different strategies available.  
+Added station code and parameter to the plot title.
+
+v.5.2.3 14 Dec 2012
+===============================
+Modified cal.py to allow editing records if the database table is not
+'calibrations'.
+
+v.5.2.2 27 Nov 2012
+===============================
+Modified the common/regres.py file to include t test and probability
+values for a linear regression.  A linear regression now uses the llinregress
+routine from astats.py instead of numpy.polyfit.  The llinregress returns
+the t and probability values that can be used for determining if the
+slope coefficient is significant.
+
+Removed the 'Export to Grapher' option in ccgvu export.  This didn't work
+so only option is to export to file.
+
+v.5.2.1 06 Nov 2012
+===============================
+Changed the 'Get Data' dialog in the flask editing module fl to
+include the flask strategy, either normal flasks or pfp flasks.  Some sites
+do both, so this gives the user an option of choosing only one of them.
+
+The above changes required an update of some routines in the utils.py file 
+to handle strategies.
+
+v.5.2.0 24 Oct 2012
+===============================
+Revised the getFlDialog for fl and flsel to use a custom choice widget
+picking the site, a listbox instead of listctrl for the parameter, and 
+used static text boxes to group the widgets.
+
+Updated flraw to plot each reference tank as a different dataset instead
+of having all references as one dataset.
+
+Added plot of filter response in ccgvu. 
+
+Added a couple of utility routines in common/utils.py:
+	getSiteList for getting list of site codes and names for a project,
+	getMinMaxDates for getting min year and max year for flask data at a site
+
+change calibration dialog to not allow editing a database record except for the flag
+and notes, rather than any field in the record.
+
+Created just one SiteStrings dialog, used by fl and flraw.
+
+v.5.1.3 22 Oct 2012
+===============================
+Modified fl (manual flask flagging) to include the ability to view
+back trajectory for the selected data point.
+
+v.5.1.2 16 Mar 2012
+===============================
+Changed SiteStrings.py in fl module to use flpro.py for all
+species.  flpro.py was updated to handle all gases.
+
+v.5.1.1 24 Feb 2012
+===============================
+Changed SiteStrings.py in fl module to use flpro.pl to get
+site strings for ch4 and co.  flpro.py previously used works only
+for co2.
+
+Fixed typo in fl.py.  Was data.setData(), should have been
+data.SetData().
+
+Added an about() box with version number.

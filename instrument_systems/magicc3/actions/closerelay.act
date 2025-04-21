@@ -1,0 +1,4 @@
+# action file to close a relay
+#
+#
+0	CloseRelay	hp34970		$1

@@ -1,0 +1,19 @@
+
+#
+# Action list for setting up for drying the water trap
+#
+#
+
+#0	TurnUniversalActuator	GCbypass	@Include
+0	TurnUniversalActuator	ManifoldD	@ManifoldD_off
+0	TurnUniversalActuator	ManifoldSelect	@ManifoldSelect_off
+1	OpenRelay		HP34970		@Sample_mks_open_valve 
+1	CloseRelay		HP34970		@Sample_mks_close_valve 
+1	OpenRelay		HP34970		@regulator_purge
+2	OpenRelay		HP34970		@gc_sample_loop_relax
+#
+# use these steps to stop drying of manifold pump water traps
+2	TurnUniversalActuator 	ManifoldA_Evac	@evac_off
+2	TurnUniversalActuator 	ManifoldB_Evac	@evac_off
+5	TurnUniversalActuator	ManifoldA	@ManifoldA_off
+5	TurnUniversalActuator	ManifoldB	@ManifoldB_off

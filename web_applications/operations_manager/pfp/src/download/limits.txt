@@ -1,0 +1,24 @@
+Commands: S - L - L
+
+sampling site  CMA
+plan limits:
+  altitude tolerance     100 ft
+  latitude tolerance    0.10 deg
+  longitude tolerance   0.10 deg
+  sampling mode         semi auto
+  location method       GPS/Altimeter
+  know altitude          100 ft
+  met sample interval   001d:000h:000m:000s
+sample limits:
+  max flush time         100 seconds
+  manifold flush volume    5.0 liters
+  default manifold flush   5 seconds
+  sample flush volume     10.0 liters
+  default sample flush    20 seconds
+  max fill time          100 seconds
+  min fill pressure       40.0 psia
+test limits:
+  max test time  100 seconds
+  max flowrate     4.0 lpm
+  max pressure    59.0 psia
+  min supply      19.0 volts

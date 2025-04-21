@@ -1,0 +1,8 @@
+#
+# Magicc Peak Identification Table
+#
+# Gas    Channel   Retention    Window
+# Name   Number    Time (sec)  Size (sec)
+#-----   -------   ----------  ----------
+  H2        0          43          20
+  CO        0          88          20

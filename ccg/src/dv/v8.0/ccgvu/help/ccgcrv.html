@@ -1,0 +1,564 @@
+<HTML><HEAD><TITLE>Manpage of CCGCRV</TITLE>
+</HEAD><BODY>
+<H1>CCGCRV</H1>
+Section: User Commands  (1)<BR>Updated: local<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+ccgcrv - Apply ccg curve fitting routines to time series data
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+
+<B>ccgcrv</B>
+
+[<B> options </B>]
+
+[
+<I>file </I>
+
+]
+
+<BR>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<I>ccgcrv</I>
+
+applies the standard ccg curve fitting routines to a time series data
+set.  This curve fit consists of a function fit to the data where the
+function is a combination of a polynomial and annual harmonics.  The 
+residuals from this fit are then smoothed using a low pass filter.
+<P>
+
+If 
+<I>file</I>
+
+is not specified, input is from stdin.  The input data must consist of two
+columns of numbers. The first column is a decimal year value, and the
+second column is the corresponding value.  Columns are separated by white
+space.
+<P>
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+The following options are used for determining how the curve fits are
+made to the data.
+<P>
+<DL COMPACT>
+<DT><B>-npoly  num</B>
+
+<DD>
+Specify the number of polynomial terms to use.  Default is 3.  
+<I>num</I>
+
+must be in the range 0 to 10.
+<P>
+<DT><B>-nharm  num</B>
+
+<DD>
+Specify the number of annual harmonic terms to use.  Default is 4.
+<I>num</I>
+
+must be in the range 0 to 10.
+<P>
+<DT><B>-interv  value</B>
+
+<DD>
+Specify the average sampling interval between data points.  This is a
+floating point number, and units are in days.  If not specified, 
+<I>ccgcrv</I>
+
+will calculate it based on the spacing in the input data.
+<P>
+<DT><B>-short  num</B>
+
+<DD>
+Specify the short term cutoff value for the low pass filter.  The short
+term value is usually used for applying light smoothing to the data.  Units
+for 
+<I>num</I>
+
+are in days.  The default value is 50.
+<P>
+<DT><B>-long  num</B>
+
+<DD>
+Specify the long term cutoff value for the low pass filter.  The long
+term value is usually used for removing any remaining annual cycles still
+present in the residuals after the function fit.  Units for 
+<I>num</I>
+
+are in days.  The default value is 667.
+<P>
+<P>
+<DT><B>-timez  decdate</B>
+
+<DD>
+Specify the date at which the coefficients of the function fit will intersect
+the y axis, that is, when x = 0.  This should be a decimal year value.
+The default value is January 1st for the year of the first data point.
+<P>
+<P>
+</DL>
+<P>
+
+The following options determine the date category of the output.  There
+are three categories: sample dates, equally spaced dates, and user defined dates.  
+Only one of equally spaced dates or user defined dates should be specified. If
+both are, then equally spaced dates are used.  The output for sample date results
+can be saved to a file using the 
+<B>-s file</B>
+
+option.
+The output for the equally spaced or user defined date results can be save to a
+file using the
+<B>-f file</B>
+
+option.  At least one of the next three options must be specified.  If not, then
+<B>-sample</B>
+
+is assumed.
+<P>
+<DL COMPACT>
+<DT><B>-sample</B>
+
+<DD>
+Output data will be printed at the dates corresponding to the input sample data.
+The output options (see below)
+<B>-orig, -res, -detrend, and -ressm </B>
+
+are available only for this option.
+<P>
+<DT><B>-equal</B>
+
+<DD>
+Output data will be printed at equal time intervals.  The interval is 
+specified by 
+<B>-interv.  </B>
+
+The times for the output data will not necessarily correspond to the input
+data times when using this option.  The starting date is the date of the
+first sample.  This can be changed using the 
+<B>-date</B>
+
+option (see below).
+<P>
+<DT><B>-user file</B>
+
+<DD>
+Output data will be printed based on dates contained in 'file'. 
+The dates should be in decimal year format, and be the
+first column in the file.
+<P>
+</DL>
+<P>
+
+The next options are used for redirecting output to a file instead of to stdout.
+<P>
+<DL COMPACT>
+<DT><B>-s file</B>
+
+<DD>
+Write sample date defined output data to 'file' instead of stdout.  
+This does not affect the
+<B>-coef</B>
+
+and 
+<B>-stats</B>
+
+options.  
+They continue to go to stdout only.
+<P>
+<DT><B>-f file</B>
+
+<DD>
+Write equally spaced or user defined output data to 'file' instead of stdout.  
+This does not affect the
+<B>-coef</B>
+
+and 
+<B>-stats</B>
+
+options.  
+They continue to go to stdout only.
+<P>
+</DL>
+<P>
+
+The following options determine the dates and date formats for the output results.
+<P>
+<DL COMPACT>
+<DT><B>-cal</B>
+
+<DD>
+Dates and times for output data will be printed using calendar style 
+representation.  Default is for decimal year values.  Output consists of
+three columns of numbers representing the year, month and day of the data
+point.
+<P>
+<DT><B>-date  yy:mm:dd</B>
+
+<DD>
+Specify the starting date of output data.  Normally 
+<I>ccgcrv</I>
+
+will print out data for the same period as the input data.  This option 
+allows the user to explicitly set the starting date.  When used in conjunction
+with
+<B>-interv</B>
+
+, equally spaced data at known times can be output.
+<P>
+<P>
+</DL>
+<P>
+
+Different parts of the result curves can be printed to standard output by 
+specifying one or more of the following options.  Output consists of columns of numbers 
+separated by white space.  The first column is the decimal date 
+(or calendar date if
+<B>-cal</B>
+
+is specified) in .6f format.  Any remaining columns correspond to any of
+the following options that are specified.  Each column has an %8.3f format.
+The order of the columns from left to right, regardless of the order of the 
+specfied options, is
+<P>
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>-orig</B>
+
+<DD>
+<DT><B>-func</B>
+
+<DD>
+<DT><B>-poly</B>
+
+<DD>
+<DT><B>-smooth</B>
+
+<DD>
+<DT><B>-trend</B>
+
+<DD>
+<DT><B>-detrend</B>
+
+<DD>
+<DT><B>-smscycle</B>
+
+<DD>
+<DT><B>-harm</B>
+
+<DD>
+<DT><B>-res</B>
+
+<DD>
+<DT><B>-smres</B>
+
+<DD>
+<DT><B>-trres</B>
+
+<DD>
+<DT><B>-ressm</B>
+
+<DD>
+<DT><B>-gr</B>
+
+<DD>
+
+</DL>
+</DL>
+
+<DL COMPACT>
+<DT><DD>
+<P>
+</DL>
+<P>
+
+The options 
+<B>-all </B>
+
+and
+<B>-unique </B>
+
+can be used to get multiple results.
+<P>
+<DL COMPACT>
+<DT><B>-all</B>
+
+<DD>
+All curve results contained in the list above are printed.  If 
+<B>-equal</B>
+
+or
+<B>-user file</B>
+
+are specified, then 
+<B>-orig, -detrend, -res,</B>
+
+and
+<B>-ressm</B>
+
+are not included.
+<P>
+<DT><B>-unique</B>
+
+<DD>
+The curve results that are unique to an output date category are printed.  
+If 
+<B>-sample</B>
+
+is specified, only the results corresponding to
+<B>-orig, -detrend, -res,</B>
+
+and
+<B>-ressm</B>
+
+are included.  If
+<B>-equal</B>
+
+or
+<B>-user file</B>
+
+are specified, all other options except the four unique to 
+<B>-sample</B>
+
+are printed.
+<P>
+<P>
+<DT><B>-orig</B>
+
+<DD>
+Values of the original input data set will be printed.  Only applies if
+<B>-equal </B>
+
+or
+<B>-user</B>
+
+are not specified.
+<P>
+<DT><B>-func</B>
+
+<DD>
+Print values of the function fit to the data.
+<P>
+<DT><B>-poly</B>
+
+<DD>
+Print values of the polynomial part of the function.
+<P>
+<DT><B>-smooth</B>
+
+<DD>
+Print values of the short term smoothed curve.  This is the function plus
+the short term filter of the residuals.
+<P>
+<DT><B>-trend</B>
+
+<DD>
+Print values of the trend curve.  This is the polynomial part of the 
+function plus the long term filter of the residuals.
+<P>
+<DT><B>-detrend</B>
+
+<DD>
+Print values of the detrended data.  This is the original data points 
+minus the trend curve.  Only applies if
+<B>-equal</B>
+
+and
+<B>-user file</B>
+
+are not specified.
+<P>
+<DT><B>-smcycle</B>
+
+<DD>
+Print values of the smoothed, detrended annual cycle.  This is the smooth
+curve minus the trend.
+<P>
+<DT><B>-harm</B>
+
+<DD>
+Print values of the annual harmonic part of the function.
+<P>
+<DT><B>-res</B>
+
+<DD>
+Print values of the residuals from the function.  Only applies if
+<B>-equal </B>
+
+or
+<B>-user</B>
+
+are not specified.
+<P>
+<DT><B>-smres</B>
+
+<DD>
+Print values of the short term smoothed residuals from the function.
+<P>
+<DT><B>-trres</B>
+
+<DD>
+Print values of the long term smoothed residuals from the function.
+<P>
+<DT><B>-ressm</B>
+
+<DD>
+Print values of the residuals from the smoothed curve.  This is the
+original data points minus the smoothed curve.  Only applies if
+<B>-equal</B>
+
+and
+<B>-user file</B>
+
+are not specified.
+<P>
+<DT><B>-gr</B>
+
+<DD>
+Print values of the growth rate.  This is the first derivative of the trend
+curve.
+<P>
+</DL>
+<P>
+
+Miscellaneous extra output options.
+<P>
+<DL COMPACT>
+<DT><B>-coef  num1, num2</B>
+
+<DD>
+Print values of the coefficients of the function.  All other output options
+are ignored if 
+<B>-coef</B>
+
+is specifed.
+<I>num1</I>
+
+and
+<I>num2</I>
+
+refer to the begining and ending indexes of the coefficients.  The  
+coefficients are numbered from 0 to 
+<I>n</I>
+
+where
+<I>n </I>
+
+is 
+<B>-npoly</B>
+
++ 2 * 
+<B>-nharm</B>
+
+- 1.  There are two coefficients for each harmonic term in the function.  
+<P>
+<DT><B>-stats</B>
+
+<DD>
+Print summary statistics of curve fit.  This includes such things as
+function coefficients and uncertainties, filter parameters, and residual
+information.
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+<P>
+The most common case is to get all results written to two files, one
+with results based on sample dates, one with results based on equally
+spaced or user defined dates.  The following example computes curves for
+the data in
+<B>testfile</B>
+
+and creates the two files 
+<B>file1</B>
+
+and
+<B>file2. file1</B>
+
+contains results based on sample dates (4 columns of result data), and
+<B>file2</B>
+
+contains results based on equally spaced dates (9 columns of result data).
+<P>
+<DL COMPACT>
+<DT><DD>
+<B>ccgcrv -sample -equal -unique -s file1 -f file2 inputfile</B>
+
+<P>
+Print the long term trend values from the data file
+<B>testfile.</B>
+
+<DT><DD>
+<B>ccgcrv -npoly 3 -nharm 4 -trend  testfile</B>
+
+<P>
+</DL>
+<P>
+
+Print the smoothed curve, at equally spaced intervals, 14 days apart.
+<P>
+<DL COMPACT>
+<DT><DD>
+<B>ccgcrv -interv 14 -equal -smooth testfile</B>
+
+<P>
+</DL>
+<P>
+
+Print in calendar format the growth rate
+<DL COMPACT>
+<DT><DD>
+<B>ccgcrv -cal -gr  testfile</B>
+
+<P>
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>WARNINGS</H2>
+
+If no output options are specified, 
+<I>ccgcrv</I>
+
+prints out nothing.
+<P>
+<A NAME="lbAH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<P>
+See the paper 
+<I>Curve Fitting Methods Applied to Time </I>
+
+<I>Series of Trace Gas Measurements</I>
+
+<I>in NOAA/CMDL</I>
+
+by K.W. Thoning.
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">EXAMPLES</A><DD>
+<DT><A HREF="#lbAG">WARNINGS</A><DD>
+<DT><A HREF="#lbAH">SEE ALSO</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 23:33:09 GMT, March 08, 2002
+</BODY>
+</HTML>

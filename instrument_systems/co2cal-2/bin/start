@@ -1,0 +1,6 @@
+#!/bin/bash
+
+	cd /home/co2cal
+
+	exec python /home/co2cal/co2cal.py
+#	exec python /home/co2cal/co2cal_V02.py

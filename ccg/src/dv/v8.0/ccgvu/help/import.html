@@ -1,0 +1,104 @@
+<title>Import Menu</title>
+<h1>Import  [File Menu]</h1>
+<hr>
+<center>
+<img src="import.gif">
+</center>
+
+<p>
+Import allows you to read files that are in several
+different standard formats, but are located in a different location from
+the standard location.
+
+<p>
+This routine differs from <a href="open.html">'Open'</a> in that the
+file location is specified by the user, and the time period is not specified; 
+all of the data in the file is used.
+
+<p>
+
+<hr>
+The following are the options of the Import dialog box:
+
+<ul>
+<li>
+	<b>Data Format</b>
+	<dd>	Specify the format of the data file.  The available formats
+		are:
+		<ul>
+		<li>Decimal Date (1994.1234) Value
+		<br>
+			A file with two columns, the first columnn is the decimal date,
+			the second column the value.  The decimal date used a 4 digit format
+			for the year.
+		<li>Decimal Date (94.1234) Value
+		<br>
+			A file with two columns, the first columnn is the decimal date,
+			the second column the value.  The decimal date used a 2 digit format
+			for the year.
+		<li>Year Month Day Hour Value
+		<br>
+			A file with the date in calendar format, including the hour.
+		<li>Year Month Day Value
+		<br>
+			A file with the date in calendar format.
+		<li>Year Month Value
+		<br>
+			A file with the date in calendar format.  Only the year and
+			month are specified.
+		<li>Sta Year Month Day Hour Value
+		<br>
+			A file with the date in calendar format, including the hour.
+			The date is preceeded by a column, such as a station code.
+		<li>Sta Year Month Day Value
+		<br>
+			A file with the date in calendar format.
+			The date is preceeded by a column, such as a station code.
+		<li>Sta Year Month Value
+		<br>
+			A file with the date in calendar format.  Only the year and
+			month are specified.
+			The date is preceeded by a column, such as a station code.
+		</ul>
+
+<p>
+<li>
+	<b>Import File</b>
+	<dd>	An entry box where the user specifies the file name.  
+		The user can browse through the file system directory and select
+		a file by pressing the <b>Browse...</b> button.
+
+<p>
+<li>
+	<b>Data Selection Options</b>
+	<dd> 	Parts of the file can be ignored using these options:
+	
+	<ul>
+	<li>
+	Lines to skip<br>
+	<dd>	If there are any lines at the beginning of the file  
+		that should not be used, enter that number here.
+
+	<li>
+	Ignore data<br>
+	<dd>
+		If this checkbox is selected, than the user can specify
+		data to be ignored if it is less than, equal to, or greater
+		than some value.
+	</ul>
+
+</ul>
+<p>
+	<h3>Action Buttons</h3>
+
+<ul>
+<li>
+	<b>OK</b>
+	<dd>	Opens the selected file, calculates the curve fits, 
+		plots the results, and dismisses the dialog box.
+
+<li>
+	<b>Close</b>
+	<dd> 	Close: Dismisses the dialog box and takes no action.
+</ul>
+</ul>

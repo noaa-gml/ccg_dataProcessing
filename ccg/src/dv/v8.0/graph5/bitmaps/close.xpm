@@ -1,0 +1,26 @@
+/* XPM */
+static char *close[] = {
+/* width height ncolors chars_per_pixel */
+"16 13 6 1",
+/* colors */
+"+	c none",
+" 	c #000000",
+".	c #7F7F7F",
+"X	c #FFFFFF",
+"o	c #FFFF00",
+"O	c #BFBFBF",
+/* pixels */
+"+++.....++++++++",
+"++.OoOoO.+++++++",
+"+.OoOoOoO......+",
+"+.XXXXXXXXXXXX. ",
+"+.XoOoOoOoOoOo. ",
+"+.XOoOoOoOoOoO. ",
+"+.XoOoOoOoOoOo. ",
+"+.XOoOoOoOoOoO. ",
+"+.XoOoOoOoOoOo. ",
+"+.XOoOoOoOoOoO. ",
+"+.XoOoOoOoOoOo. ",
+"+.............. ",
+"++              "
+};

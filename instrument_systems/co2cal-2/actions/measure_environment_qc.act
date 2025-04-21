@@ -1,0 +1,13 @@
+# action file to measure system wide qc data
+#
+# $1 is file for the qc data
+#
+0   LockInterface   hp34970     Lock
+0   ConfigChannel   hp34970     @room_temp  DCVOLT
+0   ConfigChannel   hp34970     @chiller_temp  TC K
+1   SingleScan      hp34970     @room_temp,@chiller_temp @room_temp_scale,@chiller_temp_scale
+1   LockInterface   hp34970     Unlock
+1   LogData         hp34970     $1          Replace
+
+
+

@@ -1,0 +1,13 @@
+# action file for flushing and sampling the Aerodyne analyzer
+#
+# $1 = temp data filename
+#
+# Assumes the StandardSelect and SampleSelect valves are already in 
+# the correct position and flush cycle is finished
+#
+#Action line syntax:
+#       0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?
+#
+#
+0   MonitorDevice Aerodyne None 30  0  0  $1 replace
+

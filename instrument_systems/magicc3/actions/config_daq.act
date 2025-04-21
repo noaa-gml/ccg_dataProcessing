@@ -1,0 +1,17 @@
+# config_daq.act
+# 
+# Configure the channels of the hp34970A DAQ
+0     LockInterface     hp34970     Lock
+0     ConfigChannel     hp34970     @manifold_pressure       DCVOLT
+0     ConfigChannel     hp34970     @manifoldA_press         DCVOLT
+0     ConfigChannel     hp34970     @manifoldB_press         DCVOLT
+0     ConfigChannel     hp34970     @sample_flow             DCVOLT
+0     ConfigChannel     hp34970     @sample_pressure         DCVOLT
+0     ConfigChannel     hp34970     @room_temp               DCVOLT
+0     ConfigChannel     hp34970     @chiller_temp            TC K 
+0     ConfigChannel     hp34970     @trap_humidity           DCVOLT
+0     ConfigChannel     hp34970     @sample_loop_pressure    DCVOLT
+0     ConfigChannel     hp34970     @room_pressure           DCVOLT
+0     ConfigChannel     hp34970     @idle_pressure           DCVOLT
+0    ConfigChannel     hp34970     @scroll_pump_pressure    DCVOLT
+0    LockInterface     hp34970     Unlock

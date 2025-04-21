@@ -1,0 +1,127 @@
+LIB=linpack
+FFLAGS=-O
+OBJ = \
+	cchdc.o	\
+	cchdd.o	\
+	cchex.o	\
+	cchud.o	\
+	ccopy.o	\
+	cdotc.o	\
+	cdotu.o	\
+	cgbco.o	\
+	cgbdi.o	\
+	cgbfa.o	\
+	cgbsl.o	\
+	cgeco.o	\
+	cgedi.o	\
+	cgefa.o	\
+	cgesl.o	\
+	cgtsl.o	\
+	chico.o	\
+	chidi.o	\
+	chifa.o	\
+	chisl.o	\
+	chpco.o	\
+	chpdi.o	\
+	chpfa.o	\
+	chpsl.o	\
+	cmach.o	\
+	cpbco.o	\
+	cpbdi.o	\
+	cpbfa.o	\
+	cpbsl.o	\
+	cpoco.o	\
+	cpodi.o	\
+	cpofa.o	\
+	cposl.o	\
+	cppco.o	\
+	cppdi.o	\
+	cppfa.o	\
+	cppsl.o	\
+	cptsl.o	\
+	cqrdc.o	\
+	cqrsl.o	\
+	crotg.o	\
+	cscal.o	\
+	csico.o	\
+	csidi.o	\
+	csifa.o	\
+	csisl.o	\
+	cspco.o	\
+	cspdi.o	\
+	cspfa.o	\
+	cspsl.o	\
+	csrot.o	\
+	csscal.o	\
+	csvdc.o	\
+	cswap.o	\
+	ctrco.o	\
+	ctrdi.o	\
+	ctrsl.o	\
+	icamax.o	\
+	isamax.o	\
+	sasum.o	\
+	saxpy.o	\
+	sblas.o	\
+	scasum.o	\
+	schdc.o	\
+	schdd.o	\
+	schex.o	\
+	schud.o	\
+	scnrm2.o	\
+	scopy.o	\
+	sdot.o	\
+	sgbco.o	\
+	sgbdi.o	\
+	sgbfa.o	\
+	sgbsl.o	\
+	sgeco.o	\
+	sgedi.o	\
+	sgefa.o	\
+	sgesl.o	\
+	sgtsl.o	\
+	smach.o	\
+	snrm2.o	\
+	spbco.o	\
+	spbdi.o	\
+	spbfa.o	\
+	spbsl.o	\
+	spoco.o	\
+	spodi.o	\
+	spofa.o	\
+	sposl.o	\
+	sppco.o	\
+	sppdi.o	\
+	sppfa.o	\
+	sppsl.o	\
+	sptsl.o	\
+	sqrdc.o	\
+	sqrsl.o	\
+	srot.o	\
+	srotg.o	\
+	sscal.o	\
+	ssico.o	\
+	ssidi.o	\
+	ssifa.o	\
+	ssisl.o	\
+	sspco.o	\
+	sspdi.o	\
+	sspfa.o	\
+	sspsl.o	\
+	ssvdc.o	\
+	sswap.o	\
+	strco.o	\
+	strdi.o	\
+	strsl.o	\
+	caxpy.o
+lib$(LIB).a:	$(OBJ)
+	ar ru lib$(LIB).a $?
+	ranlib lib$(LIB).a
+
+install:	lib$(LIB).a
+	ln -s /netlib/netlib/linpack/lib$(LIB).a /usr/local/lib/liblinpack.a
+	rm *.o
+
+test: test.o
+	f77 test.o -l$(LIB)
+	time a.out

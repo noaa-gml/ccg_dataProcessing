@@ -1,0 +1,14 @@
+# action to measure suite of system qc data at start of measurement cycle
+#
+# $1 data file for qc data 
+#
+
+# First read qc data  for aerodyne stop flow
+#0     ConfigChannel   hp34970 	@idle_pressure		DCVOLT
+#0     ConfigChannel   hp34970	@room_pressure		DCVOLT
+#0     ConfigChannel   hp34970	@room_temp	 	DCVOLT
+#0     ConfigChannel   hp34970	@chiller_temp		TC K
+#0     ConfigChannel   hp34970 	@scroll_pump_pressure	DCVOLT
+0   SingleScan      hp34970	@idle_pressure,@room_pressure,@room_temp,@chiller_temp,@scroll_pump_pressure  @idle_pressure_scale,@room_pressure_scale,@room_temp_scale,@chiller_temp_scale,@scroll_pump_pressure_scale
+0   LogData         hp34970	$1 Replace
+#0  PrintData	      hp34970   %d %12.4

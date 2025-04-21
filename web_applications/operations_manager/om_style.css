@@ -1,0 +1,99 @@
+.NoUnderlineSmallBlackURL {font-family:Times;font-size:12pt;font-weight:bold;color:black;text-decoration:none}
+.NoUnderlineBlackURL {font-family:Times;font-size:13pt;font-weight:bold;color:black;text-decoration:none}
+.NoUnderlineGreenURL {font-family:Times;font-size:13pt;font-weight:bold;color:green;text-decoration:none}
+.NoUnderlineBlueURL {font-family:Times;font-size:13pt;font-weight:bold;color:blue;text-decoration:none}
+.NoUnderlineLargeBlueURL {font-family:Times;font-size:18pt;font-weight:bold;color:blue;text-decoration:none}
+.NoUnderlineWhiteURL {font-family:Times;font-size:13pt;font-weight:bold;color:white;text-decoration:none}
+
+.NavBtn {font-size: 11pt; font-weight: bold; color: white; background-color: turquoise}
+.Btn {font-size: 13pt; font-weight: bold; color: white; background-color: turquoise}
+.SmallBtn {font-size: 10pt; font-weight: bold; color: white; background-color: turquoise}
+
+.List {font-size: 13pt; font-family: arial,helvetica;font-weight: normal; color: black; background-color: white}
+.BlueList {font-size: 13pt; font-family: arial,helvetica; font-weight: normal; color: blue; background-color: white}
+.GreenList {font-size: 13pt; font-family: arial,helvetica; font-weight: normal; color: green; background-color: white}
+.RedList {font-size: 13pt; font-family: arial,helvetica; font-weight: normal; color: red; background-color: white}
+.PurpleList {font-size: 13pt; font-family: arial,helvetica; font-weight: normal; color: purple; background-color: white}
+
+.Spacing { line-height: 25pt }
+.WordSpace { word-spacing: 20 }
+
+.MediumSize {font-size: 12pt; font-family: arial,helvetica; font-weight: normal}
+
+.XLargeWhiteB {text-decoration:none;font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: white}
+.LargeWhiteB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: white}
+.MediumWhiteB {text-decoration:none;font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: white}
+.SmallWhiteB {font-size: 10pt; font-family: arial,helvetica; font-weight: bold; color: white}
+
+.XLargeGrayB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: gray}
+.LargeGrayB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: gray}
+.MediumGrayB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: gray}
+.MediumGrayN {font-size: 12pt; font-family: arial,helvetica; font-weight: normal; color: gray}
+.SmallGrayB {font-size: 10pt; font-family: arial,helvetica; font-weight: bold; color: gray}
+
+.LargeLightGrayN {font-size: 18pt; font-family: arial,helvetica; font-weight: normal; color: #DCDCDC}
+
+.XLargeRedB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: red}
+.LargeRedB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: red}
+.MediumRedB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: red}
+.SmallRedB {font-size: 10pt; font-family: arial,helvetica; font-weight: bold; color: red}
+
+.MediumMagentaB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: magenta}
+
+.XLargeRedN {font-size: 24pt; font-family: arial,helvetica; font-weight: normal; color: red}
+.LargeRedN {font-size: 18pt; font-family: arial,helvetica; font-weight: normal; color: red}
+.MediumRedN {font-size: 12pt; font-family: arial,helvetica; font-weight: normal; color: red}
+.SmallRedN {font-size: 10pt; font-family: arial,helvetica; font-weight: normal; color: red}
+
+.SuperSizeBlackTurquoiseB {font-size: 60pt; font-family: arial,helvetica; font-weight: bold; color: black; background-color: paleturquoise}
+.LargeSizeBlackTurquoiseB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: black; background-color: paleturquoise}
+.MediumSizeBlackTurquoiseB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: black; background-color: paleturquoise}
+.XLargeBlackB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: black}
+.LargeBlackB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: black}
+.MediumBlackB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: black}
+.SmallBlackB {font-size: 11pt; font-family: arial,helvetica; font-weight: bold; color: black}
+.TinyBlackB {font-size: 6pt; font-family: arial,helvetica; font-weight: bold; color: black}
+.LessTinyBlackB {font-size: 8pt; font-family: arial,helvetica; font-weight: bold; color: black}
+.BlackB_warning {font-size: 10pt; font-weight: bold; color: black}
+
+.XSmallBlackB {font-size: 1pt; font-family: arial,helvetica; font-weight: bold; color: black}
+
+.MediumBlackGrayN {font-size: 12pt; font-family: arial,helvetica; font-weight: normal; color: black; background-color: whitesmoke}
+
+.MediumBlackMonoN {font-size: 12pt; font-family: monospace; font-weight: normal; color: black}
+
+.LargeBlackN {font-size: 18pt; font-family: arial,helvetica; font-weight: normal; color: black}
+.MediumBlackN {font-size: 12pt; font-family: arial,helvetica; font-weight: normal; color: black}
+.SmallBlackN {font-size: 10pt; font-family: arial,helvetica; font-weight: normal; color: black}
+.TinyBlackN {font-size: 6pt; font-family: arial,helvetica; font-weight: normal; color: black}
+
+.XLargeGreenB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: green}
+.LargeGreenB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: green}
+.MediumGreenB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: green}
+.SmallGreenB {font-size: 10pt; font-family: arial,helvetica; font-weight: bold; color: green}
+
+.XLargeCyanB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: cyan}
+.LargeCyanB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: cyan}
+.MediumCyanB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: cyan}
+.SmallCyanB {font-size: 10pt; font-family: arial,helvetica; font-weight: bold; color: cyan}
+
+.XLargeBlueB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: blue}
+.LargeBlueB {font-size: 18pt; font-family: arial,helvetica; font-weight: bold; color: blue}
+.MediumBlueB {font-size: 12pt; font-family: arial,helvetica; font-weight: bold; color: blue}
+.SmallBlueB {font-size: 10pt; font-family: arial,helvetica; font-weight: bold; color: blue}
+.TinyBlueB {font-size: 6pt; font-family: arial,helvetica; font-weight: bold; color: blue}
+
+.MediumBlueN {font-size: 12pt; font-family: arial,helvetica; font-weight: normal; color: blue}
+.LargeBlueN {font-size: 18pt; font-family: arial,helvetica; font-weight: normal; color: blue}
+
+.XLargeYellowB {font-size: 24pt; font-family: arial,helvetica; font-weight: bold; color: yellow}
+
+.HelpText { font-size:11pt; font-family: arial,helvetica; color: black; line-height: 25pt }
+
+.Message {text-align: center; border-style: solid; border-width: medium; border-color: turquoise; padding: 4%; VISIBILITY: hidden; OVERFLOW: hidden; POSITION: absolute; TOP: 50%; LEFT: 35%; background-color: blue; }
+
+.Hidden {text-align: center; VISIBILITY: hidden; OVERFLOW: hidden; }
+.Whitewash {text-align: center; VISIBILITY: hidden; OVERFLOW: hidden; }
+
+.Sub {position: relative; top: 0.3em; font-size:75%}
+.Sup {position: relative; bottom: 0.3em; font-size:75%}

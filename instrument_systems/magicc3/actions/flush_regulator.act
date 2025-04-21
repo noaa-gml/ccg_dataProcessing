@@ -1,0 +1,24 @@
+# action file to flush tank regulator
+# assumes manifold had been already positioned to correct port
+#  action.run("flush_regulator.act", std_manifold, std_portnum, std_next_off, flush_inst)
+#
+# $1	manifold 
+# $2	portnum
+# $3	next off port
+# 
+0	TurnUniversalActuator	GCbypass	@Include
+0	OpenRelay		hp34970		@Sample_mks_close_valve
+0	TurnUniversalActuator	ManifoldSelect	@Manifold$1_port
+2	TurnUniversalActuator	Manifold$1	$2
+5	CloseRelay		hp34970		@Regulator_purge
+5	CloseRelay		hp34970		@Sample_mks_open_valve
+5	CloseRelay		hp34970		@gc_sample_loop_relax
+#184	ConfigChannel		hp34970		@sample_flow 	DCVOLT
+185	SingleScan		hp34970		@sample_flow @sample_flow_scale
+185	PrintData		hp34970         %d %12.4f
+185	TurnUniversalActuator	Manifold$1	$3
+185	OpenRelay		hp34970		@Regulator_purge
+190	OpenRelay		hp34970		@Sample_mks_open_valve
+190  	OpenRelay		hp34970		@gc_sample_loop_relax
+190	CloseRelay		hp34970		@Sample_mks_close_valve
+190	TurnUniversalActuator	ManifoldSelect	@Manifold$1_port_off

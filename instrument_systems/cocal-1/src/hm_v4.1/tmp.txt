@@ -1,0 +1,156 @@
+    #########################################################################
+    def monitor_device_file_transfer(self, device, option):
+        """
+        Read data from an instrument using file exchange data transfer
+
+        It skips any leading character strings in the instrument output.
+        Sampling rate is set by the instrument for non-polled devices,
+        hard coded here to 1 second for polled devices.
+
+        Can either loop forever OR take a single reading (or single average reading).
+        Print each reading to stdout OR an average from a specified
+        time period to stdout.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm when looping forever.  Only way to stop hm is by
+        killing the process.
+
+        Option string can have up to 6 fields. Only the first is required:
+            'source_datafile timeavg forever reg_time filename replace|append'
+
+        Action line syntax:
+            0 MonitorDevice device source_datafile time_avg? forever? reg_time_interval? filename? filemode?
+
+        where,
+            source_datafile - path/filename for source data file 
+
+            time_avg - length of time in seconds to average readings before
+                 printing out the values. A time_avg value of 0 will cause
+                 hm to print out every reading.
+
+            forever - specifies wheather to loop forever (1) or to stop after one
+                time_avg cycle (0). Default is 0.
+
+            reg_time_interval? - 0 or 1 specifies if the user wants the timestamps to be
+                on a regular repeating pattern.  For example 10 second averages would
+                be recorded with timestamps of 10, 20, 30, etc seconds after the minute.
+                Default is 0.
+
+            filename - prints data lines to file "filename". Leave empty or use 'None' to default to stdout
+
+            filemode - one of 'append' or 'replace' or 'none'.  If 'append' add new lines to filename,
+                otherwise write over filename.  Default is 'replace'. If 'none' set with filename,
+                defaults to 'replace'
+
+
+        For example,
+
+        0  MonitorDevice device  None 10 1
+
+            will read device and average the readings for 10 seconds
+            before printing out, and it will loop forever.
+
+        0  MonitorDevice device  None 10
+
+            will read device and average the readings for 10 seconds
+            before printing out, and it will NOT loop forever so will exit
+            after the first 10 sec average is printed.
+
+        0  MonitorDevice device  None 0 1
+
+            will read device but will NOT average, instead it will print out
+            all of the data points and it will continue forever.
+
+        0  MonitorDevice device Read? 10  1  1
+
+            will read device and average the readings for 10 sec, loop forever,
+            and keep a regular pattern to the timestamps (ie every even 10 seconds of the minute).
+            Prompts the device with the 'Read?' string.
+
+        possible subclass overrides
+
+            self._process_answer()
+            self._getResultString()
+
+        """
+
+        self.logger.info("MonitorDevice start %s %s", device.name, option)
+
+        # split up option string into separeate variables
+        (source_fn, timeavg, forever, reg_time_interval, filename, filemode) = self._getMonitorOptions(option)
+        self.logger.info("MonitorDevice timeavg is %s, forever is %s, reg_time_interval is %s", timeavg, forever, reg_time_interval)
+
+        if filename:
+            mode = "a" if filemode == "append" else "w"
+            output_file = open(filename, mode)
+        else:
+            output_file = sys.stdout
+
+        # check if we want to save the output strings to file.
+        # this is for every string read from device.  filename and filemode are for averaged results
+        save_data, fp = self._check_save_data()
+        self.logger.info("MonitorDevice save_data is %s", save_data)
+        
+        ######################################
+        #clear buffer   #### throw away file to reset buffer ( mv source_fn read_fn)
+        device.clear()
+        # take a reading and throw it away, it might be just a partial string
+        self.logger.debug("MonitorDevice taking first reading. command is %s", command)
+        if command is None:
+            device.read_raw()
+        else:
+            ###################################### change get_answer to mv and read file  (get_datafile_answer)
+            answer = self._get_answer(device, command)
+        self.logger.debug("MonitorDevice: First reading discarded")
+
+        # If set reg_time_interval then correct start_time so that the time intervals will
+        # fall on a repeating "second past the minute", ie for 10 second averages the data points
+        # will be at 0, 10, 20, 30 etc seconds of each minute.
+        prev_time = time.time()
+        start_time = self._getStartTime(prev_time, timeavg, reg_time_interval)
+
+        # data will hold each reply from device
+        data = []
+        while True:
+            # Get a single line of data from device
+            ###################################### change get_answer to mv and read file
+            answer = self._get_answer(device, command)  # mv source_fn to read_fn, read/process lines
+            self.logger.debug("MonitorDevice: %s", answer)
+            if save_data:
+                fp.write(answer)
+                fp.flush()
+
+            if len(answer) == 0:
+                break
+
+            data.append(answer)
+            prev_time = time.time()
+
+            # if we've gone past the time average time, calculate average and write output
+            if prev_time > start_time + timeavg:
+                result = self._getResultString(timeavg, prev_time, start_time, data)
+                self.logger.debug("MonitorDevice result: %s", result)
+
+                # write result to file or stdout
+#                self._write_result(result, filename, filemode)
+#                if output_file:
+#                    output_file.write(result)
+#                else:
+#                    print(result)
+                print(result, file=output_file)
+                output_file.flush()
+
+                start_time = self._getStartTime(prev_time, timeavg, reg_time_interval)
+
+                if not forever:
+                    break    # break out of while loop
+
+                data = []
+
+            # wait a bit before asking for another line of data for polled devices.
+            if command is not None:
+                time.sleep(1)
+
+        self.logger.info("MonitorDevice stop %s %s", device.name, option)
+
+

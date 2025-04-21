@@ -1,0 +1,34 @@
+#!/bin/bash
+set -x
+
+	trap "echo got kill signal" 15
+
+	cd /home/co2cal
+
+
+
+# kill the initial run manager.  It should wait
+# for any subprocesses to finish.
+
+	read pid < .pid
+	kill $pid 
+
+# Kill any hardware manager programs (hm).
+	
+	a=`ps -fu co2cal | grep hm | awk '{print $2}'`
+	for i in $a
+	do
+		kill $i 2>/dev/null
+	done
+
+# Now kill run manager processes (co2cal.rm)
+
+#	a=`ps -fu co2cal | grep co2cal.py | awk '{print $2}'`
+#	for i in $a
+#	do
+#		if [ $i -ne $pid ]
+#		then
+#			kill $i 2>/dev/null
+#		fi
+#	done
+

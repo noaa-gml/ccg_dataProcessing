@@ -1,0 +1,2 @@
+version 4 is for using pyvisa software for
+communications with devices, instead of pyserial

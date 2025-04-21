@@ -1,0 +1,6 @@
+# action file for checking the low battery signal from the UPS
+# 
+#
+0	ReadValue	HP34970		@UPS_status	DCVOLT
+0	PrintData	HP34970     %5.2f
+
