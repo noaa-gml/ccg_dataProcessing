@@ -1,10 +1,14 @@
 # ccg_dataProcessing
 Processing, hardware management, system control and quality control software for CCGG flask, insitu and calibration data.
 
-/db_ddl contains creation files for various MariaDB tables, views, functions and stored procedures in our primary data repository.
-/instrument_systems contains software for controlling and running our flask and calibration measurement systems.
-/web_applications contains php web applications used for QC, operations and logistics.
-/ccg is the primary directory tree for the following projects:
+/db_ddl:
+    Contains creation files for various MariaDB tables, views, functions and stored procedures in primary data repository.
+/instrument_systems:
+    Contains software for controlling and running flask and calibration measurement systems.
+/web_applications:
+    Contains php web applications used for QC, operations and logistics.
+/ccg:  
+    The primary directory tree for the following projects:
 
 Flask Processing
 ================
