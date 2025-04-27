@@ -1,10 +1,11 @@
-An archive of CCGG pre-processed measurement data files for tank calibrations, instrument response curves, insitu and flask air analyses are available here:
+An archive of CCGG pre-processed measurement data files for tank calibrations, instrument response curves, insitu and flask air analyses is available here:
+
 https://doi.org/10.15138/4GJN-EM74
 
 ## Files Provided
 
-- `ccg_preprocessed_data_files_[release date].tar.gz` — the data archive
-- `ccg_preprocessed_data_files_[release date].tar.gz.sha256` — SHA-256 checksum of the archive
+- `ccg_preprocessed_data_files_[release date].tar.gz` — the data archive  
+- `ccg_preprocessed_data_files_[release date].tar.gz.sha256` — SHA-256 checksum of the archive  
 
 The checksum file has also been stored in the NOAA GML GitHub repository:
 
@@ -28,9 +29,11 @@ That archive is provided with a SHA-256 checksum so you can verify that it hasn�
 Use this command in a terminal to ensure the archive’s integrity:
 
 linux bash
+
 sha256sum -c ccg_preprocessed_data_files_[release date].tar.gz.sha256
 
 OSX can use this:
+
 shasum -a 256 -c ccg_preprocessed_data_files_[release date].tar.gz.sha256
 
 
