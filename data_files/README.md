@@ -4,8 +4,8 @@ https://doi.org/10.15138/4GJN-EM74
 
 ## Files Provided
 
-- `ccg_preprocessed_data_files_[release date].tar.gz` — the data archive  
-- `ccg_preprocessed_data_files_[release date].tar.gz.sha256` — SHA-256 checksum of the archive  
+- `ccg_preprocessed_data_files_[release date].tar.gz` — the data archive
+- `ccg_preprocessed_data_files_[release date].tar.gz.sha256` — SHA-256 checksum of the archive
 
 The checksum file has also been stored in the NOAA GML GitHub repository:
 
@@ -19,7 +19,7 @@ the GitHub version.
 
 ## Verifying the Integrity of This Archive
 
-That archive is provided with a SHA-256 checksum so you can verify that it hasn’t been tampered with during download or transfer.
+The archive is provided with a SHA-256 checksum so you can verify that it hasn’t been altered or corrupted.  This allows you to establish that the archive is what was published by GML.
 
 ---
 
@@ -28,13 +28,14 @@ That archive is provided with a SHA-256 checksum so you can verify that it hasn�
 
 Use this command in a terminal to ensure the archive’s integrity:
 
-linux bash
+linux bash:
 
 sha256sum -c ccg_preprocessed_data_files_[release date].tar.gz.sha256
 
-OSX can use this:
+OSX terminal:
 
 shasum -a 256 -c ccg_preprocessed_data_files_[release date].tar.gz.sha256
 
 
-If you see anything other than OK, the file may have been altered or corrupted.
+If it returns OK, then the file is valid and unaltered.
+
