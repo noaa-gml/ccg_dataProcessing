@@ -1,0 +1,18 @@
+.. CCG Python lib documentation master file, created by
+   sphinx-quickstart on Wed Dec 17 09:43:44 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+In-Situ
+============================
+
+These pages document the python classes used in processing of in-situ data
+
+Contents:
+
+.. toctree::
+   :maxdepth: 1
+
+   intakes
+
+

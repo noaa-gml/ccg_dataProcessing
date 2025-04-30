@@ -1,0 +1,10 @@
+ccg\_dates module
+======================
+
+This module is a function based module for dealing with dates,
+as an alternative to the class based module in ccg_date_utils.
+
+.. automodule:: ccg_dates
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_insitu_data2 — Get observatory in-situ data from database &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_tower_data — Get tower in-situ data from database" href="towerdb.html" />
+    <link rel="prev" title="ccg_flask_data — Get flask data from database" href="flaskdb.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Database routines</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="db_conn.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_db_conn</span></code> — Database connection and query class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bldsql.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_bldsql</span></code> — SQL Query builder class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbutils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_dbutils</span></code> — Database Convenience Routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flaskdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_flask_data</span></code> — Get flask data from database</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_insitu_data2</span></code> — Get observatory in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="towerdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tower_data</span></code> — Get tower in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_instrument</span></code> — Get instrument history from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Database routines</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_insitu_data2</span></code> — Get observatory in-situ data from database</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/db_utils/insitudb.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_insitu_data2">
+<span id="ccg-insitu-data2-get-observatory-in-situ-data-from-database"></span><h1><a class="reference internal" href="#module-ccg_insitu_data2" title="ccg_insitu_data2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_insitu_data2</span></code></a> — Get observatory in-situ data from database<a class="headerlink" href="#module-ccg_insitu_data2" title="Permalink to this headline"></a></h1>
+<p>InsituData - A class for getting observatory insitu data from the database</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This version is for the new structure of a single insitu database table for each averaging period.
+The tall tower site CAO is included in this module.  For other tower sites, use <code class="docutils literal notranslate"><span class="pre">ccg_insitu_tower</span></code></p>
+</div>
+<dl class="simple">
+<dt>There are 4 insitu tables</dt><dd><ul class="simple">
+<li><p>insitu_data - holds high frequency insitu data (e.g. 5 minute avgs)</p></li>
+<li><p>insitu_hour - holds hourly averaged data</p></li>
+<li><p>insitu_day - holds daily averaged data</p></li>
+<li><p>insitu_month - holds monthly averaged data</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_insitu_data2.</span></span><span class="sig-name descname"><span class="pre">InsituData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ccgg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter</strong> (<em>int</em><em>) or </em><em>(</em><em>str</em>) – parameter number or parameter formula</p></li>
+<li><p><strong>site</strong> (<em>int</em><em>) or </em><em>(</em><em>str</em>) – Site code or site number</p></li>
+<li><p><strong>which</strong> (<em>int</em>) – <p>Type of averaged data to get.  Valid values are:</p>
+<ul>
+<li><p>0 - get high frequency data from insitu table</p></li>
+<li><p>1 - get hourly averaged data</p></li>
+<li><p>2 - get daily averaged data</p></li>
+<li><p>3 - get monthly averaged data</p></li>
+</ul>
+</p></li>
+<li><p><strong>use_target</strong> (<em>bool</em>) – True to use target results instead of ambient air.
+The ‘which’ argument is ignored if <code class="docutils literal notranslate"><span class="pre">use_target</span></code> is True.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Usage:</p>
+<blockquote>
+<div><p>Usage of this class is a 3 step process</p>
+<ol class="arabic simple">
+<li><p>Create the class</p></li>
+<li><p>Configure settings for filtering data</p></li>
+<li><p>Run the query</p></li>
+</ol>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">InsituData</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Additional methods are available to filter results.</p>
+<p>Data with a first or second character flag != ‘.’ is not included
+unless the useFlaggedData() and/or useHardFlags() methods are called prior to run().</p>
+<p>Results:</p>
+<blockquote>
+<div><p>Results are generated with the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method. Results are also available
+in the self.results attribute.  If no data is found, None is returned as the result.</p>
+<p>Default result is a list of dicts, each dict representing a row of data.
+Results can be changed to either a dict of numpy arrays or a pandas DataFrame
+with arguments to the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method.
+Data fields included in the results are:</p>
+<ul class="simple">
+<li><p>date - datetime object for sample date and time</p></li>
+<li><p>time_decimal - decimal value for the sample date</p></li>
+<li><p>value - analzyed mole fraction value</p></li>
+<li><p>n - number of samples averaged into value</p></li>
+<li><p>std_dev - standard deviation of value</p></li>
+<li><p>qcflag - qc flag (renamed from ‘flag’)</p></li>
+<li><p>intake_ht - intake height of sample</p></li>
+<li><p>unc - calculated uncertainty of value</p></li>
+<li><p>inst - instrument id</p></li>
+<li><p>inlet - inlet name</p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">use_target</span></code> is True, then <cite>intake_ht</cite> is not included.</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.includeDefault">
+<span class="sig-name descname"><span class="pre">includeDefault</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.includeDefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.includeDefault" title="Permalink to this definition"></a></dt>
+<dd><p>Include data that has default value (-999.99)</p>
+<p>Since default data is usually flagged, you also need to include the
+includeHardFlags() filter to get the default values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.includeFlaggedData">
+<span class="sig-name descname"><span class="pre">includeFlaggedData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.includeFlaggedData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.includeFlaggedData" title="Permalink to this definition"></a></dt>
+<dd><p>include data where the second character of the flag is not ‘.’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.includeHardFlags">
+<span class="sig-name descname"><span class="pre">includeHardFlags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.includeHardFlags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.includeHardFlags" title="Permalink to this definition"></a></dt>
+<dd><p>include data where the first character of the flag is not ‘.’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_arrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_dataframe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bydate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.run" title="Permalink to this definition"></a></dt>
+<dd><p>Run the query and return results</p>
+<dl>
+<dt>Results:</dt><dd><p>By default the result is a list of dicts, each dict
+representing a row of data. This can be changed by
+setting the as_arrays or as_dataframe arguments.</p>
+<p>Results are also stored in the class attribute ‘results’, that is
+<code class="docutils literal notranslate"><span class="pre">f.results</span></code></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>as_arrays</strong> – If True, convert the result to a single dict of
+numpy arrays.  The key is the name, and the value
+is a numpy array of all results.</p></li>
+<li><p><strong>as_dataframe</strong> – If True, return results as a pandas DataFrame</p></li>
+<li><p><strong>bydate</strong> – If True and as_dataframe is True, set the index of the
+dataframe to the date.  If both as_arrays is False and as_dataframe is false,
+return results as a dict with the date as the key, and the row of data as the value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.setInlet">
+<span class="sig-name descname"><span class="pre">setInlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlet_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.setInlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.setInlet" title="Permalink to this definition"></a></dt>
+<dd><p>Restrict results to a single inlet.
+Only for high frequency raw data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.setInstrument">
+<span class="sig-name descname"><span class="pre">setInstrument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.setInstrument"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.setInstrument" title="Permalink to this definition"></a></dt>
+<dd><p>Restrict results to certain analyer instrument.</p>
+<p>‘instnum’ is a single instrument number from inst_description table</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.setIntakeHeight">
+<span class="sig-name descname"><span class="pre">setIntakeHeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.setIntakeHeight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.setIntakeHeight" title="Permalink to this definition"></a></dt>
+<dd><p>Restrict results to a single intake height</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.setRange">
+<span class="sig-name descname"><span class="pre">setRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.setRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.setRange" title="Permalink to this definition"></a></dt>
+<dd><p>Set the date range for the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>datetime</em>) – Start date of data</p></li>
+<li><p><strong>end</strong> (<em>datetime</em>) – End date of data</p></li>
+</ul>
+</dd>
+</dl>
+<p>Data is up to but not including end date.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.setSystem">
+<span class="sig-name descname"><span class="pre">setSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sysname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.setSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.setSystem" title="Permalink to this definition"></a></dt>
+<dd><p>Restrict results to certain system names.</p>
+<p>‘sysname’ is a system name, such as ‘pic’, ‘lgr’, ‘ndir’…</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_insitu_data2.InsituData.showQuery">
+<span class="sig-name descname"><span class="pre">showQuery</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_insitu_data2.html#InsituData.showQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_insitu_data2.InsituData.showQuery" title="Permalink to this definition"></a></dt>
+<dd><p>Print out the query string</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="flaskdb.html" class="btn btn-neutral float-left" title="ccg_flask_data — Get flask data from database" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="towerdb.html" class="btn btn-neutral float-right" title="ccg_tower_data — Get tower in-situ data from database" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

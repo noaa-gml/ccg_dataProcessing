@@ -1,0 +1,18 @@
+.. highlight:: rest
+
+.. _daq:
+
+daq
+^^^^
+
+ReadNumber
+----------
+        Read a single floating point value back from a device
+
+        Action line syntax:
+
+                ``0 ReadData device devid``
+
+        Read a value from the daq.  The 'devid' option is the rs-485 id and channel combined into one 3 character string,
+        'AAN' where AA is the hex id, and N is the channel number, e.g. '011' is device id 01 channel 1.
+        Data value is stored in hm's internal *last_data* variable.  Use routines such as :ref:`log_data` to retreive the data.

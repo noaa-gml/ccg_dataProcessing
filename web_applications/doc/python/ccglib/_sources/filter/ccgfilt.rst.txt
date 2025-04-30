@@ -1,0 +1,272 @@
+
+:mod:`ccg_filter` --- Curve fitting and filtering
+=================================================
+
+.. module:: ccg_filter
+      :synopsis: Curve fitting and filtering
+
+
+Class for computing the curve fitting/smoothing technique used by *Thoning et al 1989* and at
+https://gml.noaa.gov/ccgg/mbl/crvfit/
+
+This technique uses the following steps:
+
+1. Fit a function consisting of a polynomial and harmonics to the data
+2. Smooth the residuals from the function fit with a low-pass filter using fft and user defined cutoff value.
+3. Calculate the inverse fft of the low-pass filter to get smoothed data in time domain.
+4. Determine the smoothed curve of interest by combining the function with the filtered data.
+
+The class is available by using the 'import' statement to include it in your python code::
+
+   import ccg_filter
+
+The function to be fit to the data is specified in the routines 'fitFunc' and 'harmonics'.
+
+
+.. function:: fitFunc(params, x, numpoly, numharm)
+
+   Calculate the function at time x with coefficients given in params.
+   This is a combination of a polynomial with numpoly coefficients, and 
+   a sin/cosine harmonic with numharm coefficients.  e.g., with numpoly=3 and numharm=2:
+
+   .. math:: 
+      :label: function
+
+         y = a + b*x + c*x^2 + d*sin(2*\pi*x) + e*cos(2*\pi*x) + f*sin(4*\pi*x) + g*cos(4*\pi*x)
+
+   where a = params[0], b = params[1], c = params[2], d = params[3] ...
+
+.. code-block:: python
+
+    harmonics(params, x, numpoly, numharm)
+
+    calculate the harmonic part of the function at time x
+
+
+:class:`ccg_filter` Objects
+---------------------------------------------
+
+.. class:: ccgFilter( xp, yp[, shortterm=80, longterm=667, sampleinterval=0, numpolyterms=3, numharmonics=4, timezero = -1, gap=0, use_gain_factor=False, debug=False])
+
+   :param xp: Time values for input data.  These must be decimal dates, such as produced by :func:`dates.decimalDate()`.
+   :type xp: list or numpy array
+   :param yp: Dependent values for input data.
+   :type yp: list or numpy array
+   :param int shortterm: Short term cutoff value in days for smoothing of data.
+   :param int longterm: Long term cutoff value in days for extracting trend from data
+   :param int sampleinterval: Interval in days between samples, calculate equally spaced values at this interval. Default is calculated from xp
+   :param int numpoly: Number of polynomial terms used in function fit - e.g. 3 = quadratic
+   :param int numharm: Number of harmonics used in function fit
+   :param float timezero: Value where x = 0 in the function coefficients. If timezero = -1, it will be reset to the year of the first data point.
+   :param float gap:  When determining equally spaced values for the fft, 
+        if gap != 0, then gap is the number of days between samples that should
+        be filled in with values from the function, rather than linear interpolated.
+   :param boolean use_gain_factor: Set to True if you want to include a gain factor to the harmonic amplitude. 
+        This means the harmonics part of the function will have a linearly increasing 
+        or decreasing amplitude with time.
+
+   :param boolean debug: If true, print out extra information during calculations.
+
+   Only xp and yp are required, all others are optional.
+
+
+Class attributes:
+--------------------
+
+Input Data
+^^^^^^^^^^
+
+.. attribute:: xp
+   
+    (*list or numpy array*) Time value for input data
+   
+.. attribute:: yp 
+   
+   (*list or numpy array*) Dependent values for input data
+   
+.. attribute:: np
+   
+   (*int*) Number of points in xp, yp
+   
+.. attribute:: xinterp 
+   
+   (*numpy array*) Equally spaced interpolated values from input data
+
+For the function fit
+^^^^^^^^^^^^^^^^^^^^
+
+.. attribute:: numpoly 
+
+    (*int*) Number of polynomial terms used in function fit - e.g. 3 = quadratic
+
+.. attribute:: numharm 
+
+   (*int*) Number of harmonics used in function fit
+
+.. attribute:: timezero
+
+   (*float*) Value where x = 0 in the function coefficients
+
+.. attribute:: params 
+
+   (*numpy array*) Parameters (coefficients) for the function fit
+
+.. attribute:: covar 
+
+   (*numpy array*) Covariance values of the parameters
+
+.. attribute:: numpm 
+
+   (*int*) Total number of parameters in the function
+
+.. attribute:: resid 
+
+   (*numpy array*) Residuals from function fit for times specified in input array xp
+
+.. attribute:: yinterp 
+
+   (*numpy array*) Equally spaced interpolated values of the residuals from the functions fit for times specified in array xinterp
+
+For the filter
+^^^^^^^^^^^^^^
+
+.. attribute:: sampleinterval 
+
+  (*int*) Interval in days between equally spaced points used in the fft
+
+.. attribute:: dinterval 
+
+   (*float*) Sample interval in decimal years 
+
+.. attribute:: shortterm 
+
+   (*int*) Short term cutoff value in days for smoothing of data
+
+.. attribute:: longterm 
+
+   (*int*) Long term cutoff value in days for extracting trend from data
+
+.. attribute:: smooth 
+
+   (*numpy array*) smoothed results from applying short term cutoff filter to residuals of data from the function.  Equally spaced at xinterp
+
+.. attribute:: trend 
+
+   (*numpy array*) trend results from applying long term cutoff filter to residuals of data from the function.  Equally spaced at xinterp
+
+.. attribute:: deriv 
+
+   (*numpy array*) derivative of function + trend.  Equally spaced at xinterp
+
+.. attribute:: ninterp 
+
+   (*int*) number of points in each of xinterp, smooth, trend
+
+Misc.
+^^^^^
+
+.. attribute:: rsd1 
+
+   (*float*) Standard deviation of residuals about function
+.. attribute:: rsd2 
+
+   (*float*) Standard deviation of residuals about smooth curve
+.. attribute:: debug 
+
+   (*boolean*) Flag for showing additional information during computation
+
+
+Methods
+-------
+
+For each of the methods below, the input value x can be a single point, a list, or a numpy array
+
+.. method:: getFunctionValue(x)
+
+   Returns the value of the function part of the filter at time x.
+
+.. method:: getSmoothValue(x)
+
+   Returns the 'smoothed' data at time x.  This is function + self.smooth
+
+.. method:: getTrendValue(x)
+
+   Returns the 'trend' of the data at time x.  This is polynomial part of function + self.trend
+
+.. method::  getHarmonicValue(x)
+
+   Returns the value of the harmonic part of the function at time x.
+
+.. method:: getPolyValue(x)
+
+   Returns the value of the polynomial part of the function at time x
+
+.. method:: getAmplitudes()
+
+   Get seasonal cycle amplitudes. Returns a list of tuples, each tuple has 6 values ``(year, total_amplitude, max_date, max_value, min_date, min_value)``
+
+.. method:: getFilterResponse(cutoff)
+
+   Returns the value of the filter for frequencies 0 - 10 cycles/year at given cutoff
+
+.. method:: getMonthlyMeans()
+
+   Return a list of tuples containing monthy means from the smoothed curve.
+   The value of the curve is computed at every sample interval, then summed up for each 
+   month and the average computed.  Each tuple contains 5 values, ``(year, month, average, std.dev., n)``
+
+.. method:: getTrendCrossingDates()
+
+   Get the decimal dates when the smoothed curve crosses the trend curve.
+   That is, when the detrended smooth seasonal cycle crosses 0. Use the :func:`dates.calendarDate()` function to convert
+   from decimal date to calendar date.
+
+Examples
+--------
+
+   Example of creating the ccgfilter class
+
+.. code-block:: python
+
+      import ccg_filter
+
+      # create the ccgfilt object
+      filt = ccg_filter.ccgFilter(xp, yp, shortterm, longterm, sampleinterval, 
+                                  numpolyterms, numharmonics, timezero, gap, debug)
+
+      # 
+      mm = filt.getMonthlyMeans()
+      amps = filt.getAmplitudes()
+      tcup, tcdown = filt.getTrendCrossingDates()
+
+      # get x,y data for plotting
+      x0 = filt.xinterp
+      y1 = filt.getFunctionValue(x0)
+      y2 = filt.getPolyValue(x0)
+      y3 = filt.getSmoothValue(x0)
+      y4 = filt.getTrendValue(x0)
+
+      # Seasonal Cycle 
+      # x and y are original data points
+      trend = filt.getTrendValue(x)
+      detrend = y - trend
+      harmonics = filt.getHarmonicValue(x0)
+      smooth_cycle = harmonics + filt.smooth - filt.trend
+
+      # residuals from the function
+      resid_from_func = filt.resid
+
+      # smoothed residuals
+      resid_smooth = filt.smooth
+
+      # trend of residuals
+      resid_trend = filt.trend
+
+      # residuals about the smoothed line
+      resid_from_smooth = filt.yp - filt.getSmoothValue(x)
+
+      # equally spaced interpolated data with function removed
+      x1 = filt.xinterp
+      y9 = filt.yinterp
+
+

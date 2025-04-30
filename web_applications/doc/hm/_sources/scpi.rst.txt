@@ -1,0 +1,195 @@
+
+.. highlight:: rest
+
+.. _scpi:
+
+scpi
+^^^^
+
+CloseRelay
+----------
+
+        Close a relay on a switch device.
+
+        Action line syntax:
+
+                ``0 CloseRelay device 207``
+
+        The option value is a single number which contains both 'card' value and 'relay' value.  *card* is 
+        the first digit of the number, and *relay* is the remaining digits.  So 207 would be card 2, relay 7.
+
+
+.. _config_channel:
+
+ConfigChannel
+-------------
+
+        Configure a channel on a multiplexor.
+
+        Action line syntax:
+
+                ``0 ConfigChannel device location type``
+
+        where *location* is the card/channel location,
+        and *type* is the measurement type (dcvolt, resistance, current etc.).
+        The location and type syntax are device dependent.
+        Type must be one of DCVOLT, ACVOLT, RES, FRES, TC, THER THERREF, RTD, FRTD, DCCURR
+
+        Example::
+
+                0 ConfigChannel hp34970 @co2_ndir
+                or
+                0 ConfigChannel hp34970 101 DCVOLT
+                
+DeviceClear
+-------------
+
+MeasureChannel
+---------------
+
+OpenRelay
+---------
+
+        Open a relay on a switch device.
+
+        Action line syntax:
+
+                ``0 OpenRelay device 207``
+
+        The option value is a single number which contains both 'card' value and 'relay' value.  *card* is 
+        the first digit of the number, and *relay* is the remaining digits.  So 207 would be card 2, relay 7.
+
+ReadData
+---------------
+
+ReadChannel
+---------------
+
+.. _read_number:
+
+ReadNumber
+----------
+        Read a single floating point value back from a device 
+
+        Action line syntax:
+
+                ``0 ReadData device None``
+
+        Assumes device is already configured for the desired data type. Use :ref:`config_channel` to configure the device.
+        Data value is stored in hm's internal *last_data* variable.  Use routines such as :ref:`log_data` to retreive the data.
+
+
+.. _read_value:
+
+ReadValue
+---------
+
+        Configure a channel and then read a value from it.
+        This is the same as a :ref:`config_channel` followed by a :ref:`read_number`
+
+        Action line syntax:
+
+                ``0 ReadValue device location type``
+
+        where *location* is the card/channel location,
+        and *type* is the measurement type (dcvolt, resistance, current etc.).
+        Data value is stored in hm's internal *last_data* variable.  Use routines such as :ref:`log_data` to retreive the data.
+
+        Example::
+
+                0 ReadValue hp34970 @co2_ndir
+
+
+
+
+.. _sample_data:
+
+SampleData
+-----------
+
+        Read data from a device at a specified sample rate
+        for a specified number of times.  Store the average of the
+        readings in the last_data variable. Use :ref:`log_data` or :ref:`log_datagmt` routines
+        to save the readings to file.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm.c UNTIL all readings have been taken.
+
+        Action line syntax is:
+
+             ``0  SampleData  device interval number channel_configuration``
+
+        channel_configuration is optional, and if included, then configure the channel
+        using ConfigChannel before taking each reading.  The channel_configuration
+        string is passed into ConfigChannel as the option.
+
+        e.g.
+
+            ``0 SampleData device 100 50 200 DCVOLT``
+
+        or
+
+            ``0 SampleData device 100 50``
+
+        The first example is for a device that will be configured to read from 
+        channel 200 for dc voltage, and 50 readings will be taken at 100 millisecond intervals.
+        Use this option if another process is using the device at the same time
+        and may change channels.
+
+        The second example is for a device that does not need to be configured 
+        but just have a value read back. Use this option if onlye one process will
+        be using the device.  Should run a ConfigChannel first to ensure channel config.
+
+.. _scan_data:
+
+ScanData
+-----------
+
+        Scans list of channels on Agilent 34970.
+        Assumes channels already configured
+
+        Action line syntax:
+
+            ``0 ScanData device  channel_list  time_avg  rate``
+
+        * *channel_list* list of channel numbers, comma separated
+        * *time_avg*  time to have device average over
+        * *rate* time between sweeps in secondes
+
+
+ScaleChannel
+-------------
+
+SingleScan
+-------------
+
+StartScan
+-------------
+
+StopScan
+-------------
+
+SwitchValve
+-----------
+
+         Turn a 2 postion **Valco** valve to the either the load position 
+         or inject position by using relays for activating the load or 
+         inject line.
+ 
+         Option string should contain either 'Load' or 'Inject'
+ 
+         Syntax:
+
+              ``0       SwitchValve     valve_name      Inject | Load``
+ 
+         Requires a line in the :ref:`config` file with the valve_name-option pair,
+         where the option string should contain:
+
+         * the device name where the relays are connected,
+         * the channel of the relay for the load line,
+         * the channel of the relay for the inject line.
+
+         e.g.
+
+              ``Ch4Load  VxiRelay 200 201``
+

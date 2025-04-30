@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_refgasdb — Get assigned values for a tank from database &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="In-Situ" href="../insitu/index.html" />
+    <link rel="prev" title="ccg_tankhistory — Get history of tank usage" href="history.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tank Calibrations and History</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="caldb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code> — Get tank calibration results from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calfit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code> — Get fit to tank calibrations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calunc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code> — Get typeB uncertainty for data (including tank calibrations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code> — Get history of tank usage</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code> — Get assigned values for a tank from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tank Calibrations and History</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code> — Get assigned values for a tank from database</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tankcals/refgasdb.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_refgasdb">
+<span id="ccg-refgasdb-get-assigned-values-for-a-tank-from-database"></span><h1><a class="reference internal" href="#module-ccg_refgasdb" title="ccg_refgasdb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code></a> — Get assigned values for a tank from database<a class="headerlink" href="#module-ccg_refgasdb" title="Permalink to this headline"></a></h1>
+<p>A class for holding and manipulating reference gas information
+from one of the scales tables.
+Generally used for getting an assigned value for a tank on a certain date.</p>
+<p>MODIFIED TO USE NEW STYLE db TABLES THAT INCLUDE TIME DEPENDENT UNCERTAINTIES - AMC</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_refgasdb.calcAssignedValue">
+<span class="sig-prename descclassname"><span class="pre">ccg_refgasdb.</span></span><span class="sig-name descname"><span class="pre">calcAssignedValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#calcAssignedValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.calcAssignedValue" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the mole fraction value from coefficients on the given date</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_refgasdb.</span></span><span class="sig-name descname"><span class="pre">refgas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_history_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startdate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enddate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moddate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for getting assigned value information.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>refgas = ccg_refgasdb.refgas(sp, sn=[‘CC71636’], scale = “CO_X2014”, database=db, startdate=sdt, enddate=edt, moddate=md, verbose=””, debug=True|False)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sp</strong> – The gas species of interest (e.g. ‘CO2’)</p></li>
+<li><p><strong>sn</strong> – List of tank serial numbers</p></li>
+<li><p><strong>scale</strong> – Name of the scale to use (default is current scale as defined in the reftank.scale DB table)</p></li>
+<li><p><strong>database</strong> – Use a different database for refgas assignments</p></li>
+<li><p><strong>startdate</strong> – Only include information after this date. Can be datetime object or valid date string.</p></li>
+<li><p><strong>enddate</strong> – Don’t include information after this date. Can be datetime object or valid date string.</p></li>
+<li><p><strong>moddate</strong> – Modification date.  Use assigned values prior to this date.  Pass in as python datetime or as “yyyy-mm-dd” string.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Members:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>refgas - A list of namedtuples with information on the reference gases</dt><dd><p>Fields are
+[‘serial_number’, ‘start_date’, ‘tzero’, ‘coef0’, ‘coef1’, ‘coef2’, ‘unc_c0’, ‘unc_c1’, ‘unc_c2’, ‘sd_resid’, ‘standard_unc’, ‘level’, ‘mod_date’, ‘comment’]</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.filterByDate">
+<span class="sig-name descname"><span class="pre">filterByDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startdate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.filterByDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.filterByDate" title="Permalink to this definition"></a></dt>
+<dd><p>Find entries that have start_date &gt;= given startdate,
+and the last entry before the startdate.</p>
+<p>Need to save, for each tank label, the last entry before start date, and any after start date</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getAssignedValue">
+<span class="sig-name descname"><span class="pre">getAssignedValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sernum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showWarn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getAssignedValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getAssignedValue" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience method for getting assigned value for a tank</p>
+<dl class="simple">
+<dt>Input:</dt><dd><p>sernum - serial number of tank
+adate - date on which to calculate the assigned value</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>val - assigned value, as a single float, not as a tuple like</dt><dd><p>in getRefgasBySerialNumber</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getAssignment">
+<span class="sig-name descname"><span class="pre">getAssignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sernum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getAssignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getAssignment" title="Permalink to this definition"></a></dt>
+<dd><p>Return the refgas row that is the correct one for the given date.</p>
+<p>Because there can be multiple rows for a tank, use the one that has
+the latest assign_date.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getEntries">
+<span class="sig-name descname"><span class="pre">getEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getEntries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getEntries" title="Permalink to this definition"></a></dt>
+<dd><p>Get all refgas entries where label=label</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getHistory">
+<span class="sig-name descname"><span class="pre">getHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sernum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getHistory" title="Permalink to this definition"></a></dt>
+<dd><p>Return the history of the standard.  All fills, all modifications.
+Output line = sn yr mo dy t0 coef0 coef1 coef2 transfer_unc standard_unc level mod_date #comment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getInfo">
+<span class="sig-name descname"><span class="pre">getInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sernum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getInfo" title="Permalink to this definition"></a></dt>
+<dd><p>return the information on the standard rather than the assigned value.
+Pass adate as python datetime or “yyyy-mm-dd” string.</p>
+<p>Output line = sn yr mo dy t0 coef0 coef1 coef2 transfer_unc standard_unc level mod_date #comment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getRefgasByLabel">
+<span class="sig-name descname"><span class="pre">getRefgasByLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showWarn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getRefgasByLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getRefgasByLabel" title="Permalink to this definition"></a></dt>
+<dd><p>Get serial number and mixing ratio of tank on adate based on label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tank</strong> (<em>label - label of the</em>) – </p></li>
+<li><p><strong>string.</strong> (<em>adate - Date to get assignment for.  Either a python datetime</em><em> or </em><em>&quot;yyyy-mm-dd&quot;</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result - namedtuple with (serial num, val, unc)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.getRefgasBySerialNumber">
+<span class="sig-name descname"><span class="pre">getRefgasBySerialNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sernum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showWarn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.getRefgasBySerialNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.getRefgasBySerialNumber" title="Permalink to this definition"></a></dt>
+<dd><p>Get mixing ratio of tank with serial number on adate.
+Pass adate as python datetime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tzero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.insert" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a new entry into the scale assignments database table.</p>
+<p>For now, only parts of the fields are updated. Uncertainty terms are ignored here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.insertFromFit">
+<span class="sig-name descname"><span class="pre">insertFromFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calfit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.insertFromFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.insertFromFit" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a new entry into the scale assignments database table.</p>
+<dl class="simple">
+<dt>Input</dt><dd><p>serial_number - serial number of the tank
+start_date - date when to start using the assigned values
+calfit - a namedtuple from ccg_calfit.fitCalibrations()
+level - level of the tank, e.g. ‘primary’, ‘secondary’ …
+comment - a text comment</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_refgasdb.refgas.printTable">
+<span class="sig-name descname"><span class="pre">printTable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_refgasdb.html#refgas.printTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_refgasdb.refgas.printTable" title="Permalink to this definition"></a></dt>
+<dd><p>prints a table of all standards (each start date) selected by the
+modification date if passed.  Does not print comments.
+Output line = sn yr mo dy t0 coef0 unc_c0 coef1 unc_c1 coef2 unc_c2 sd_resid standard_unc level #</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="history.html" class="btn btn-neutral float-left" title="ccg_tankhistory — Get history of tank usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../insitu/index.html" class="btn btn-neutral float-right" title="In-Situ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

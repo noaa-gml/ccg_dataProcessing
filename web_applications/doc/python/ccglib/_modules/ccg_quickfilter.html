@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_quickfilter &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_quickfilter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_quickfilter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Perform an outlier rejection of data using ccg_filter curve fit to data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/ccg/python/ccglib&quot;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">ccg_filter</span>
+<span class="kn">from</span> <span class="nn">ccg_filter_params</span> <span class="kn">import</span> <span class="n">filterParameters</span>
+
+<span class="kn">import</span> <span class="nn">ccg_dates</span>
+
+
+<span class="c1">######################################################################</span>
+<div class="viewcode-block" id="quickFilter"><a class="viewcode-back" href="../filter/quickfilter.html#ccg_quickfilter.quickFilter">[docs]</a><span class="k">class</span> <span class="nc">quickFilter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Perform filtering of data based on outliers from a smooth curve.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x : Date values.  Can be a list/array of decimal date values or datetime objects</span>
+<span class="sd">        y : Mole Fraction values.  Can be either a list or numpy array</span>
+<span class="sd">        flags : An integer value associated with the data point flag.</span>
+<span class="sd">                0 = unflagged, include in fit, 1 = auto flagged.</span>
+<span class="sd">                Any other value is not used and is not changed.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        summaryText (str): Text summarizing changes to flags that were made</span>
+<span class="sd">        flags (list): Array of new flags values for each data point</span>
+<span class="sd">        xFiltered (list): Array of new x points excluding flagged data</span>
+<span class="sd">        yFiltered (list): Array of new y points excluding flagged data</span>
+<span class="sd">        filt (ccgFilter): ccgFilter object</span>
+<span class="sd">        params (filterParameters): filterParameters object</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        setEnvelope(sigmaminus, sigmaplus): Set envelope in terms of multiples of the residual standard deviation</span>
+<span class="sd">        setFilterParameters(params...): Set filter and function parameters</span>
+
+<span class="sd">    Results:</span>
+<span class="sd">        Creates three members with filtered results:</span>
+
+<span class="sd">        * xFiltered: array of x values for unflagged data</span>
+<span class="sd">        * yFiltered: array of y values for unflagged data</span>
+<span class="sd">        * flags: array of integer flag values. A value of 1 indicates automatically flagged data point</span>
+
+
+<span class="sd">    The parameters for the filter can be set either through the convenience </span>
+<span class="sd">    functions setEnvelope() and setFilterParameters(), or set directy with::</span>
+
+<span class="sd">        params = filterParameters()</span>
+<span class="sd">        qf.params = params</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        qf = quickFilter(x, y)</span>
+<span class="sd">        qf.setEnvelope(2.5, 2.5)</span>
+<span class="sd">        qf.setFilterParameters(short_cutoff=120)</span>
+<span class="sd">        qf.run()</span>
+<span class="sd">        newx = qf.xFiltered</span>
+<span class="sd">        newy = qf.yFiltered</span>
+<span class="sd">        flags = qf.flags</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xFiltered</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yFiltered</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">summaryText</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filt</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag_years</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># set default parameters.  These can be changed with setFilterParameters()</span>
+        <span class="c1"># or individually with qf.params.short_cutoff = 60</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">filterParameters</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">ccg_dates</span><span class="o">.</span><span class="n">decimalDateFromDatetime</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span> <span class="k">for</span> <span class="n">xp</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mf</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span>
+
+
+    <span class="c1">#----------------------------------------------------------------------</span>
+<div class="viewcode-block" id="quickFilter.run"><a class="viewcode-back" href="../filter/quickfilter.html#ccg_quickfilter.quickFilter.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Perform an outlier rejection of data using ccg_filter curve fit to data &quot;&quot;&quot;</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_format</span> <span class="o">=</span> <span class="s2">&quot;  Changed data point on </span><span class="si">%s</span><span class="s2"> </span><span class="si">%8.2f</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> -&gt; </span><span class="si">%d</span><span class="s2"> (diff from curve </span><span class="si">%.3f</span><span class="s2">)&quot;</span>
+
+
+        <span class="c1"># loop until number of rejected points = 0</span>
+        <span class="n">nr</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">loopnum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">nr</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">loopnum</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">:</span>
+
+            <span class="n">loopnum</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Pass # </span><span class="si">%d</span><span class="s2"> through data&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">loopnum</span><span class="p">))</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-----------------------------------------&quot;</span><span class="p">)</span>
+
+            <span class="c1"># get only unflagged data</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+            <span class="n">years</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="c1"># do curve fit</span>
+            <span class="n">filt</span> <span class="o">=</span> <span class="n">ccg_filter</span><span class="o">.</span><span class="n">ccgFilter</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">short_cutoff</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">long_cutoff</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">npoly</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">nharm</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">zero</span><span class="p">,</span>
+                <span class="n">use_gain_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">gain</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Find the residual std. dev about the smooth curve</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Residual std. dev. is </span><span class="si">%f</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">filt</span><span class="o">.</span><span class="n">rsd2</span><span class="p">)</span>
+            <span class="n">sigma3plus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sigma_plus</span><span class="p">(</span><span class="n">filt</span><span class="o">.</span><span class="n">rsd2</span><span class="p">)</span>
+            <span class="n">sigma3minus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sigma_minus</span><span class="p">(</span><span class="n">filt</span><span class="o">.</span><span class="n">rsd2</span><span class="p">)</span>
+
+            <span class="c1"># get smoothed curve value for all data points and residuals</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getSmoothValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="p">)</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mf</span> <span class="o">-</span> <span class="n">y1</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_years</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># find auto flagged data that is inside +/- 3 sigma, remove auto flag</span>
+                <span class="n">w1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                    <span class="p">(((</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="n">sigma3plus</span><span class="p">))</span> <span class="o">|</span>
+                     <span class="p">((</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="n">sigma3minus</span><span class="p">)))</span>
+                <span class="p">)</span>
+
+                <span class="c1"># find unflagged data outside +/- 3 sigma, auto flag</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span>
+                    <span class="p">((</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="n">sigma3plus</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="n">sigma3minus</span><span class="p">))</span>
+                <span class="p">)</span>
+
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># find auto flagged data that is inside +/- 3 sigma, remove auto flag</span>
+                <span class="n">w1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_years</span><span class="p">))</span> <span class="o">&amp;</span>
+                    <span class="p">(((</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="n">sigma3plus</span><span class="p">))</span> <span class="o">|</span>
+                     <span class="p">((</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="n">sigma3minus</span><span class="p">)))</span>
+                <span class="p">)</span>
+
+                <span class="c1"># find unflagged data outside +/- 3 sigma, auto flag</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_years</span><span class="p">))</span> <span class="o">&amp;</span>
+                    <span class="p">((</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="n">sigma3plus</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="n">sigma3minus</span><span class="p">))</span>
+                <span class="p">)</span>
+
+            <span class="n">nr</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># set auto flagged data</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">datetimeFromDecimalDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_format</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">diff</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">nr</span> <span class="o">=</span> <span class="n">nr</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># remove auto flagged data</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">w1</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">datetimeFromDecimalDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_format</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">diff</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">nr</span> <span class="o">=</span> <span class="n">nr</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary&quot;</span><span class="p">)</span>
+        <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;=====================================&quot;</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">datetimeFromDecimalDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_format</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">diff</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%d</span><span class="s2"> points flagged&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+
+        <span class="c1"># create array with only unflagged data</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xFiltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yFiltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">summaryText</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filt</span> <span class="o">=</span> <span class="n">filt</span></div>
+
+
+    <span class="c1">#----------------------------------------------------------------------</span>
+<div class="viewcode-block" id="quickFilter.setEnvelope"><a class="viewcode-back" href="../filter/quickfilter.html#ccg_quickfilter.quickFilter.setEnvelope">[docs]</a>    <span class="k">def</span> <span class="nf">setEnvelope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigmaminus</span><span class="p">,</span> <span class="n">sigmaplus</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set width of envelope for flagging</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sigmaminus (float): Number of residual standard deviations below the curve</span>
+<span class="sd">            sigmaplus (float): Number of residual standard deviations above the curve</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sigmaplus</span> <span class="o">=</span> <span class="n">sigmaplus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sigmaminus</span> <span class="o">=</span> <span class="n">sigmaminus</span></div>
+
+    <span class="c1">#----------------------------------------------------------------------</span>
+<div class="viewcode-block" id="quickFilter.setFlagYears"><a class="viewcode-back" href="../filter/quickfilter.html#ccg_quickfilter.quickFilter.setFlagYears">[docs]</a>    <span class="k">def</span> <span class="nf">setFlagYears</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">years</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the years that can be flagged.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            years (list): list of years to be flagged, e.g. [2020,2021,2022]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;flag years must be a list&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag_years</span> <span class="o">=</span> <span class="n">years</span></div>
+
+    <span class="c1">#----------------------------------------------------------------------</span>
+<div class="viewcode-block" id="quickFilter.setFilterParameters"><a class="viewcode-back" href="../filter/quickfilter.html#ccg_quickfilter.quickFilter.setFilterParameters">[docs]</a>    <span class="k">def</span> <span class="nf">setFilterParameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">short_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">long_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">numpoly</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">numharm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tzero</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">gain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set parameter for the filter and curve fit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            short_cutoff : Short term cutoff.</span>
+<span class="sd">            long_cutoff : Long term cutoff</span>
+<span class="sd">            interval : Sampling interval</span>
+<span class="sd">            numpoly : Number of polynomial terms to use in function fit</span>
+<span class="sd">            numharm : Number of harmonic terms to use in function fit</span>
+<span class="sd">            tzero : Value where x=0 in function coefficients</span>
+<span class="sd">            gain : Use amplitude gain factor if True</span>
+
+<span class="sd">        All arguments are optional.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">short_cutoff</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">short_cutoff</span> <span class="o">=</span> <span class="n">short_cutoff</span>
+        <span class="k">if</span> <span class="n">long_cutoff</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">long_cutoff</span> <span class="o">=</span> <span class="n">long_cutoff</span>
+        <span class="k">if</span> <span class="n">interval</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="k">if</span> <span class="n">numpoly</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">npoly</span> <span class="o">=</span> <span class="n">numpoly</span>
+        <span class="k">if</span> <span class="n">numharm</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">nharm</span> <span class="o">=</span> <span class="n">numharm</span>
+        <span class="k">if</span> <span class="n">tzero</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">zero</span> <span class="o">=</span> <span class="n">tzero</span>
+        <span class="k">if</span> <span class="n">gain</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="n">gain</span></div></div>
+
+
+<span class="c1">################################################################################################</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">import</span> <span class="nn">ccg_flask_data</span>
+    
+    <span class="n">f</span> <span class="o">=</span> <span class="n">ccg_flask_data</span><span class="o">.</span><span class="n">FlaskData</span><span class="p">(</span><span class="s2">&quot;co2&quot;</span><span class="p">,</span> <span class="s2">&quot;ALT&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">setProject</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">setStrategy</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">includeFlaggedData</span><span class="p">()</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">as_arrays</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">#    print(f.results)</span>
+    <span class="n">flags</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;qcflag&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">flag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+            <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">flag</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+            <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">qf</span> <span class="o">=</span> <span class="n">quickFilter</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">f</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">flags</span><span class="p">)</span>
+    <span class="n">qf</span><span class="o">.</span><span class="n">setFlagYears</span><span class="p">([</span><span class="mi">2022</span><span class="p">,</span><span class="mi">2023</span><span class="p">])</span>
+    <span class="n">qf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">qf</span><span class="o">.</span><span class="n">summaryText</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">qf</span><span class="o">.</span><span class="n">flags</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">flag</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">f</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">qf</span><span class="o">.</span><span class="n">flags</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

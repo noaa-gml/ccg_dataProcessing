@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_csv_utils module &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ccg_ncdf - NetCDF file utilities" href="ccg_ncdf.html" />
+    <link rel="prev" title="ccg_dates module" href="ccg_dates.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ccglib.python
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>ccg_csv_utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ccg_csv_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_csv_utils">
+<span id="ccg-csv-utils-module"></span><h1>ccg_csv_utils module<a class="headerlink" href="#module-ccg_csv_utils" title="Permalink to this headline"></a></h1>
+<p>CCG Utilities for CSV files</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_csv_utils.readcsv_bycol">
+<span class="sig-prename descclassname"><span class="pre">ccg_csv_utils.</span></span><span class="sig-name descname"><span class="pre">readcsv_bycol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_glob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usemod_ifexist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prtmsgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_csv_utils.html#readcsv_bycol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_csv_utils.readcsv_bycol" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Read and concatenate a list of CSV files specified by a file glob</dt><dd><p>that may have differing numbers of columns.  Reads each CSV file
+to get the header and then uses pandas read_csv to read the columns
+for that file. Concatenates the dataframes and fills any missing
+column with np.nan.  You may specifiy the delimeter and a number
+of lines to skip at the top of each file that contain meta data
+(before the header line).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_glob</strong> (<em>str</em>) – file glob of files to load (e.g. glob.glob(”<a href="#id1"><span class="problematic" id="id2">*</span></a>.dat”)</p></li>
+<li><p><strong>usemod_ifexist</strong> (<em>bool</em>) – If True, read .mod file if it exists instad of the normal (e.g. .dat) file.  (Default = False)</p></li>
+<li><p><strong>prtmsgs</strong> (<em>bool</em>) – If True, print messages while reading files (Default = True)</p></li>
+<li><p><strong>num_skip</strong> (<em>int</em>) – number of rows of meta data to skip at top of file before the CSV header (Default = 0)</p></li>
+<li><p><strong>delim</strong> (<em>str</em>) – column delimeter (Default=’,’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dataframe containing all data/all columns for all files matching the file_glob</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.core.frame.DataFrame</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Suppose data0.csv, data1.csv, data1.csv.mod, data2.csv exist</span>
+<span class="c1"># in the current directory.  From ipython:</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">01</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">ccg_csv_utils</span> <span class="k">as</span> <span class="nn">ccu</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">02</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">glob</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">03</span><span class="p">]:</span> <span class="n">fl</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.csv&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">04</span><span class="p">]:</span> <span class="n">df</span><span class="o">=</span><span class="n">ccu</span><span class="o">.</span><span class="n">readcsv_bycol</span><span class="p">(</span><span class="n">fl</span><span class="p">,</span><span class="n">usemod_ifexist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">prtmsgs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">num_skip</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Creates a single dataframe (df) that contains the data from</span>
+<span class="c1"># all files ending in csv in the current directory. The files in</span>
+<span class="c1"># this case would each have 1 meta data line before the csv header</span>
+<span class="c1"># (therefore num_skip=1).</span>
+<span class="c1"># Also since data1.csv.mod exists, and the usemod_ifexist</span>
+<span class="c1"># parameter was set to True, data1.csv.mod is read instead of</span>
+<span class="c1"># data1.csv</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ccg_dates.html" class="btn btn-neutral float-left" title="ccg_dates module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ccg_ncdf.html" class="btn btn-neutral float-right" title="ccg_ncdf - NetCDF file utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

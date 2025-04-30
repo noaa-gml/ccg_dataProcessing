@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_insitu_data &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_insitu_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_insitu_data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">InsituData - A class for getting observatory insitu data from the database</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">ccg_db_conn</span>
+<span class="kn">import</span> <span class="nn">ccg_dbutils</span>
+
+<span class="c1"># averaging types</span>
+<span class="n">RAW</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">HOURLY</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DAILY</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">MONTHLY</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<div class="viewcode-block" id="InsituData"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData">[docs]</a><span class="k">class</span> <span class="nc">InsituData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parameter (int) or (str): parameter number or parameter formula</span>
+<span class="sd">        site (int) or (str): Site code or site number</span>
+<span class="sd">        which (int): Type of averaged data to get.  Valid values are:</span>
+
+<span class="sd">            * 0 - get high frequency data from insitu table</span>
+<span class="sd">            * 1 - get hourly averaged data</span>
+<span class="sd">            * 2 - get daily averaged data</span>
+<span class="sd">            * 3 - get monthly averaged data</span>
+
+<span class="sd">        use_target (bool) : True to use target results instead of ambient air.</span>
+<span class="sd">            The &#39;which&#39; argument is ignored if ``use_target`` is True.</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">        Usage of this class is a 3 step process</span>
+
+<span class="sd">        1. Create the class</span>
+<span class="sd">        2. Configure settings for filtering data</span>
+<span class="sd">        3. Run the query</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        f = InsituData(parameter, site, 1)</span>
+<span class="sd">        f.setRange(t1, t2)</span>
+<span class="sd">        result = f.run()</span>
+
+<span class="sd">    Additional methods are available to filter results.</span>
+
+<span class="sd">    Data with a first or second character flag != &#39;.&#39; is not included</span>
+<span class="sd">    unless the useFlaggedData() and/or useHardFlags() methods are called prior to run().</span>
+
+<span class="sd">    Results:</span>
+
+<span class="sd">        Results are generated with the ``run()`` method. Results are also available</span>
+<span class="sd">        in the self.results attribute.  If no data is found, None is returned as the result.</span>
+
+<span class="sd">        Default result is a list of dicts, each dict representing a row of data.</span>
+<span class="sd">        Results can be changed to either a dict of numpy arrays or a pandas DataFrame</span>
+<span class="sd">        with arguments to the ``run()`` method.</span>
+<span class="sd">        Data fields included in the results are:</span>
+
+<span class="sd">        * date - datetime object for sample date and time</span>
+<span class="sd">        * time_decimal - decimal value for the sample date</span>
+<span class="sd">        * value - analzyed mole fraction value</span>
+<span class="sd">        * n - number of samples averaged into value</span>
+<span class="sd">        * std_dev - standard deviation of value</span>
+<span class="sd">        * qcflag - qc flag (renamed from &#39;flag&#39;)</span>
+<span class="sd">        * intake_ht - intake height of sample</span>
+<span class="sd">        * unc - calculated uncertainty of value</span>
+<span class="sd">        * inst - instrument id</span>
+<span class="sd">        * inlet - inlet name</span>
+
+<span class="sd">        If ``use_target`` is True, then `intake_ht` is not included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="n">RAW</span><span class="p">,</span> <span class="n">use_target</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_default</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_db_conn</span><span class="o">.</span><span class="n">RO</span><span class="p">()</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="n">ccg_dbutils</span><span class="o">.</span><span class="n">dbUtils</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">paramnum</span> <span class="o">=</span> <span class="n">parameter</span>
+            <span class="n">paramname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getGasFormula</span><span class="p">(</span><span class="n">paramnum</span><span class="p">)</span>
+            <span class="n">paramname</span> <span class="o">=</span> <span class="n">paramname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">paramnum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
+            <span class="n">paramname</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getSiteCode</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">use_target</span><span class="p">:</span>
+            <span class="n">which</span> <span class="o">=</span> <span class="n">RAW</span>
+
+        <span class="n">allowed_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">RAW</span><span class="p">,</span> <span class="n">HOURLY</span><span class="p">,</span> <span class="n">DAILY</span><span class="p">,</span> <span class="n">MONTHLY</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">which</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incorrect averaging value </span><span class="si">%s</span><span class="s2">. Should be one of </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">allowed_types</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">=</span> <span class="n">which</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;dd as time_decimal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;std_dev&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;flag as qcflag&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;dd&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">==</span> <span class="n">RAW</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">use_target</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;type as inlet&quot;</span><span class="p">)</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">paramname</span> <span class="o">+</span> <span class="s2">&quot;_target&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;intake_ht&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;inlet&quot;</span><span class="p">)</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">paramname</span> <span class="o">+</span> <span class="s2">&quot;_insitu&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;hr&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;sec&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;unc&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;inst&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">==</span> <span class="n">DAILY</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">paramname</span> <span class="o">+</span> <span class="s2">&quot;_day&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">==</span> <span class="n">MONTHLY</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">paramname</span> <span class="o">+</span> <span class="s2">&quot;_month&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">==</span> <span class="n">HOURLY</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">paramname</span> <span class="o">+</span> <span class="s2">&quot;_hour&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;intake_ht&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;unc&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;inst&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.run"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_arrays</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Run the query and return results</span>
+
+<span class="sd">        By default the result is a list of dicts, each dict</span>
+<span class="sd">        representing a row of data. This can be changed by</span>
+<span class="sd">        setting the as_arrays or as_dataframe arguments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            as_arrays : If True, convert the result to a single dict of</span>
+<span class="sd">                numpy arrays.  The key is the name, and the value</span>
+<span class="sd">                is a numpy array of all results.</span>
+
+<span class="sd">            as_dataframe : If True, return results as a pandas DataFrame</span>
+
+<span class="sd">        Results:</span>
+
+<span class="sd">            Results are stored in the class attribute &#39;results&#39;, that is</span>
+<span class="sd">            ``f.results``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RAW</span><span class="p">,</span> <span class="n">HOURLY</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span><span class="p">:</span>
+                <span class="c1"># don&#39;t restrict flags</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;flag like &#39;_._&#39;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;flag like &#39;.__&#39;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;flag like &#39;.._&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;value&gt;-999&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># convert separate date and time fields to single datetime</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">==</span> <span class="n">RAW</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+                <span class="n">hour</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">]</span>
+                <span class="n">minute</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">]</span>
+                <span class="n">second</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;sec&#39;</span><span class="p">]</span>
+                <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;sec&#39;</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="ow">in</span> <span class="p">[</span><span class="n">DAILY</span><span class="p">,</span> <span class="n">MONTHLY</span><span class="p">]:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+                <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="o">==</span> <span class="n">HOURLY</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+                <span class="n">hour</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">]</span>
+                <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">as_dataframe</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">as_arrays</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+<span class="c1">#            {d[key].append(row[key]) for row in result for key in row}</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">d2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.setRange"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.setRange">[docs]</a>    <span class="k">def</span> <span class="nf">setRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the date range for the results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start (datetime) : Start date of data</span>
+<span class="sd">            end (datetime) : End date of data</span>
+
+<span class="sd">        Data is up to but not including end date.</span>
+<span class="sd">        Times for the start and end are ignored, only</span>
+<span class="sd">        complete days are used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;date &gt;= </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">.</span><span class="n">date</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">end</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;date &lt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">.</span><span class="n">date</span><span class="p">())</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.setInstrument"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.setInstrument">[docs]</a>    <span class="k">def</span> <span class="nf">setInstrument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Restrict results to certain analyer instruments.</span>
+
+<span class="sd">        &#39;instid&#39; can be an explicit name or can contain mysql wildcard characters like &#39;%&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;inst like </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">instid</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.setIntakeHeight"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.setIntakeHeight">[docs]</a>    <span class="k">def</span> <span class="nf">setIntakeHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Restrict results to a single intake height &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;intake_ht = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.setInlet"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.setInlet">[docs]</a>    <span class="k">def</span> <span class="nf">setInlet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Restrict results to a single inlet &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;inlet=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inlet_num</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.includeFlaggedData"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.includeFlaggedData">[docs]</a>    <span class="k">def</span> <span class="nf">includeFlaggedData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; include data where the second character of the flag is not &#39;.&#39; &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RAW</span><span class="p">,</span> <span class="n">HOURLY</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.includeHardFlags"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.includeHardFlags">[docs]</a>    <span class="k">def</span> <span class="nf">includeHardFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; include data where the first character of the flag is not &#39;.&#39; &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">averaging</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RAW</span><span class="p">,</span> <span class="n">HOURLY</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.includeDefault"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.includeDefault">[docs]</a>    <span class="k">def</span> <span class="nf">includeDefault</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Include data that has default value (-999.99)</span>
+
+<span class="sd">        Since default data is usually flagged, you also need to include the</span>
+<span class="sd">        includeHardFlags() filter to get the default values.   </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_default</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="InsituData.showQuery"><a class="viewcode-back" href="../db_utils/insitudb.html#ccg_insitu_data.InsituData.showQuery">[docs]</a>    <span class="k">def</span> <span class="nf">showQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Print out the query string &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">_parameters</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">cmd</span><span class="p">()</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">bind</span><span class="p">())</span></div></div>
+<span class="c1">#        print(self.sql.cmd())</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">InsituData</span><span class="p">(</span><span class="s2">&quot;CO2&quot;</span><span class="p">,</span> <span class="s2">&quot;LEF&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">t1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">t2</span><span class="p">)</span>
+    <span class="c1">#    f.includeFlaggedData()</span>
+<span class="c1">#    f.setIntakeHeight(18.3)</span>
+<span class="c1">#    f.includeHardFlags()</span>
+<span class="c1">#    f.includeDefault()</span>
+<span class="c1">#    f.setInlet(2)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#    results = f.run(as_arrays=True)</span>
+<span class="c1">#    f.showQuery()</span>
+
+    <span class="c1">#    for row in f.results: print(row)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+<span class="c1">#    d = InsituData(&quot;CO2&quot;, &quot;MKO&quot;, 2)</span>
+<span class="c1">#    results2 = d.run(as_dataframe=True)</span>
+<span class="c1">#    results2 = d.run(as_arrays=True)</span>
+<span class="c1">#    print(results2)</span>
+
+<span class="c1">#    print(pd.concat([results, results2]))</span>
+<span class="c1">#    print(numpy.concatenate((results[&#39;date&#39;], results2[&#39;date&#39;])))</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

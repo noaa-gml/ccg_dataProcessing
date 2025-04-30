@@ -1,0 +1,104 @@
+
+.. highlight:: rest
+
+.. _runaction:
+
+RunAction
+---------
+
+A python class for calling the hm program in various ways from within a python program:
+
+        * run - start hm in foreground with given action file
+        * runbg - start hm in background with given action file
+        * execute - start hm in foreground with given list of action lines
+
+The class does this by starting a python subprocess that starts hm.
+
+
+RunAction Objects
+=================
+
+.. class:: RunAction(actiondir="", configfile="hm.conf", bindir="", testMode=False, debug=False, rotate_logs=False)
+
+   :param string actiondir: directory path where action files are located
+   :param string configfile: configuration file to pass into hm program
+   :param string bindir: directory where hm program resides
+   :param boolean testMode: Set to True to pass --test flag to hm
+   :param boolean debug: Set to True to pass --debug flag to hm and to turn on debuggin in RunAction
+   :param boolean rotate_logs: Set to True to pass --rotatelog flag to hm
+
+
+   .. method:: run(actionfile, *args)
+
+   Run an action in the foreground, wait for it to finish.
+
+   :param string actionfile: The filename which contains action lines to execute.
+   :param args: Additional arguments to pass into the hm command line.
+
+   :returns: Returns the return value from the hm process.
+
+
+   .. method:: runbg(actionfile, *args)
+
+   Run an action in the background, don't wait for it to finish. Returns the Popen object for the hm process.
+
+   :param string actionfile: The filename which contains action lines to execute.
+   :param args: Additional arguments to pass into the hm command line.
+
+   :returns: Returns the Popen object for the hm process.
+
+   .. method:: execute(actionlist, *args)
+
+   Execute a list of action lines, wait for it to finish.
+
+   :param list actionlist: A list action lines to execute.
+   :param args: Additional arguments to pass into the hm command line.
+
+   :returns: Returns the return value from the hm process.
+
+   This is the same as the run method, but you provide a list of action
+   lines instead of a file name containing the action lines.
+
+
+Examples
+==========
+
+.. code-block:: python
+
+        import runaction
+
+        action = runaction.RunAction(actiondir)
+        action.run(actionfile)
+        print(action.output)
+
+.. code-block:: python
+
+        import runaction
+
+        action = runaction.RunAction(actiondir)
+        p = action.runbg(actionfile)
+        ...
+        output = p.stdout.readline()
+
+.. code-block:: python
+
+        import runaction
+
+        action = runaction.RunAction(actiondir)
+        actionlist = ['0 CheckDevice hp34970 @query34970', '0 CheckDevice hp35900 @query35900']
+        action.execute(actionlist)
+        print(action.output)
+
+
+r = action.run(actionfile)
+where r is the return value from hm process
+
+p = action.runbg(actionfile)
+where p is Popen object for the hm process
+
+r = action.execute(actionlist)
+where r is the return value from hm process
+
+For cases ``run`` and ``execute``, any output from hm can be read from action.output variable. Error output
+is available in the action.errors variable.
+For case ``runbg``, output can be read with p.stdout.readline()

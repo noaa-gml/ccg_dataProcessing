@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_dbutils &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_dbutils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_dbutils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Convenience routines for common database requests</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">ccg_db_conn</span>
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="csv"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.csv">[docs]</a><span class="k">def</span> <span class="nf">csv</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert list to &#39;,&#39; separated string &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%%%%</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">items</span>
+
+    <span class="k">return</span> <span class="n">a</span></div>
+
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="dbUtils"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils">[docs]</a><span class="k">class</span> <span class="nc">dbUtils</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Class for convenience functions for common database requests</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        readonly (bool): If False, open database connection in read/write mode.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        **readonly=False** should only be set when using the FlaskDataTag routines</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        db = ccg_dbutils.dbUtils()</span>
+<span class="sd">        print(db.getSiteNum(&#39;MLO&#39;))</span>
+<span class="sd">        print(db.getSiteCode(75))</span>
+<span class="sd">        print(db.getSiteName(&#39;MLO&#39;))</span>
+<span class="sd">        print(db.getSiteNameFromNum(75))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s2">&quot;ccgg&quot;</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;db-int2&quot;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">database</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;ccgg&quot;</span>
+
+        <span class="c1"># only one host available now that db is gone - 17 May 2023</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;db-int2&quot;</span>
+        <span class="k">if</span> <span class="n">readonly</span><span class="p">:</span>
+            <span class="n">passwd</span> <span class="o">=</span> <span class="s1">&#39;pFR4&amp;MePOv1jr&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_db_conn</span><span class="o">.</span><span class="n">DatabaseConn</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s1">&#39;readonly&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">passwd</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">passwd</span> <span class="o">=</span> <span class="s1">&#39;0</span><span class="si">%c</span><span class="s1">&amp;eS*wrwl1O&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_db_conn</span><span class="o">.</span><span class="n">DatabaseConn</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s1">&#39;gmduser&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">passwd</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.close"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteNum">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the site number for a site code. Returns -1 if code is not found. &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT num FROM gmd.site WHERE code=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">code</span><span class="p">,))</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;num&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteCode"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteCode">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get a site code from a site number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT code FROM gmd.site WHERE num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">num</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;code&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">code</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteName"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteName">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get a site name from a site code &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT name FROM gmd.site WHERE code=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">code</span><span class="p">,))</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">name</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteNameFromNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteNameFromNum">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteNameFromNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a site name from a site number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT name FROM gmd.site WHERE num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">num</span><span class="p">,))</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">name</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteInfo"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get site information from a site code.  &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT num, code, name, country, lat, lon, elev, lst2utc FROM gmd.site WHERE code=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">code</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteInfoFromNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteInfoFromNum">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteInfoFromNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get site information from a site number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT num, code, name, country, lat, lon, elev, lst2utc FROM gmd.site WHERE num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">num</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getGasNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getGasNum">[docs]</a>    <span class="k">def</span> <span class="nf">getGasNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gas</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get parameter number from formula or name &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT num from gmd.parameter where formula=</span><span class="si">%s</span><span class="s2"> or name=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">gas</span><span class="p">))</span>
+
+        <span class="n">num</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;num&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getGasFormula"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getGasFormula">[docs]</a>    <span class="k">def</span> <span class="nf">getGasFormula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gasnum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get parameter formula from number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT formula from gmd.parameter where num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">gasnum</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getGasNameFromNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getGasNameFromNum">[docs]</a>    <span class="k">def</span> <span class="nf">getGasNameFromNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gasnum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get parameter name from number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT name from gmd.parameter where num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">gasnum</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getGasName"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getGasName">[docs]</a>    <span class="k">def</span> <span class="nf">getGasName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formula</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get parameter name from formula &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT name from gmd.parameter where formula=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">formula</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getGasInfo"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getGasInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getGasInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formula</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get parameter info from formula &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT num, formula, name, unit, unit_name, formula_html, unit_html, formula_idl, unit_idl, formula_matplotlib, unit_matplotlib &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;FROM gmd.parameter WHERE formula=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">formula</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getGasInfoFromNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getGasInfoFromNum">[docs]</a>    <span class="k">def</span> <span class="nf">getGasInfoFromNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get parameter info from number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT num, formula, name, unit, unit_name, formula_html, unit_html, formula_idl, unit_idl, formula_matplotlib, unit_matplotlib &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;FROM gmd.parameter WHERE num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">num</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getProgramNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getProgramNum">[docs]</a>    <span class="k">def</span> <span class="nf">getProgramNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abbr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get program number from a single or list of program abbreviations &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">abbr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">abbr</span> <span class="o">=</span> <span class="p">(</span><span class="n">abbr</span><span class="p">,)</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span>
+        <span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;gmd.program&quot;</span><span class="p">)</span>
+        <span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
+        <span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;abbr in&quot;</span><span class="p">,</span> <span class="n">abbr</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+
+        <span class="n">plist</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;num&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">plist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">plist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">plist</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getProjectName"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getProjectName">[docs]</a>    <span class="k">def</span> <span class="nf">getProjectName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projectnum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get project name from project number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT name FROM gmd.project WHERE num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">projectnum</span><span class="p">,))</span>
+
+        <span class="n">projectname</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">projectname</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">projectname</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getProgramAbbrFromProject"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getProgramAbbrFromProject">[docs]</a>    <span class="k">def</span> <span class="nf">getProgramAbbrFromProject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get program abbreviation from a project number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select program.abbr from gmd.program, gmd.project where project.num=</span><span class="si">%s</span><span class="s2"> and program_num=program.num;&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">proj</span><span class="p">,))</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;abbr&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">name</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getIntakeHeights"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getIntakeHeights">[docs]</a>    <span class="k">def</span> <span class="nf">getIntakeHeights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stacode</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get all intake heights from an insitu table &quot;&quot;&quot;</span>
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">stacode</span><span class="p">)</span>
+        <span class="n">paramnum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select distinct height from ccgg.intake_heights &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;where site_num=</span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">sitenum</span>
+<span class="c1">#        query += &quot;and parameter_num=%d &quot; % parmnum</span>
+
+
+<span class="c1">#        table = stacode.lower() + &quot;_&quot; + param.lower() + &quot;_insitu&quot;</span>
+<span class="c1">#        query = &quot;select distinct intake_ht from ccgg.%s &quot; % table</span>
+<span class="c1">#        query += &quot;where intake_ht &gt; 0 &quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">a</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getBinInfo"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getBinInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getBinInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stacode</span><span class="p">,</span> <span class="n">project_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get any binning information for a site code and project number &quot;&quot;&quot;</span>
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">stacode</span><span class="p">)</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select method, min, max, width &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;from ccgg.data_binning where site_num=</span><span class="si">%s</span><span class="s2"> and project_num=</span><span class="si">%s</span><span class="s2">&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">sitenum</span><span class="p">,</span> <span class="n">project_num</span><span class="p">))</span>
+
+<span class="c1">#        if result is not None:</span>
+<span class="c1">#            return result[0]</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getPrelimDate"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getPrelimDate">[docs]</a>    <span class="k">def</span> <span class="nf">getPrelimDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">gas</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return date for preliminary data for a site code and gas &quot;&quot;&quot;</span>
+
+        <span class="n">sitecode</span> <span class="o">=</span> <span class="n">site</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">sitecode</span><span class="p">)</span>
+        <span class="n">paramnum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="n">gas</span><span class="p">)</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT begin FROM ccgg.data_release &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;WHERE site_num=</span><span class="si">%s</span><span class="s2"> &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;AND parameter_num=</span><span class="si">%s</span><span class="s2"> &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;AND project_num=</span><span class="si">%s</span><span class="s2"> &quot;</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">sitenum</span><span class="p">,</span> <span class="n">paramnum</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">prelimdate</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;begin&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prelimdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">9999</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">prelimdate</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getDefaultScale"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getDefaultScale">[docs]</a>    <span class="k">def</span> <span class="nf">getDefaultScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gas</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the default scale table name for the given gas abbr &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select name from reftank.scales where species=</span><span class="si">%s</span><span class="s2"> and current=1&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">gas</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">name</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getScaleNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getScaleNum">[docs]</a>    <span class="k">def</span> <span class="nf">getScaleNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return the scale number for a given scale name &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT idx FROM reftank.scales &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;WHERE name=</span><span class="si">%s</span><span class="s2"> &quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">scale_name</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getScaleName"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getScaleName">[docs]</a>    <span class="k">def</span> <span class="nf">getScaleName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return the scale name for a given scale number &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT name FROM reftank.scales &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;WHERE idx=</span><span class="si">%s</span><span class="s2"> &quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">scale_num</span><span class="p">,))</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getCurrentScale"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getCurrentScale">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gas</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determine the current scale number and name for the gas</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict with</span>
+<span class="sd">            d[&#39;idx&#39;] - scale number</span>
+<span class="sd">            d[&#39;name&#39;] - scale name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT idx, name FROM reftank.scales WHERE species=</span><span class="si">%s</span><span class="s2"> and current=1&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">gas</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+
+        <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown scale for: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">gas</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getFillCode"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getFillCode">[docs]</a>    <span class="k">def</span> <span class="nf">getFillCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_num</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the filling code for tank with &#39;serial_num&#39; on given date</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            serial_num : serial number of the reference tank</span>
+<span class="sd">            date : Either a datetime or date instance for the date</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            fill code of the tank on given date. If no fill code available returns &#39;-&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select code from reftank.fill where serial_number=</span><span class="si">%s</span><span class="s2"> and date &lt;=</span><span class="si">%s</span><span class="s2"> order by date desc limit 1&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">(</span><span class="n">serial_num</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">fillcode</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;code&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">fillcode</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="n">fillcode</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fillcode</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+
+        <span class="k">return</span> <span class="n">fillcode</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getStrategies"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getStrategies">[docs]</a>    <span class="k">def</span> <span class="nf">getStrategies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stacode</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get sampling strategies that are used for a project at a site.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stacode (str): Three letter station code</span>
+<span class="sd">            project (int or list): Single number or list of project numbers</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            slist (list): List of strategy numbers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">csv</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="c1"># assume project 6 will be by itself</span>
+            <span class="k">if</span> <span class="n">p1</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select distinct strategy_num from hats_qc.data_summary where site_num=</span><span class="si">%s</span><span class="s2"> and project_num in (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select distinct strategy_num from ccgg.data_summary where site_num=</span><span class="si">%s</span><span class="s2"> and project_num in (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># assume project 6 will be by itself</span>
+            <span class="k">if</span> <span class="s2">&quot;6&quot;</span> <span class="ow">in</span> <span class="n">p1</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select distinct strategy_num from hats_qc.data_summary where site_num=</span><span class="si">%s</span><span class="s2"> and project_num in (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select distinct strategy_num from ccgg.data_summary where site_num=</span><span class="si">%s</span><span class="s2"> and project_num in (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">stacode</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">sitenum</span><span class="p">,</span> <span class="n">p1</span><span class="p">))</span>
+
+        <span class="n">slist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">slist</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;strategy_num&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">slist</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getParameterList"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getParameterList">[docs]</a>    <span class="k">def</span> <span class="nf">getParameterList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stacode</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get a list of parameters that have been measured at a site for a given project.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stacode (str): Three letter station code</span>
+<span class="sd">            project (int): Project number</span>
+<span class="sd">            strategy (int or list): Strategy number or list of strategy numbers</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Return a list of dicts that contain the parameter numbers, formulas and names</span>
+<span class="sd">            of the parameters. keys are &#39;parameter_num&#39;, &#39;formula&#39;, &#39;name&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">strategy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="p">(</span><span class="n">strategy</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="n">strategy</span>
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">stacode</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;hats_qc.data_summary d&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;ccgg.data_summary d&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.parameter p on d.parameter_num=p.num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.parameter_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;p.formula&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;p.name&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;p.formula&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;d.parameter_num&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.project_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.site_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sitenum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.strategy_num in&quot;</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;(d.parameter_num &lt; 58 OR d.parameter_num &gt; 62) &quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getFlaskMethodList"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getFlaskMethodList">[docs]</a>    <span class="k">def</span> <span class="nf">getFlaskMethodList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stacode</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">parameternum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get a list of flask sample method codes for a parameter at a site</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stacode (str): Three letter station code</span>
+<span class="sd">            project (int): Project number</span>
+<span class="sd">            parameternum (int or list): Parameter number</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Return a list of flask methods that have been used for the site/project/parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">stacode</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;ccgg.flask_data_view d&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.parameter p on d.parameter_num=p.num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.me&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;d.me&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.project_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.site_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sitenum</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameternum</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.parameter_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">parameternum</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameternum</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.parameter_num in&quot;</span><span class="p">,</span> <span class="n">parameternum</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;me&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">methods</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSiteList"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSiteList">[docs]</a>    <span class="k">def</span> <span class="nf">getSiteList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get list of sites for a given project and strategy</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project (int): Project number</span>
+<span class="sd">            strategy (int or list): Single number or list of strategy numbers</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Returns a list of dicts containing the site code, name and country.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">strategy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="p">(</span><span class="n">strategy</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="n">strategy</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;hats_qc.data_summary d&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># use flask_event, data_summary not always up to date for new sites</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;ccgg.flask_event d&quot;</span><span class="p">)</span>  <span class="c1"># this doesn&#39;t work for observatory</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;ccgg.data_summary d&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.site s on d.site_num=s.num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;s.code&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;s.name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;s.country&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;s.code&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.project_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.strategy_num in&quot;</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getSitePrograms"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getSitePrograms">[docs]</a>    <span class="k">def</span> <span class="nf">getSitePrograms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitecode</span><span class="p">,</span> <span class="n">gasnum</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get list of program abbr and numbers that have analyzed flasks for a gas at a site </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sitecode: Three letter site code</span>
+<span class="sd">            projnum: Single or list of project numbers</span>
+<span class="sd">            gasnum: Single or list of gas numbers</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Returns a list of dicts with progam abbreviation and program number.</span>
+<span class="sd">            Keys are &#39;program_num&#39;, &#39;name&#39;, &#39;abbr&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">sitecode</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;hats_qc.flask_event e&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;hats_qc.flask_data d on e.num=d.event_num&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;ccgg.flask_event e&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;ccgg.flask_data d on e.num=d.event_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.program p on d.program_num=p.num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.program_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;p.name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;p.abbr&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.site_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sitenum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gasnum</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gasnum</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.parameter_num in&quot;</span><span class="p">,</span> <span class="n">gasnum</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.parameter_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">gasnum</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+<span class="c1">#        print(self.db.sql.cmd() % self.db.sql.bind())</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.flaskPairDiff"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.flaskPairDiff">[docs]</a>    <span class="k">def</span> <span class="nf">flaskPairDiff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitecode</span><span class="p">,</span> <span class="n">gas</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">programs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute flask pair difference for a given site,gas and project number</span>
+<span class="sd">            for dates from &#39;start&#39; up to but not including &#39;end&#39;</span>
+
+<span class="sd">        Only uses unflagged flask data</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sitecode (str): Three letter site code</span>
+<span class="sd">            gas (str): Gas formula, e.g. &#39;CO2&#39;</span>
+<span class="sd">            start (str): Start date, e.g. &#39;2021-04-06&#39;</span>
+<span class="sd">            end (str): End date, e.g. &#39;2021-04-06&#39;</span>
+<span class="sd">            project (int): Project number</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of tuples, each tuple contains</span>
+<span class="sd">                (date, method, flaskid1, flaskid2, value1, value2, abs(value2-value1))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">sitenum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">sitecode</span><span class="p">)</span>
+        <span class="n">paramnum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="n">gas</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;hats_qc.flask_event e&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;hats_qc.flask_data d on e.num=d.event_num&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;ccgg.flask_event e&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;ccgg.flask_data d on e.num=d.event_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.date&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.time&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.id&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.me&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.value&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.site_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sitenum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.value &gt; -999&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.project_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">programs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.program_num=1&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.program_num in&quot;</span><span class="p">,</span> <span class="n">programs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.parameter_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">paramnum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.flag like &#39;.._&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date &gt;= </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date &lt; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;e.date&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;e.time&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;e.me&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;e.id&quot;</span><span class="p">)</span>
+
+<span class="c1">#        print(self.db.sql.cmd() % self.db.sql.bind())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="c1"># time 0</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">prev_method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">prev_date</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># loop through results finding lines that match previous line in date and method</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+<span class="c1">#    print(r)</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;me&#39;</span><span class="p">]</span>
+
+            <span class="c1"># convert date and time to datetime</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span> <span class="o">+</span> <span class="n">time</span>
+
+            <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="n">prev_date</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="n">prev_method</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                <span class="n">flaskid</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">prev_value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                <span class="n">prev_flaskid</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="n">prev_value</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dt</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">prev_flaskid</span><span class="p">,</span> <span class="n">flaskid</span><span class="p">,</span> <span class="n">prev_value</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">diff</span><span class="p">))</span>
+
+            <span class="n">prev_date</span> <span class="o">=</span> <span class="n">dt</span>
+            <span class="n">prev_method</span> <span class="o">=</span> <span class="n">method</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getFlaskDataTagList"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getFlaskDataTagList">[docs]</a>    <span class="k">def</span> <span class="nf">getFlaskDataTagList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datanum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; get tag numbers available for flask data number &quot;&quot;&quot;</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">datanum</span><span class="p">]</span>
+        <span class="n">_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">callproc</span><span class="p">(</span><span class="s1">&#39;tagwr_getFlaskDataTagList&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">nextset</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getFlaskDataTags"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getFlaskDataTags">[docs]</a>    <span class="k">def</span> <span class="nf">getFlaskDataTags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datanum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; get tag numbers already assigned to flask data number &quot;&quot;&quot;</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">datanum</span><span class="p">]</span>
+        <span class="n">_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">callproc</span><span class="p">(</span><span class="s1">&#39;tagwr_getFlaskDataTags&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="n">_c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span> <span class="c1">#list of column names</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">nextset</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">b</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.addFlaskDataTag"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.addFlaskDataTag">[docs]</a>    <span class="k">def</span> <span class="nf">addFlaskDataTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datanum</span><span class="p">,</span> <span class="n">tagnum</span><span class="p">,</span> <span class="n">comment</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; add tag number from flask data number &quot;&quot;&quot;</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">datanum</span><span class="p">,</span> <span class="n">tagnum</span><span class="p">,</span> <span class="n">comment</span><span class="p">,</span> <span class="n">user</span><span class="p">]</span>
+        <span class="n">_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">callproc</span><span class="p">(</span><span class="s1">&#39;tagwr_addFlaskDataTag&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">nextset</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.delFlaskDataTag"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.delFlaskDataTag">[docs]</a>    <span class="k">def</span> <span class="nf">delFlaskDataTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datanum</span><span class="p">,</span> <span class="n">tagnum</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; remove tag number from flask data number &quot;&quot;&quot;</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">datanum</span><span class="p">,</span> <span class="n">tagnum</span><span class="p">,</span> <span class="n">user</span><span class="p">]</span>
+        <span class="n">_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">callproc</span><span class="p">(</span><span class="s1">&#39;tagwr_delFlaskDataTag&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">nextset</span><span class="p">()</span>
+        <span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.dbTableExists"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.dbTableExists">[docs]</a>    <span class="k">def</span> <span class="nf">dbTableExists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Check if a table exists in a database &quot;&quot;&quot;</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot; SHOW TABLES LIKE &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">table</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getTables"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getTables">[docs]</a>    <span class="k">def</span> <span class="nf">getTables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchstr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get database tables that match a search string</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchstr (str): String to match a table name.  Do not include wildcard characters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            d (list): Returns a list of dicts with one key; &#39;table_name&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;show tables like &#39;%&quot;</span> <span class="o">+</span> <span class="n">searchstr</span> <span class="o">+</span> <span class="s2">&quot;%&#39;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+        <span class="c1"># make a simpler key name for the results</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;table_name&#39;</span><span class="p">:</span> <span class="n">val</span><span class="p">})</span>
+
+
+        <span class="k">return</span> <span class="n">d</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getTableColumnNames"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getTableColumnNames">[docs]</a>    <span class="k">def</span> <span class="nf">getTableColumnNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; get column names of table in database. &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;WHERE table_schema=</span><span class="si">%s</span><span class="s2"> and table_name=</span><span class="si">%s</span><span class="s2">;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;COLUMN_NAME&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Table name doesn&#39;t exist: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">field_names</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.getInstrumentNum"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.getInstrumentNum">[docs]</a>    <span class="k">def</span> <span class="nf">getInstrumentNum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get instrument number from id character string &quot;&quot;&quot;</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select num from ccgg.inst_description where id=</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">(</span><span class="n">inst_id</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;num&#39;</span><span class="p">]</span></div>
+
+    <span class="c1">#---------------------------------------------------------</span>
+<div class="viewcode-block" id="dbUtils.doquery"><a class="viewcode-back" href="../db_utils/dbutils.html#ccg_dbutils.dbUtils.doquery">[docs]</a>    <span class="k">def</span> <span class="nf">doquery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">insert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Do a simple general query of the database.</span>
+
+<span class="sd">        This method calls the doquery() method in :ref:`ccg_db_conn &lt;db_conn&gt;` but uses</span>
+<span class="sd">        only two arguments, &#39;query&#39; and &#39;parameters&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">insert</span><span class="o">=</span><span class="n">insert</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">db</span> <span class="o">=</span> <span class="n">dbUtils</span><span class="p">()</span>
+<span class="c1">#    print(db.sql.cmd())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteCode</span><span class="p">(</span><span class="mi">75</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteName</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteNameFromNum</span><span class="p">(</span><span class="mi">75</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteInfo</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteInfoFromNum</span><span class="p">(</span><span class="mi">75</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasFormula</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasName</span><span class="p">(</span><span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasNameFromNum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasInfo</span><span class="p">(</span><span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasInfoFromNum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getProgramNum</span><span class="p">((</span><span class="s1">&#39;CCGG&#39;</span><span class="p">,</span> <span class="s1">&#39;HATS&#39;</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getProgramNum</span><span class="p">(</span><span class="s1">&#39;CCGG&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getProgramAbbrFromProject</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getProjectName</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getIntakeHeights</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getBinInfo</span><span class="p">(</span><span class="s1">&#39;POC&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getBinInfo</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getPrelimDate</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getDefaultScale</span><span class="p">(</span><span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getScaleNum</span><span class="p">(</span><span class="s1">&#39;CO2_X2019&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getScaleName</span><span class="p">(</span><span class="mi">13</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-----------&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getCurrentScale</span><span class="p">(</span><span class="s1">&#39;CO2&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getStrategies</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;********&quot;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">getParameterList</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;@@@@@&quot;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">getSiteList</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteList</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;@@@@@@@@@@@&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteList</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;@@@@@@@@@@@&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteList</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteList</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteList</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSitePrograms</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getTables</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="s2">&quot;select min(date), max(date) from mlo_co2_target&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getTableColumnNames</span><span class="p">(</span><span class="s1">&#39;mlo_co2_insitu&#39;</span><span class="p">))</span>
+
+<span class="c1">#    db = dbUtils(readonly=False)</span>
+
+<span class="c1">#    print(db.getFlaskDataTagList(498415))</span>
+<span class="c1">#    print(db.getFlaskDataTags(498415))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="s1">&#39;CFC11&#39;</span><span class="p">))</span>
+<span class="c1">#    print(db.doquery(&quot;SELECT * FROM reftank.grav_stds ORDER BY serial_number, date  &quot;))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getFlaskMethodList</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;@@@@@@@@@@@&quot;</span><span class="p">)</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">flaskPairDiff</span><span class="p">(</span><span class="s1">&#39;BRW&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;1998-1-1&#39;</span><span class="p">,</span> <span class="s1">&#39;1999-1-1&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

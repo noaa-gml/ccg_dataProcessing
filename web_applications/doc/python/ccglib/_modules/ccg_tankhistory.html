@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_tankhistory &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_tankhistory</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_tankhistory</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A class for dealing with the tank_history database table,</span>
+<span class="sd">which contains usage information for tanks used on various systems,</span>
+<span class="sd">especially for observatories.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">ccg_dbutils</span>
+<span class="kn">import</span> <span class="nn">ccg_db_conn</span>
+
+<span class="c1">##################################################################</span>
+<span class="c1"># make this a function so that tankhistory class can be readonly</span>
+<div class="viewcode-block" id="insert_tank_history"><a class="viewcode-back" href="../tankcals/history.html#ccg_tankhistory.insert_tank_history">[docs]</a><span class="k">def</span> <span class="nf">insert_tank_history</span><span class="p">(</span><span class="n">stacode</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">serial_number</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">gases</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Insert a new entry into the tank_history database table</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        stacode (str) : station code</span>
+<span class="sd">        system (str) : system name</span>
+<span class="sd">        serial_number (str) : tank serial number</span>
+<span class="sd">        label (str) : tank usage label</span>
+<span class="sd">        start_date (str or datetime) : start date of tank usage</span>
+<span class="sd">        gases (list) : list of gases that tank is used for</span>
+<span class="sd">        comment (str) : comment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;insert into tank_history set &quot;</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;site=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">stacode</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;system=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">system</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;serial_number=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">serial_number</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;label=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">label</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;start_date=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">start_date</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;gas=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gases</span><span class="p">)</span>
+    <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;comment=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">comment</span>
+
+    <span class="n">db</span> <span class="o">=</span> <span class="n">ccg_db_conn</span><span class="o">.</span><span class="n">ProdDB</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="s1">&#39;reftank&#39;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span></div>
+
+
+<span class="c1">##################################################################</span>
+<div class="viewcode-block" id="tankhistory"><a class="viewcode-back" href="../tankcals/history.html#ccg_tankhistory.tankhistory">[docs]</a><span class="k">class</span> <span class="nc">tankhistory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Class for holding tank history information.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        gas     : gas species</span>
+<span class="sd">        location : sitecode, e.g. brw, mlo ...</span>
+<span class="sd">        label : find entries with this tank label, e.g. R0, S1, ...</span>
+<span class="sd">        system : system name, e.g. ndir, lgr, picarro ...</span>
+<span class="sd">        date : Only include information where the tank is active on this date.</span>
+<span class="sd">               Can be datetime object or valid date string.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        data : A list of namedtuples with information on the reference gases.</span>
+<span class="sd">            Field names are (&#39;site&#39;, &#39;system&#39;, &#39;gas&#39;, &#39;serial_number&#39;, &#39;label&#39;, &#39;start_date&#39;, &#39;fill_code&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a tank history object.</span>
+
+<span class="sd">        parameter:</span>
+<span class="sd">            gas: the gas species</span>
+<span class="sd">            location: set to specify location from tank history table.</span>
+<span class="sd">            system: system name to use</span>
+<span class="sd">            label: get only entries that have this label</span>
+<span class="sd">            date: get entries that are active on this date (startdate &lt;= date &lt;= enddate)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gas</span> <span class="o">=</span> <span class="n">gas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activedate</span> <span class="o">=</span> <span class="n">date</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_dbutils</span><span class="o">.</span><span class="n">dbUtils</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s1">&#39;reftank&#39;</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_results</span><span class="p">()</span>
+        <span class="c1"># a namedtuple object to hold results.</span>
+        <span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;gas&#39;</span><span class="p">,</span> <span class="s1">&#39;serial_number&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">,</span> <span class="s1">&#39;end_date&#39;</span><span class="p">,</span> <span class="s1">&#39;fill_code&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Row</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">fillcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fill_code</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="n">row</span><span class="p">[</span><span class="s1">&#39;fill_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fillcode</span>
+
+                <span class="n">end_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_end_date</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+                <span class="n">row</span><span class="p">[</span><span class="s1">&#39;end_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_date</span>
+
+    <span class="c1">#            t = row + (fillcode,)</span>
+    <span class="c1">#            self.data.append(self.Row._make(t))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Row</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">))</span>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="tankhistory.filterByDate"><a class="viewcode-back" href="../tankcals/history.html#ccg_tankhistory.tankhistory.filterByDate">[docs]</a>    <span class="k">def</span> <span class="nf">filterByDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startdate</span><span class="p">,</span> <span class="n">enddate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find entries that have start_date &gt;= given startdate.</span>
+
+<span class="sd">        Need to save, for each tank label, the last entry before start date, and any after start date</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tmpdata</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="c1"># save the data by the tank label</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">tmpdata</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmpdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">tmpdata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">))</span> <span class="c1"># sort by date</span>
+            <span class="n">tmplist</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tmpdata</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;</span> <span class="n">startdate</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">enddate</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;</span> <span class="n">enddate</span><span class="p">:</span>
+                            <span class="n">tmplist</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">]</span>       <span class="c1"># last one before start date and before end date</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tmplist</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">]</span>       <span class="c1"># last one before start date</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">enddate</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;</span> <span class="n">enddate</span><span class="p">:</span>
+                            <span class="n">tmplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   <span class="c1"># any after start date and before enddate</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tmplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   <span class="c1"># any after start date</span>
+
+            <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tmplist</span><span class="p">)</span>    <span class="c1"># save entries for this tank label</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="tankhistory.filterByLabel"><a class="viewcode-back" href="../tankcals/history.html#ccg_tankhistory.tankhistory.filterByLabel">[docs]</a>    <span class="k">def</span> <span class="nf">filterByLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find entries that have label</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="tankhistory.search"><a class="viewcode-back" href="../tankcals/history.html#ccg_tankhistory.tankhistory.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">serial_number</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; search entries that match given arguments &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">site</span> <span class="o">==</span> <span class="n">site</span>
+                <span class="ow">and</span> <span class="n">row</span><span class="o">.</span><span class="n">serial_number</span> <span class="o">==</span> <span class="n">serial_number</span>
+                <span class="ow">and</span> <span class="n">row</span><span class="o">.</span><span class="n">start_date</span> <span class="o">==</span> <span class="n">start_date</span>
+                <span class="ow">and</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">label</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">row</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the results from the tank_history database &quot;&quot;&quot;</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select site, system, gas, serial_number, label, start_date from tank_history &quot;</span>
+
+        <span class="n">whereclause</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;site=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gas</span><span class="p">:</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;find_in_set(&#39;</span><span class="si">%s</span><span class="s2">&#39;, gas)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">gas</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">:</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;system=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;label in (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activedate</span><span class="p">:</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;start_date&lt;=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">activedate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereclause</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;WHERE &quot;</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">whereclause</span><span class="p">)</span>
+
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot; order by site,label,start_date&quot;</span>
+
+        <span class="c1"># modifications needed to sql if date set</span>
+        <span class="c1"># we want to order by date descending for each label, so most recent</span>
+        <span class="c1"># start date before active date is first</span>
+        <span class="c1"># Then the group by label will select the first row for each group</span>
+        <span class="c1"># the &#39;gas&#39; part of the group by is needed to separate the same label</span>
+        <span class="c1"># used by multiple gases.</span>
+        <span class="c1"># The limit 99999 is needed to keep the descending sort</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activedate</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select * from (&quot;</span> <span class="o">+</span> <span class="n">sql</span> <span class="o">+</span> <span class="s2">&quot; desc limit 999999) as zzz group by gas, label&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+<span class="c1">#        results = self.db.dbQueryAndFetch(sql)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_get_fill_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get fill code for a tank entry &quot;&quot;&quot;</span>
+
+        <span class="n">code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getFillCode</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;serial_number&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">code</span>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_end_date</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; as a convenience, find the end date for a tank history entry &quot;&quot;&quot;</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">end_date</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">end_date</span></div>
+
+<span class="c1">#if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#    dt = datetime.datetime(2022,6,6)</span>
+<span class="c1">#    hist = tankhistory(&quot;CO2&quot;, &quot;BRW&quot;, system=&quot;lgr&quot;, date=dt)</span>
+<span class="c1">#    for t in hist.data:</span>
+<span class="c1">#        print(t.system, t.serial_number, t.label, t.start_date, t.end_date)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

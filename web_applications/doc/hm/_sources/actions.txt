@@ -1,0 +1,655 @@
+.. highlight:: rest
+
+.. _actions:
+
+Actions
+=======================
+
+        **hm** uses a list of lines called 'action lines' to determine what it is supposed to do.  
+        Multiple lines can be stored in a file, and the file is passed into **hm** on :ref:`startup`.
+        Each action line consists of 4 parts, separated by spaces:
+
+        * time
+        * action name
+        * device
+        * options
+
+        The *time* value is a time in seconds after the start of **hm** at which to execute the desited *action*.
+        The *action name* is one of the actions described on this page.
+        The *device* is the device name specified in the hm :ref:`config` file.
+        The *options* can be a single word or multiple words specifying the option values that are needed by the 
+        *action name*.
+
+        The *options* field has in addition two special ways of specifying the option values.  If the field is a
+        single name that has '@' as the first character, then the values from the :ref:`config` file that 
+        correspond to that name are substituted.  Secondly, if the field is of the from $1, $2, $3 ..., then the
+        $n is replaced with its corresponding command line argument when hm is started. For example,  if **hm** 
+        is started like this:
+
+                ``hm -c hm.conf 101 < close_relay.act``
+
+        and the file 'close_relay.act' has this:
+
+                ``0 CloseRelay HP34970 $1``
+
+        then the value '101' will be substituted as the option value for the CloseRelay action.  The argument '101' 
+        is the first argument passed to **hm**, so it is used instead of '$1'.  Similarly, if there was a
+        second argument following '101', then that would be used instead of '$2' and so on.
+
+
+Action Names
+^^^^^^^^^^^^
+
+        In all of the following actions, replace the word 'device' with the actual device name specified in
+        the :ref:`config` file.
+
+
+CloseRelay
+----------
+
+        Close a relay on a switch device.
+
+        Action line syntax:
+
+                ``0 CloseRelay device 207``
+
+        The option value is a single number which contains both 'card' value and 'relay' value.  *card* is 
+        the first digit of the number, and *relay* is the remaining digits.  So 207 would be card 2, relay 7.
+
+.. _config_channel:
+
+ConfigChannel
+-------------
+
+        Configure a channel on a multiplexor.
+
+        Action line syntax:
+
+                ``0 ConfigChannel device location type``
+
+        where *location* is the card/channel location,
+        and *type* is the measurement type (dcvolt, resistance, current etc.).
+        The location and type syntax are device dependent.
+        Type must be one of DCVOLT, ACVOLT, RES, FRES, TC, THER THERREF, RTD, FRTD, DCCURR
+
+        Example::
+
+                0 ConfigChannel hp34970 @co2_ndir
+                or
+                0 ConfigChannel hp34970 101 DCVOLT
+                
+
+DeviceClear
+-----------
+
+
+LockInterface
+-------------
+
+        Lock the interface to a device for excluse use of the device.
+
+        This allows multiple actions to be run on a device without any
+        other process interfering.
+
+        To lock:
+                ``0 LockInterface devicename Lock``
+        To unlock
+                ``0 LockInterface devicename Unlock``
+
+        Example usage::
+
+                0 LockInterface hp34970 LOCK
+                0 ShowStatus sys.status Measuring channel 102
+                0 ReadValue hp34970 @channel_102
+                0 ScaleValue hp34970 @scale_102
+                0 LogDataGMT /data/qc/2012/ndir_temp/2012-11-07 Append
+                0 ShowStatus sys.status Measuring channel 103
+                0 ReadValue hp34970 @channel_103
+                0 ScaleValue hp34970 @scale_103
+                0 LogDataGMT /data/qc/2012/sample_flow/2012-11-07 Append
+                0 LockInterface hp34970 UNLOCK
+
+.. _log_data:
+
+LogData
+-----------
+
+        Write the value stored in the 'last_data' variable to a file.  
+        Data is either appended to or replaces the file, depending on
+        the value of option.  Default is to append.
+        Include the time stamp in local time when data was taken.
+        The filename is in the 'device' variable.
+
+        Action line syntax:
+
+                ``0 LogData filename Append | Replace``
+
+        Use the option value 'Append' to add a line of data to the file, and 'Replace' 
+        to write over the file and have just one line as a result.
+
+        The timestamp that is written is a Unix timestamp, i.e. time in seconds since
+        Jan 1, 1970.  To have a timestamp with a calendar date and time, use :ref:`log_datagmt`.
+
+.. _log_datagmt:
+
+LogDataGMT
+-----------
+
+        Write the value stored in the 'last_data' variable to a file.  
+        Data is either appended to or replaces the file, depending on
+        the value of option.  Default is to append.
+        Include the time stamp in GMT when data was taken.
+        The filename is in the 'device' variable.
+
+        Action line syntax:
+
+                ``0 LogDataGMT filename Append | Replace``
+
+        Use the option value 'Append' to add a line of data to the file, and 'Replace' 
+        to write over the file and have just one line as a result.
+
+        The timestamp that is written is a date and time consisting of year, month, day, hour, minute and second.
+        To have a timestamp with a single timestamp value, use :ref:`log_data`.
+
+.. _monitor_data:
+
+MonitorData
+-----------
+
+        Read data from a device at a specified sample rate
+        forever, print each reading to stdout.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm.py.  Only way to stop hm is by killing the process.
+
+        Action line syntax:
+
+                ``0 MonitorData device interval time_avg [channel type]``
+
+        where *interval* is time between readings in milliseconds,
+        *time_avg* is length of time to average readings before printing 
+        out the values, in seconds. A *time_avg* value of 0 will cause
+        **hm** to print out every reading.
+
+        For example,
+
+                ``0 MonitorData device 500 10``
+
+        which will cause *device* to take a reading every 500 milliseconds
+        and averages these readings for 10 seconds before printing out.
+
+        The device must already be configured to take readings of the desired type.
+
+.. _monitor_nonpolled_data:
+
+MonitorNonPolledData
+---------------------
+
+        Read data from an non-polled instrument that outputs single or multiple 
+        data streams as one digital output string. That is, read from a device that
+        continuously sends out data without being prompted.
+
+        It skips any leading character strings in the instrument output.  
+        Sampling rate is set by the instrument.
+
+        Can either loop forever OR take a single reading (or single average reading).
+        Print either each reading to stdout OR an average from a specified 
+        time period to stdout.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm.c when looping forever.  Only way to stop hm is by 
+        killing the process.
+
+        Action line syntax:
+
+                ``0 MonitorNonPolledData device  time_avg  forever?  gmt?  reg_time_interval?``
+
+        where options with ? are optional, and
+
+             *time_avg* is length of time in seconds to average readings before 
+             printing out the values. A time_avg value of 0 will cause
+             hm to print out every reading.
+
+             *forever?* specifies wheather to loop forever or to stop after one
+             time_avg cycle.
+             Default is to stop after one time_avg cycle.
+
+             *gmt?*  specifies use of GMT timestamps for data.  Set to 1 for GMT, 
+             0 or undefined for local time
+             Default is false.
+             
+             *reg_time_interval?*  specifies if the user wants the timestamps to be 
+             on a regular repeating pattern.  For example 10 second averages would
+             be recorded with timestamps of 10, 20, 30, etc seconds after the minute.
+             Default is false.
+
+
+        For example,
+
+            ``0  MonitorNonPolledData device  10 1``
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will loop forever.
+
+            ``0  MonitorNonPolledData device  10`` 
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will NOT loop forever so will exit 
+        after the first 10 sec average is printed.
+
+            ``0  MonitorNonPolledData device  0  1  1``
+
+        will read device but will NOT average, instead it will print out
+        all of the data points and it will continue forever.  The last option
+        causes the timestamps to be in GMT
+
+            ``0  MonitorNonPolledData device 10  1  0  1``
+
+        will read device and average the readings for 10 sec, loop forever, use local time
+        for the timestamp, and keep a regular pattern to the timestamps (ie
+        every even 10 seconds of the minutes)
+
+.. _monitor_polled_data:
+
+MonitorPolledData
+------------------
+
+        Read data from an polled instrument that outputs single or multiple 
+        data streams as one digital output string.  That is, read output from a device that 
+        requires a prompt before sending it's output.
+
+        Assumes channels already configured. 
+        !!!! NOT SURE THIS IS TRUE ----- It skips any leading character strings in the instrument output.  
+        !!!! SHOULD DO IF POSSIBLE !!!!
+
+        Sampling rate is set to 1 Hz.  
+
+        Can either loop forever OR take a single reading (or single average reading).
+        Print either each reading to stdout OR an average from a specified time period to stdout.
+
+        Be warned that this routine does NOT return to the main loop in hm.c when looping forever.  
+        Only way to stop hm is by killing the process.
+
+        Action line syntax, parameters with ? are optional:
+
+            ``0 MonitorPolledData device  command  time_avg  forever?  gmt?  reg_time_interval?``
+
+        where,
+
+             * *command* is the device command to retrieve data. Assume already configured.
+
+             * *time_avg* is length of time in seconds to average readings before printing out the values. A time_avg value of 0 will cause hm to print out every reading.
+
+             * *forever?*  specifies wheather to loop forever or to stop after one time_avg cycle.
+
+             * *gmt?*  specifies use of GMT timestamps for data.  Set to 1 for GMT, 0 or undefined for local time
+             
+             * *reg_time_interval?*  specifies if the user wants the timestamps to be on a regular repeating pattern.  For example 10 second averages would be recorded with timestamps of 10, 20, 30, etc seconds after the minute.
+
+
+        For example,
+
+            ``0  MonitorPolledData hp34970 READ?  10 1``
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will loop forever.
+
+            ``0  MonitorPolledData hp34970 READ?  10`` 
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will NOT loop forever so will exit 
+        after the first 10 sec average is printed.
+
+            ``0  MonitorPolledData hp34970 READ?  0  1  1``
+
+        will read device but will NOT average, instead it will print out
+        all of the data points and it will continue forever.  The last option
+        causes the timestamps to be in GMT
+
+            ``0  MonitorPolledData hp34970 READ? 10  1  0  1``
+
+        will read device and average the readings for 10 sec, loop forever, use local time
+        for the timestamp, and keep a regular pattern to the timestamps (ie
+        every even 10 seconds of the minute)
+
+        Example action file for hp34970::
+
+                0       SendCommand       hp34970 ROUTE:SCAN (@101,102,103)
+                0       SendCommand       hp34970 TRIG:SOURCE TIMER
+                0       SendCommand       hp34970 TRIG:TIMER 0
+                0       SendCommand       hp34970 TRIG:COUNT 1
+                0       MonitorPolledData hp34970 READ? 10 1 0 1
+
+MoveValve
+-----------
+
+        Turn a multiport **Valco** valve to a specified position 
+        using random position lines on the valve.
+
+        Option string should contain:
+
+        * the name of the valve as given in the :ref:`config` file,
+
+        * the desired position of the valve
+
+        Action line syntax:
+
+             ``0       MoveValve       valve_name      position``
+
+        e.g.
+
+             ``0 MoveValve co2_select 5``
+
+        There must be an entry in the :ref:`config` file for each valve called,
+        of the form:
+
+          valve_name  digital_io_device n_positions  outport  inport
+
+        where
+
+          * *digital_io_device* is the name of the device with digital i/o lines
+          * *n_positions* is the maximum number of positions of the valve (e.g. 4, 8 or 16)
+          * *outport* is the address of the digital output port
+          * *inport* is the address of the LSB input of the valve position 
+
+        If inport < 0 then no readback of valve position is done.
+
+        Makes assumptions about how the valve is wired to the digital i/o board. 
+        The write lines are at the 5 bits starting at the inport address.
+        Bit values are:
+
+             | 0       1s
+             | 1       2s
+             | 2       4s
+             | 3       8s
+             | 4       10s
+             | 5       input enable
+             | 6       Home
+             | 7       Step
+
+
+Noop
+-----------
+
+        No operation, i.e. do nothing.  Useful for inserting delays
+        at the end of actions before quitting.
+
+        Action line syntax:
+
+             ``0 Noop None None``
+
+
+OpenRelay
+---------
+        Open a relay on a switch device.
+
+        Action line syntax:
+
+                ``0 OpenRelay device 207``
+
+        The option value is a single number which contains both 'card' value and 'relay' value.  *card* is 
+        the first digit of the number, and *relay* is the remaining digits.  So 207 would be card 2, relay 7.
+
+.. _print_data:
+
+PrintData
+---------
+        Print the *last_data* value to stdout using given format.
+
+        Action line syntax:
+
+                ``0 Printdata None format``
+
+        where format is a two field format to handle time and a number, 
+        e.g. "%d %5.2f"
+
+.. _print_reply:
+
+PrintReply
+-----------
+
+        Query a device, get an answer, then print the answer to stdout.
+
+        Action line syntax:
+
+                ``0 PrintReply device string``
+
+        where *string* is the query string to send to the device.
+
+
+
+QueryDevice or CheckDevice
+--------------------------
+        Send a command string to a device, and read back the one line answer.
+
+        Action line syntax:
+
+                ``0 QueryDevice device string``
+
+        where *string* is the query string to send to the device.
+
+        This action is intended to check that a device is on and responding to the computer.  
+        The answer to the query is logged.  If no anwer is returned from the device, an error will be logged.  
+
+.. _read_device:
+
+ReadDevice
+-----------
+
+        Read one line from a device without prompting.  Currently the answer from the device is only written
+        to the log file.
+
+        Action line syntax:
+
+                ``0 ReadDevice device None``
+
+.. _read_number:
+
+ReadNumber
+----------
+        Read a single floating point value back from a device 
+
+        Action line syntax:
+
+                ``0 ReadData device None``
+
+        Assumes device is already configured for the desired data type. Use :ref:`config_channel` to configure the device.
+        Data value is stored in hm's internal *last_data* variable.  Use routines such as :ref:`log_data` to retreive the data.
+
+
+.. _read_value:
+
+ReadValue
+---------
+
+        Configure a channel and then read a value from it.
+        This is the same as a :ref:`config_channel` followed by a :ref:`read_number`
+
+        Action line syntax:
+
+                ``0 ReadValue device location type``
+
+        where *location* is the card/channel location,
+        and *type* is the measurement type (dcvolt, resistance, current etc.).
+        Data value is stored in hm's internal *last_data* variable.  Use routines such as :ref:`log_data` to retreive the data.
+
+        Example::
+
+                0 ReadValue hp34970 @co2_ndir
+
+.. _sample_data:
+
+SampleData
+-----------
+
+        Read data from a device at a specified sample rate
+        for a specified number of times.  Store the average of the
+        readings in the last_data variable. Use :ref:`log_data` or :ref:`log_datagmt` routines
+        to save the readings to file.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm.c UNTIL all readings have been taken.
+
+        Action line syntax is:
+
+             ``0  SampleData  device interval number channel_configuration``
+
+        channel_configuration is optional, and if included, then configure the channel
+        using ConfigChannel before taking each reading.  The channel_configuration
+        string is passed into ConfigChannel as the option.
+
+        e.g.
+
+            ``0 SampleData device 100 50 200 DCVOLT``
+
+        or
+
+            ``0 SampleData device 100 50``
+
+        The first example is for a device that will be configured to read from 
+        channel 200 for dc voltage, and 50 readings will be taken at 100 millisecond intervals.
+        Use this option if another process is using the device at the same time
+        and may change channels.
+
+        The second example is for a device that does not need to be configured 
+        but just have a value read back. Use this option if onlye one process will
+        be using the device.  Should run a ConfigChannel first to ensure channel config.
+
+
+.. _scale_value:
+
+ScaleValue
+----------
+
+        Do a linear scaling of the last_data value.
+
+        Action line syntax:
+
+                ``0 ScaleValue None a b``
+
+        where y = a+b*x
+
+.. _scan_data:
+
+ScanData
+-----------
+
+        Scans list of channels on Agilent 34970.
+        Assumes channels already configured
+
+        Action line syntax:
+
+            ``0 ScanData device  channel_list  time_avg  rate``
+
+        * *channel_list* list of channel numbers, comma separated
+        * *time_avg*  time to have device average over
+        * *rate* time between sweeps in secondes
+
+
+SendCommand
+-----------
+
+        Send a string to a device without trying to read an answer.
+
+        Action line syntax:
+
+                ``0 SendCommand device string``
+
+ShowStatus
+-----------
+
+        Write a one line string to a file.  The file is always overwritten.
+
+        Action line syntax:
+
+                ``0 ShowStatus filename string``
+
+
+StartRun
+-----------
+
+        Start a run on the HP 35900 Dual Channel Interface.
+
+        Action line syntax:
+
+            ``0 StartRun HP35900 channel``
+
+        where channel should be either 'A' or 'B'.
+
+
+StopRun
+-----------
+
+        Stop a run on the HP 35900 Dual Channel Interface
+
+        Action line syntax:
+
+            ``0 StopRun HP35900 Channel``
+
+        where Channel should be either 'A' or 'B'.
+
+StoreData
+-----------
+
+        Read back the data from the 35900 dci, write values to file.
+        File is in gc TEXT format. (see /ccg/src/integrator/src)
+        'Option' must contain 4 fields:
+
+                * the channel letter either 'A' or 'B',
+                * the filename to store the data,
+                * the port number where the sample came from,
+                * the samplerate of the data in Hz
+
+        Action line syntax:
+
+                ``0 StoreData device channel filename port samplerate``
+
+        Example:
+
+                ``0 Storedata HP35900 A gc.ch4.txt 3 10``
+
+
+SwitchValve
+-----------
+
+         Turn a 2 postion **Valco** valve to the either the load position 
+         or inject position by using relays for activating the load or 
+         inject line.
+ 
+         Option string should contain either 'Load' or 'Inject'
+ 
+         Syntax:
+
+              ``0       SwitchValve     valve_name      Inject | Load``
+ 
+         Requires a line in the :ref:`config` file with the valve_name-option pair,
+         where the option string should contain:
+
+         * the device name where the relays are connected,
+         * the channel of the relay for the load line,
+         * the channel of the relay for the inject line.
+
+         e.g.
+
+              ``Ch4Load  VxiRelay 200 201``
+
+
+TurnValve
+-----------
+
+        Turn a **Valco** multiposition valve to a specified position.
+        These are the newer **Valco** valves that can turn either direction.
+        This routine is for the serial interface to the valve.
+
+        Action line syntax:
+
+             ``0  TurnValve  valve_name  position``
+
+        e.g.
+
+             ``0 Turnvalve SystemSelect 4``
+
+        The *valve name* must be have a 'device' entry in the configuration file, such as
+
+                ``device SystemSelect     serial  /dev/ttyS0 0 9600``
+

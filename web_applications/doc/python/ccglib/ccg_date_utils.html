@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_date_utils module &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ccg_dates module" href="ccg_dates.html" />
+    <link rel="prev" title="ccg_insitu_intakes — Get intake heights" href="insitu/intakes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ccglib.python
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>ccg_date_utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ccg_date_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ccg-date-utils-module">
+<h1>ccg_date_utils module<a class="headerlink" href="#ccg-date-utils-module" title="Permalink to this headline"></a></h1>
+<span class="target" id="module-ccg_date_utils"></span><dl>
+<dt>Class: date_conversions()</dt><dd><p>Generalized python class for conversions between common date formats.
+Converts input to timezone aware datetime objects using pytz module, then converts datetime objects to UTC.
+Inputs: Scalars or iterables (e.g. lists, tuples, numpy arrays) of dates
+Output: List of dates</p>
+</dd>
+<dt>Keywords</dt><dd><p>dtobj: date_conversion instance can be initialized with an existing array of datetime objects, “dtobj”. If timezone naive, the timezone(s) must also be passed as “tz”.
+tz: string or array of strings representing timezones of each element of dtobj.</p>
+</dd>
+<dt>Attributes</dt><dd><p>dtobj: array of timezone aware datetime objects in UTC</p>
+</dd>
+<dt>Methods</dt><dd><dl class="simple">
+<dt>Input</dt><dd><p>set_string_date(dates, tz=”UTC”, fmt=”%Y-%m-%dT%H:%M:%S”)
+set_calendar_date(dates, tz=”UTC”):
+set_epoch_days(dates, ref=”1970-01-01T00:00:00”, fmt=”%Y-%m-%dT%H:%M:%S”):
+set_epoch_seconds(dates, ref=”1970-01-01T00:00:00”, fmt=”%Y-%m-%dT%H:%M:%S”):
+set_decimal_year(dates):
+set_julian_days(dates):</p>
+</dd>
+<dt>Output</dt><dd><p>get_string_date(tz=”UTC”, fmt=”%Y-%m-%dT%H:%M:%S.%f %z (%Z)”):
+get_calendar_date(tz=”UTC”):
+get_epoch_days(ref=”1970-01-01T00:00:00”, fmt=”%Y-%m-%dT%H:%M:%S”):
+get_epoch_seconds(ref=”1970-01-01T00:00:00”, fmt=”%Y-%m-%dT%H:%M:%S”):
+get_decimal_year():
+get_julian_days():
+get_seconds_past_midnight():
+get_days_per_year():
+get_days_per_month():
+get_day_of_the_week():
+get_seconds_per_year():</p>
+</dd>
+<dt>Other Methods (dtboj array is modified)</dt><dd><p>add_time(days=0, seconds=0, microseconds=0):
+round_time(days=0, hours=0, minutes=0, seconds=0, microseconds=0, direction=’’)</p>
+</dd>
+</dl>
+</dd>
+<dt>History</dt><dd><p>Created Aug 2021, M. Trudeau (development version)
+Modified 28 Sep 2021, M. Trudeau: Removed default microsecond formatting on input methods.</p>
+</dd>
+<dt>Examples(s)</dt><dd><p># import existing datetime object and add timezone information (default is UTC), and convert to decimal year
+from datetime import datetime
+d = date_conversions(dtobj=(datetime(2000,1,1,0,0,0),), tz=(“UTC”,))
+print(d.dtobj)
+&gt;&gt; [datetime.datetime(2000, 1, 1, 0, 0, tzinfo=&lt;UTC&gt;)]
+print(d.get_decimal_year())
+&gt;&gt; [2000.0]</p>
+<p># import string dates with time zone information using UTC−Offset (method 1)
+d.set_string_date((“2000-01-23T01:23:45.678”,”2000-01-23T01:23:45.678-07:00”), fmt=(“%Y-%m-%dT%H:%M:%S.%f”,”%Y-%m-%dT%H:%M:%S.%f%z”))
+print(d.dtobj)
+&gt;&gt; [datetime.datetime(2000, 1, 23, 1, 23, 45, 678000, tzinfo=&lt;UTC&gt;), datetime.datetime(2000, 1, 23, 8, 23, 45, 678000, tzinfo=&lt;UTC&gt;)]</p>
+<p># import string dates with time zone information (method 2)
+d.set_string_date((“2000-01-23T01:23:45.678”,”2000-01-23T01:23:45.678”), fmt=(“%Y-%m-%dT%H:%M:%S.%f”,”%Y-%m-%dT%H:%M:%S.%f”), tz=(“UTC”,”US/Mountain”))
+print(d.dtobj)
+&gt;&gt; [datetime.datetime(2000, 1, 23, 1, 23, 45, 678000, tzinfo=&lt;UTC&gt;), datetime.datetime(2000, 1, 23, 8, 23, 45, 678000, tzinfo=&lt;UTC&gt;)]</p>
+<p># convert string dates to epoch days since a reference date (default is 1970-01-01T00:00:00)
+d.set_string_date((“1970-01-02T00:00:00”,”2000-02-01T00:00:00”))
+print(d.get_epoch_days(ref=(“1970-01-01T00:00:00”,”2000-01-01T00:00:00”)))
+&gt;&gt; [1.0, 31.0]</p>
+</dd>
+<dt>Notes</dt><dd><dl class="simple">
+<dt>datetime objects are time zone ‘naive’. Time zone information and conversions are done external to the datetime module.</dt><dd><p><a class="reference external" href="http://pytz.sourceforge.net/">http://pytz.sourceforge.net/</a>
+<a class="reference external" href="http://www.enricozini.org/blog/2009/debian/using-python-datetime/">http://www.enricozini.org/blog/2009/debian/using-python-datetime/</a>
+<a class="reference external" href="https://aboutsimon.com/blog/2013/06/06/Datetime-hell-Time-zone-aware-to-UNIX-timestamp.html">https://aboutsimon.com/blog/2013/06/06/Datetime-hell-Time-zone-aware-to-UNIX-timestamp.html</a></p>
+</dd>
+</dl>
+</dd>
+<dt>Known Issues:</dt><dd><ol class="arabic simple">
+<li><p>Import of existing datetime objects: 1) input datetime objects(s) must be iterable, 2) tz must be passed and must be iterable otherwise dtobj attribute = [] (no warning).</p></li>
+<li><p>set_calendar_date: requires a tuple of tuples, e.g. ((2000,1,1),)</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.calendar_date_to_datetime_object">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">calendar_date_to_datetime_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calendar_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#calendar_date_to_datetime_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.calendar_date_to_datetime_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.convert_local_to_utc">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">convert_local_to_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#convert_local_to_utc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.convert_local_to_utc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.convert_utc_to_local">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">convert_utc_to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#convert_utc_to_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.convert_utc_to_local" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">date_conversions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.add_time">
+<span class="sig-name descname"><span class="pre">add_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microseconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.add_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.add_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_calendar_date">
+<span class="sig-name descname"><span class="pre">get_calendar_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_calendar_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_calendar_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_day_of_the_week">
+<span class="sig-name descname"><span class="pre">get_day_of_the_week</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_day_of_the_week"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_day_of_the_week" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_days_per_month">
+<span class="sig-name descname"><span class="pre">get_days_per_month</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_days_per_month"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_days_per_month" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_days_per_year">
+<span class="sig-name descname"><span class="pre">get_days_per_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_days_per_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_days_per_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_decimal_year">
+<span class="sig-name descname"><span class="pre">get_decimal_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_decimal_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_decimal_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_epoch_days">
+<span class="sig-name descname"><span class="pre">get_epoch_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_epoch_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_epoch_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_epoch_seconds">
+<span class="sig-name descname"><span class="pre">get_epoch_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_epoch_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_epoch_seconds" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_julian_days">
+<span class="sig-name descname"><span class="pre">get_julian_days</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_julian_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_julian_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_seconds_past_midnight">
+<span class="sig-name descname"><span class="pre">get_seconds_past_midnight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_seconds_past_midnight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_seconds_past_midnight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_seconds_per_year">
+<span class="sig-name descname"><span class="pre">get_seconds_per_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_seconds_per_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_seconds_per_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.get_string_date">
+<span class="sig-name descname"><span class="pre">get_string_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S.%f</span> <span class="pre">%z</span> <span class="pre">(%Z)'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.get_string_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.get_string_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.round_time">
+<span class="sig-name descname"><span class="pre">round_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.round_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.round_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.set_calendar_date">
+<span class="sig-name descname"><span class="pre">set_calendar_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.set_calendar_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.set_calendar_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.set_decimal_year">
+<span class="sig-name descname"><span class="pre">set_decimal_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.set_decimal_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.set_decimal_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.set_epoch_days">
+<span class="sig-name descname"><span class="pre">set_epoch_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.set_epoch_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.set_epoch_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.set_epoch_seconds">
+<span class="sig-name descname"><span class="pre">set_epoch_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.set_epoch_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.set_epoch_seconds" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.set_julian_days">
+<span class="sig-name descname"><span class="pre">set_julian_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.set_julian_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.set_julian_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.date_conversions.set_string_date">
+<span class="sig-name descname"><span class="pre">set_string_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_conversions.set_string_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_conversions.set_string_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.date_increment">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">date_increment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microseconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#date_increment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.date_increment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_calendar_date">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_calendar_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_calendar_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_calendar_date" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a tuple of integers: (year, month, day, hour, minute, second, microsecond)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_decimal_year">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_decimal_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_decimal_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_decimal_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_epoch_days">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_epoch_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_epoch_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_epoch_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_epoch_seconds">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_epoch_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_epoch_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_epoch_seconds" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_julian_days">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_julian_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_julian_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_julian_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_seconds_past_midnight">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_seconds_past_midnight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_seconds_past_midnight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_seconds_past_midnight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.datetime_object_to_string_date">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">datetime_object_to_string_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S.%f</span> <span class="pre">%z</span> <span class="pre">(%Z)'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#datetime_object_to_string_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.datetime_object_to_string_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.decimal_year_to_datetime_object">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">decimal_year_to_datetime_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decimal_year</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#decimal_year_to_datetime_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.decimal_year_to_datetime_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.epoch_days_to_datetime_object">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">epoch_days_to_datetime_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch_days</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#epoch_days_to_datetime_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.epoch_days_to_datetime_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.epoch_seconds_to_datetime_object">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">epoch_seconds_to_datetime_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch_seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1970-01-01T00:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#epoch_seconds_to_datetime_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.epoch_seconds_to_datetime_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.get_timezone">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">get_timezone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz_abbreviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#get_timezone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.get_timezone" title="Permalink to this definition"></a></dt>
+<dd><p>Stand-alone function to return all timezone possibilities for a given timezone abbreviation (e.g. “CDT”)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.julian_days_to_datetime_object">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">julian_days_to_datetime_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">julian_days</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#julian_days_to_datetime_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.julian_days_to_datetime_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.round_time">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">round_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microseconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#round_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.round_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.string_to_datetime_object">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">string_to_datetime_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y-%m-%dT%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#string_to_datetime_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.string_to_datetime_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_date_utils.timedelta_functions">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">timedelta_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microsecond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#timedelta_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.timedelta_functions" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.timedelta_functions.days_per_year">
+<span class="sig-name descname"><span class="pre">days_per_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#timedelta_functions.days_per_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.timedelta_functions.days_per_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.timedelta_functions.seconds_per_year">
+<span class="sig-name descname"><span class="pre">seconds_per_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#timedelta_functions.seconds_per_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.timedelta_functions.seconds_per_year" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_date_utils.timedelta_functions.seconds_since">
+<span class="sig-name descname"><span class="pre">seconds_since</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microsecond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#timedelta_functions.seconds_since"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.timedelta_functions.seconds_since" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.timezone_aware">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">timezone_aware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#timezone_aware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.timezone_aware" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_date_utils.to_array">
+<span class="sig-prename descclassname"><span class="pre">ccg_date_utils.</span></span><span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ccg_date_utils.html#to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_date_utils.to_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="insitu/intakes.html" class="btn btn-neutral float-left" title="ccg_insitu_intakes — Get intake heights" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ccg_dates.html" class="btn btn-neutral float-right" title="ccg_dates module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

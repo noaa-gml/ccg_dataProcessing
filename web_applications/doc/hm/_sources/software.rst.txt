@@ -1,0 +1,59 @@
+
+.. highlight:: rest
+
+.. _software:
+
+Software
+=============
+
+Requirements:
+-------------
+Python 3.5 (probably will run under lower versions of python 3, but has not been tested)
+
+Dependencies
+------------
+
+The following add-on python packages are required:
+
+- `pyvisa <https://pyvisa.readthedocs.io/en/latest/>`_
+- `pyvisa-py <https://pyvisa.readthedocs.io/projects/pyvisa-py/en/latest/>`_
+
+.. _install:
+
+Installation
+------------
+The software is located in */nfs/ccg/src/hm/python/v3.1*.
+
+Files
+--------
+
+- action.py
+- daq.py
+- device.py
+- errornum.py
+- hm.py
+- hmsubs.py
+- hp35900.py
+- lgr.py
+- lock_file.py
+- picarro.py
+- pp.py
+- scpi.py
+- test.py
+- valco.py
+- vurf.py
+
+Changelog
+---------
+
+Version 3.1 (August 2022)
+
+    * Use pyvisa package instead of pyserial.  Required changes to device.py.
+    * Add daq module
+
+Version 3.0 (October 2021)
+
+    * Redo hmsubs into a class and subclasses, a subclass for each device.
+    * Use ArgumentParser instead of OptParser.
+    * Create new Action class to hold most information needed, incorporate the read_actions, get_resources and printing of their values routines into this class.
+

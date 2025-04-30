@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_dates &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_dates</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_dates</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot; Some utility functions for converting dates to different formats &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">dateutil.parser</span> <span class="kn">import</span> <span class="n">parse</span>
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="datesOk"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.datesOk">[docs]</a><span class="k">def</span> <span class="nf">datesOk</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Check if values are appropriate for a real date</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if date is Ok, False if not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">month</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">month</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Month is out of range: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">month</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">day</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">day</span> <span class="o">&gt;</span> <span class="mi">31</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Day is out of range: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">day</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">hour</span> <span class="o">&gt;</span> <span class="mi">23</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Hour is out of range: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">hour</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">minute</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">minute</span> <span class="o">&gt;</span> <span class="mi">59</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Minute is out of range: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">minute</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">second</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">second</span> <span class="o">&gt;</span> <span class="mi">59</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Second is out of range: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">second</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="decimalDate"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.decimalDate">[docs]</a><span class="k">def</span> <span class="nf">decimalDate</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a date and time to a fractional year.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dd (float) - The decimal date</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">datesOk</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">soy</span> <span class="o">=</span> <span class="n">secondOfYear</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+
+<span class="c1">#    if year % 4 == 0 and year % 100 != 0 or year % 400 == 0:</span>
+    <span class="k">if</span> <span class="n">calendar</span><span class="o">.</span><span class="n">isleap</span><span class="p">(</span><span class="n">year</span><span class="p">):</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">year</span> <span class="o">+</span> <span class="n">soy</span><span class="o">/</span><span class="mf">3.16224e7</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">year</span> <span class="o">+</span> <span class="n">soy</span><span class="o">/</span><span class="mf">3.1536e7</span>
+
+    <span class="k">return</span> <span class="n">dd</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="secondOfYear"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.secondOfYear">[docs]</a><span class="k">def</span> <span class="nf">secondOfYear</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Determine second of the year from calendar components</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        soy (int) - second of the year</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">datesOk</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">doy</span> <span class="o">=</span> <span class="n">dayOfYear</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
+    <span class="n">soy</span> <span class="o">=</span> <span class="p">(</span><span class="n">doy</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">86400</span> <span class="o">+</span> <span class="n">hour</span><span class="o">*</span><span class="mi">3600</span> <span class="o">+</span> <span class="n">minute</span><span class="o">*</span><span class="mi">60</span> <span class="o">+</span> <span class="n">second</span>
+
+    <span class="k">return</span> <span class="n">soy</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="dayOfYear"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.dayOfYear">[docs]</a><span class="k">def</span> <span class="nf">dayOfYear</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert year, month day to day of year</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        doy (int) - day of year</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">datesOk</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">mona</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">151</span><span class="p">,</span> <span class="mi">181</span><span class="p">,</span> <span class="mi">212</span><span class="p">,</span> <span class="mi">243</span><span class="p">,</span> <span class="mi">273</span><span class="p">,</span> <span class="mi">304</span><span class="p">,</span> <span class="mi">334</span><span class="p">]</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">mona</span><span class="p">[</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">day</span>
+<span class="c1">#    if ((year % 4 == 0 and year % 100 != 0) or year % 400 == 0) and month &gt; 2:</span>
+    <span class="k">if</span> <span class="n">calendar</span><span class="o">.</span><span class="n">isleap</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="ow">and</span> <span class="n">month</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">x</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="intDate"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.intDate">[docs]</a><span class="k">def</span> <span class="nf">intDate</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Make an integer value that contains the date and hour</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        intd (int) - integer representation of the date yyyymmddhh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">datesOk</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">intd</span> <span class="o">=</span> <span class="n">year</span><span class="o">*</span><span class="mi">1000000</span> <span class="o">+</span> <span class="n">month</span><span class="o">*</span><span class="mi">10000</span> <span class="o">+</span> <span class="n">day</span><span class="o">*</span><span class="mi">100</span> <span class="o">+</span> <span class="n">hour</span>
+
+    <span class="k">return</span> <span class="n">intd</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="getDate"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.getDate">[docs]</a><span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="n">intdate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Opposite of intDate, get date and hour from integer value</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        year, month, day, hour</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">intdate</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid date&quot;</span><span class="p">)</span>
+
+    <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+    <span class="n">day</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span>
+    <span class="n">hour</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">8</span><span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span></div>
+
+<span class="c1">###################################################</span>
+<span class="c1"># Don&#39;t use these routines for resolution less than 1 second.</span>
+<div class="viewcode-block" id="calendarDate"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.calendarDate">[docs]</a><span class="k">def</span> <span class="nf">calendarDate</span><span class="p">(</span><span class="n">decyear</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a decimal date to calendar components,</span>
+<span class="sd">    year, month, day, hour, minute seconds</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        year, month, day, hour, minute, second</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dyr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">decyear</span><span class="p">)</span>
+    <span class="n">fyr</span> <span class="o">=</span> <span class="n">decyear</span> <span class="o">-</span> <span class="n">dyr</span>
+
+    <span class="k">if</span> <span class="n">calendar</span><span class="o">.</span><span class="n">isleap</span><span class="p">(</span><span class="n">dyr</span><span class="p">):</span>
+        <span class="n">nsec</span> <span class="o">=</span> <span class="n">fyr</span> <span class="o">*</span> <span class="p">(</span><span class="mi">366</span><span class="o">*</span><span class="mi">86400</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nsec</span> <span class="o">=</span> <span class="n">fyr</span> <span class="o">*</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">86400</span><span class="p">)</span>
+
+    <span class="n">nsec</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">nsec</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">ndays</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nsec</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">)</span>
+    <span class="n">doy</span> <span class="o">=</span> <span class="n">ndays</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">doy</span> <span class="o">&gt;</span> <span class="mi">366</span><span class="p">:</span>
+        <span class="n">dyr</span> <span class="o">=</span> <span class="n">dyr</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">doy</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">month</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="n">to_mmdd</span><span class="p">(</span><span class="n">dyr</span><span class="p">,</span> <span class="n">doy</span><span class="p">)</span>
+
+
+    <span class="n">nsecs</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">nsec</span> <span class="o">-</span> <span class="p">(</span><span class="n">ndays</span><span class="o">*</span><span class="mi">86400</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">hour</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nsecs</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span>
+    <span class="n">minute</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">nsecs</span> <span class="o">-</span> <span class="p">(</span><span class="n">hour</span> <span class="o">*</span><span class="mi">3600</span><span class="p">))</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nsecs</span> <span class="o">-</span> <span class="p">(</span><span class="n">hour</span> <span class="o">*</span> <span class="mf">3600.0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">minute</span> <span class="o">*</span> <span class="mf">60.0</span><span class="p">),</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">dyr</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">seconds</span></div>
+
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="to_mmdd"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.to_mmdd">[docs]</a><span class="k">def</span> <span class="nf">to_mmdd</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">doy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; convert year, day of year to month, day</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        month, day</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">doy</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">doy</span> <span class="o">&gt;</span> <span class="mi">366</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Day of year is out of range&quot;</span><span class="p">)</span>
+
+<span class="c1">#    if year % 4 == 0:</span>
+    <span class="k">if</span> <span class="n">calendar</span><span class="o">.</span><span class="n">isleap</span><span class="p">(</span><span class="n">year</span><span class="p">):</span>
+        <span class="n">mona</span> <span class="o">=</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mona</span> <span class="o">=</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">]</span>
+
+    <span class="n">idoy</span> <span class="o">=</span> <span class="n">doy</span>
+    <span class="n">imon</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">idoy</span> <span class="o">-</span> <span class="n">mona</span><span class="p">[</span><span class="n">imon</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">idoy</span> <span class="o">=</span> <span class="n">idoy</span> <span class="o">-</span> <span class="n">mona</span><span class="p">[</span><span class="n">imon</span><span class="p">]</span>
+        <span class="n">imon</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">month</span> <span class="o">=</span> <span class="n">imon</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">idoy</span><span class="p">)</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="toMonthDay"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.toMonthDay">[docs]</a><span class="k">def</span> <span class="nf">toMonthDay</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">doy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert day of year to month and day</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        month, day</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">doy</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">doy</span> <span class="o">&gt;</span> <span class="mi">366</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Day of year is out of range&quot;</span><span class="p">)</span>
+
+    <span class="n">month</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="n">to_mmdd</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">doy</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="getDatetime"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.getDatetime">[docs]</a><span class="k">def</span> <span class="nf">getDatetime</span><span class="p">(</span><span class="n">datestr</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; create a datetime from a date string</span>
+<span class="sd">    The string can be of the form &#39;yyy mm dd hh mm ss&#39;,</span>
+<span class="sd">    or a string that is parseable by dateutil.parser.parse</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        date - A datetime.datetime object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if its already a datetime, return it</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datestr</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datestr</span>
+
+    <span class="c1"># convert datetime.date to datetime.datetime</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datestr</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">datestr</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">datestr</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">datestr</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datestr</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datetimeFromDecimalDate</span><span class="p">(</span><span class="n">datestr</span><span class="p">)</span>
+
+    <span class="c1"># we have a string</span>
+    <span class="c1"># dateutil parse can&#39;t handle strings with fields separated by white space</span>
+    <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">datestr</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">datestr</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+        <span class="c1"># assume string is &#39;yyyy mm dd hh mm ss&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">hour</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="n">minute</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+                    <span class="n">second</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">second</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hour</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">minute</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">second</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ok</span> <span class="o">=</span> <span class="n">datesOk</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot create datetime from string: </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">datestr</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c1"># if parse can&#39;t convert it to datetime, let it raise an error.</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">datestr</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">date</span></div>
+
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="getTime"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.getTime">[docs]</a><span class="k">def</span> <span class="nf">getTime</span><span class="p">(</span><span class="n">timestr</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Parse a string into hours, minutes, seconds.</span>
+<span class="sd">    e.g. 12:45:38 -&gt; hours = 12, minutes = 45, seconds = 38</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        time - datetime.time object</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">separators</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">sep</span><span class="p">:</span>
+        <span class="n">separators</span> <span class="o">=</span> <span class="n">separators</span> <span class="o">+</span> <span class="n">sep</span>
+
+
+    <span class="k">for</span> <span class="n">separator</span> <span class="ow">in</span> <span class="n">separators</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">separator</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">timestr</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">timestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+
+            <span class="n">hour</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">minute</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">second</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+            <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">time</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot create time from string: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">timestr</span><span class="p">)</span></div>
+
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="decimalDateFromDatetime"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.decimalDateFromDatetime">[docs]</a><span class="k">def</span> <span class="nf">decimalDateFromDatetime</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a datetime to float decimal date</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dd (float) - decimal date</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Can&#39;t use isinstance(dt, datetime.date) because it is true for both datetime.date and datetime.datetime</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">:</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">decimalDate</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">decimalDate</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dd</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="datetimeFromDateAndTime"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.datetimeFromDateAndTime">[docs]</a><span class="k">def</span> <span class="nf">datetimeFromDateAndTime</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Combine separate date and times to a single datetime</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dt - A datetime.datetime object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">t</span>
+    <span class="p">(</span><span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">hr</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">mn</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">sc</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">dt</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="datetimeFromDecimalDate"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.datetimeFromDecimalDate">[docs]</a><span class="k">def</span> <span class="nf">datetimeFromDecimalDate</span><span class="p">(</span><span class="n">dd</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a float decimal date to datetime</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dt - A datetime.datetime object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">yr</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">calendarDate</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">yr</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dt</span></div>
+
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="dateFromDecimalDate"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.dateFromDecimalDate">[docs]</a><span class="k">def</span> <span class="nf">dateFromDecimalDate</span><span class="p">(</span><span class="n">dd</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a float decimal date to date</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dt - A datetime.date object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">yr</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">calendarDate</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">yr</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
+
+    
+
+    <span class="k">return</span> <span class="n">dt</span></div>
+
+<span class="c1">###################################################</span>
+<div class="viewcode-block" id="dec2date"><a class="viewcode-back" href="../ccg_dates.html#ccg_dates.dec2date">[docs]</a><span class="k">def</span> <span class="nf">dec2date</span><span class="p">(</span><span class="n">dd</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; convert an array of decimal dates to</span>
+<span class="sd">    an array of calendar components</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">dd</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="c1"># dd is a numpy array of decimal dates</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">yr</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">calendarDate</span><span class="p">(</span><span class="n">dd</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">yr</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

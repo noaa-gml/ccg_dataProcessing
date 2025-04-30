@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ccg_filter_params &mdash; ccglib.python 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+          
+
+          
+            
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>ccg_filter_params</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ccg_filter_params</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A dataclass for holding parameters for ccg_filter</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<div class="viewcode-block" id="filterParameters"><a class="viewcode-back" href="../filter/filt_params.html#ccg_filter_params.filterParameters">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">filterParameters</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; A dataclass for holding parameters used by ccgFilter </span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        npoly (int): Number of polynomial terms to use in function fit</span>
+<span class="sd">        nharm (int): Number of harmonic terms to use in function fit</span>
+<span class="sd">        interval (float): Sampling interval in days</span>
+<span class="sd">        short_cutoff (int): Short term cutoff value in days</span>
+<span class="sd">        long_cutoff (int): Long term cutoff value in days</span>
+<span class="sd">        gapsize (float): Gap size in days to fill in with curve instead of interpolating</span>
+<span class="sd">        zero (float): zero : Value where x=0 in function coefficients</span>
+<span class="sd">        gain : Use amplitude gain factor if True</span>
+<span class="sd">        fill_gap (bool) : Fill large gaps with function instead of interpolating</span>
+<span class="sd">        gap_size (float) : Minimum gap size in days when filling gaps</span>
+<span class="sd">        sigmaminus (float): Number of residual standard deviations below the curve</span>
+<span class="sd">        sigmaplus (float): Number of residual standard deviations above the curve</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+    <span class="n">npoly</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span> 
+    <span class="n">nharm</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">short_cutoff</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span>
+    <span class="n">long_cutoff</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">667</span>
+    <span class="n">gapsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">zero</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">fill_gap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">gap_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sigmaminus</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">sigmaplus</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span>
+
+<div class="viewcode-block" id="filterParameters.sigma_plus"><a class="viewcode-back" href="../filter/filt_params.html#ccg_filter_params.filterParameters.sigma_plus">[docs]</a>    <span class="k">def</span> <span class="nf">sigma_plus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rsd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the upper envelope based on residual standard deviation &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigmaplus</span> <span class="o">*</span> <span class="n">rsd</span></div>
+
+<div class="viewcode-block" id="filterParameters.sigma_minus"><a class="viewcode-back" href="../filter/filt_params.html#ccg_filter_params.filterParameters.sigma_minus">[docs]</a>    <span class="k">def</span> <span class="nf">sigma_minus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rsd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the lower envelope based on residual standard deviation &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigmaminus</span> <span class="o">*</span> <span class="n">rsd</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span></div></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

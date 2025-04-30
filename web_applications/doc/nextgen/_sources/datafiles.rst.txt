@@ -1,0 +1,53 @@
+
+
+.. highlight:: rest
+
+.. _datafiles:
+
+Analyer Data Files
+==================
+
+These files contain short term (30-second) analyzer values.  The original source data comes
+from the tower 'raw' .dat files located at /ccg/towers/*stacode*/rawdata/ where *stacode* is the
+three letter station code for the site, e.g. 'lef'.  
+
+Processing Program
+++++++++++++++++++
+
+
+        **tower_make_output.py** is run with::
+
+                usage: tower_make_output.py [-h] [-c CONFIG] [-u] [-v] stacode gas inst date
+
+                Read tower .dat files and create separate analyzer output data text files.
+
+                positional arguments:
+                  stacode               3 letter station code
+                  gas                   gas e.g. 'co2'
+                  inst                  instrument abbreviation e.g. 'lcr'
+                  date                  date to process
+
+                optional arguments:
+                  -h, --help            show this help message and exit
+                  -c CONFIG, --config CONFIG
+                                        Select non-default configuration file
+                  -u, --update          Update the file with data.
+                  -v, --verbose         Include additional output for some options
+
+
+Configuration
++++++++++++++
+
+        The default configuration file used is located at
+
+        /ccg/*gas*/in-situ/*stacode*/*inst*/config.ini
+
+        where
+                * *gas* is the gas species, e.g. co2
+                * *stacode* is the three letter station code, e.g. lef
+                * *inst* is the instrument abbreviations, e.g. lcr
+
+        for example, */ccg/co2/in-situ/lef/lcr/config.ini*
+
+File Format
++++++++++++

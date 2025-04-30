@@ -1,0 +1,641 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ccg_date_utils &mdash; ccglib.python 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+          
+
+          
+            
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>ccg_date_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ccg_date_utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Class: date_conversions()</span>
+<span class="sd">    Generalized python class for conversions between common date formats.</span>
+<span class="sd">    Converts input to timezone aware datetime objects using pytz module, then converts datetime objects to UTC.</span>
+<span class="sd">    Inputs: Scalars or iterables (e.g. lists, tuples, numpy arrays) of dates</span>
+<span class="sd">    Output: List of dates</span>
+
+<span class="sd">Keywords</span>
+<span class="sd">    dtobj: date_conversion instance can be initialized with an existing array of datetime objects, &quot;dtobj&quot;. If timezone naive, the timezone(s) must also be passed as &quot;tz&quot;.</span>
+<span class="sd">    tz: string or array of strings representing timezones of each element of dtobj.</span>
+
+<span class="sd">Attributes</span>
+<span class="sd">    dtobj: array of timezone aware datetime objects in UTC</span>
+
+<span class="sd">Methods</span>
+<span class="sd">    Input</span>
+<span class="sd">        set_string_date(dates, tz=&quot;UTC&quot;, fmt=&quot;%Y-%m-%dT%H:%M:%S&quot;)</span>
+<span class="sd">        set_calendar_date(dates, tz=&quot;UTC&quot;):</span>
+<span class="sd">        set_epoch_days(dates, ref=&quot;1970-01-01T00:00:00&quot;, fmt=&quot;%Y-%m-%dT%H:%M:%S&quot;):</span>
+<span class="sd">        set_epoch_seconds(dates, ref=&quot;1970-01-01T00:00:00&quot;, fmt=&quot;%Y-%m-%dT%H:%M:%S&quot;):</span>
+<span class="sd">        set_decimal_year(dates):</span>
+<span class="sd">        set_julian_days(dates):</span>
+
+<span class="sd">    Output</span>
+<span class="sd">        get_string_date(tz=&quot;UTC&quot;, fmt=&quot;%Y-%m-%dT%H:%M:%S.%f %z (%Z)&quot;):</span>
+<span class="sd">        get_calendar_date(tz=&quot;UTC&quot;):</span>
+<span class="sd">        get_epoch_days(ref=&quot;1970-01-01T00:00:00&quot;, fmt=&quot;%Y-%m-%dT%H:%M:%S&quot;):</span>
+<span class="sd">        get_epoch_seconds(ref=&quot;1970-01-01T00:00:00&quot;, fmt=&quot;%Y-%m-%dT%H:%M:%S&quot;):</span>
+<span class="sd">        get_decimal_year():</span>
+<span class="sd">        get_julian_days():</span>
+<span class="sd">        get_seconds_past_midnight():</span>
+<span class="sd">        get_days_per_year():</span>
+<span class="sd">        get_days_per_month():</span>
+<span class="sd">        get_day_of_the_week():</span>
+<span class="sd">        get_seconds_per_year():</span>
+
+<span class="sd">    Other Methods (dtboj array is modified)</span>
+<span class="sd">        add_time(days=0, seconds=0, microseconds=0):</span>
+<span class="sd">        round_time(days=0, hours=0, minutes=0, seconds=0, microseconds=0, direction=&#39;&#39;)</span>
+
+<span class="sd">History</span>
+<span class="sd">    Created Aug 2021, M. Trudeau (development version)</span>
+<span class="sd">    Modified 28 Sep 2021, M. Trudeau: Removed default microsecond formatting on input methods.</span>
+
+<span class="sd">Examples(s)</span>
+<span class="sd">    # import existing datetime object and add timezone information (default is UTC), and convert to decimal year</span>
+<span class="sd">    from datetime import datetime</span>
+<span class="sd">    d = date_conversions(dtobj=(datetime(2000,1,1,0,0,0),), tz=(&quot;UTC&quot;,))</span>
+<span class="sd">    print(d.dtobj)</span>
+<span class="sd">    &gt;&gt; [datetime.datetime(2000, 1, 1, 0, 0, tzinfo=&lt;UTC&gt;)]</span>
+<span class="sd">    print(d.get_decimal_year())</span>
+<span class="sd">    &gt;&gt; [2000.0]</span>
+
+<span class="sd">    # import string dates with time zone information using UTC−Offset (method 1)</span>
+<span class="sd">    d.set_string_date((&quot;2000-01-23T01:23:45.678&quot;,&quot;2000-01-23T01:23:45.678-07:00&quot;), fmt=(&quot;%Y-%m-%dT%H:%M:%S.%f&quot;,&quot;%Y-%m-%dT%H:%M:%S.%f%z&quot;))</span>
+<span class="sd">    print(d.dtobj)</span>
+<span class="sd">    &gt;&gt; [datetime.datetime(2000, 1, 23, 1, 23, 45, 678000, tzinfo=&lt;UTC&gt;), datetime.datetime(2000, 1, 23, 8, 23, 45, 678000, tzinfo=&lt;UTC&gt;)]</span>
+
+<span class="sd">    # import string dates with time zone information (method 2)</span>
+<span class="sd">    d.set_string_date((&quot;2000-01-23T01:23:45.678&quot;,&quot;2000-01-23T01:23:45.678&quot;), fmt=(&quot;%Y-%m-%dT%H:%M:%S.%f&quot;,&quot;%Y-%m-%dT%H:%M:%S.%f&quot;), tz=(&quot;UTC&quot;,&quot;US/Mountain&quot;))</span>
+<span class="sd">    print(d.dtobj)</span>
+<span class="sd">    &gt;&gt; [datetime.datetime(2000, 1, 23, 1, 23, 45, 678000, tzinfo=&lt;UTC&gt;), datetime.datetime(2000, 1, 23, 8, 23, 45, 678000, tzinfo=&lt;UTC&gt;)]</span>
+
+<span class="sd">    # convert string dates to epoch days since a reference date (default is 1970-01-01T00:00:00)</span>
+<span class="sd">    d.set_string_date((&quot;1970-01-02T00:00:00&quot;,&quot;2000-02-01T00:00:00&quot;))</span>
+<span class="sd">    print(d.get_epoch_days(ref=(&quot;1970-01-01T00:00:00&quot;,&quot;2000-01-01T00:00:00&quot;)))</span>
+<span class="sd">    &gt;&gt; [1.0, 31.0]</span>
+
+<span class="sd">Notes</span>
+<span class="sd">    datetime objects are time zone &#39;naive&#39;. Time zone information and conversions are done external to the datetime module.</span>
+<span class="sd">        http://pytz.sourceforge.net/</span>
+<span class="sd">        http://www.enricozini.org/blog/2009/debian/using-python-datetime/</span>
+<span class="sd">        https://aboutsimon.com/blog/2013/06/06/Datetime-hell-Time-zone-aware-to-UNIX-timestamp.html</span>
+
+<span class="sd">Known Issues:</span>
+<span class="sd">    1. Import of existing datetime objects: 1) input datetime objects(s) must be iterable, 2) tz must be passed and must be iterable otherwise dtobj attribute = [] (no warning).</span>
+<span class="sd">    2. set_calendar_date: requires a tuple of tuples, e.g. ((2000,1,1),)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">pytz</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1">###################################################################</span>
+<span class="c1"># functions to convert date formats to/from datetime objects in UTC</span>
+<span class="c1">###################################################################</span>
+
+<div class="viewcode-block" id="string_to_datetime_object"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.string_to_datetime_object">[docs]</a><span class="k">def</span> <span class="nf">string_to_datetime_object</span><span class="p">(</span><span class="n">string_date</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="s2">&quot;%Z&quot;</span> <span class="ow">in</span> <span class="n">fmt</span><span class="p">:</span> <span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Error in fmt=</span><span class="si">{}</span><span class="s2">. Timezone cannot be passed in string as &#39;%Z&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span>
+
+    <span class="c1"># if &quot;%z&quot; in fmt: print(&quot;Message (fmt={}): Timezone passed as &#39;%z&#39;. Character string cannot contain a colon. &#39;tz&#39; keyword will be ignored.&quot;.format(fmt))</span>
+    <span class="n">dtobj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">string_date</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">convert_local_to_utc</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="datetime_object_to_string_date"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_string_date">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_string_date</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2"> %z (%Z)&quot;</span><span class="p">):</span>
+
+    <span class="n">dtobj_local</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="calendar_date_to_datetime_object"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.calendar_date_to_datetime_object">[docs]</a><span class="k">def</span> <span class="nf">calendar_date_to_datetime_object</span><span class="p">(</span><span class="n">calendar_date</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">):</span>
+
+    <span class="n">dtobj</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="o">*</span><span class="n">calendar_date</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="datetime_object_to_calendar_date"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_calendar_date">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_calendar_date</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Returns a tuple of integers: (year, month, day, hour, minute, second, microsecond) &quot;&quot;&quot;</span>
+
+    <span class="n">dtobj_local</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">dtobj_local</span><span class="o">.</span><span class="n">microsecond</span></div>
+
+<div class="viewcode-block" id="epoch_days_to_datetime_object"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.epoch_days_to_datetime_object">[docs]</a><span class="k">def</span> <span class="nf">epoch_days_to_datetime_object</span><span class="p">(</span><span class="n">epoch_days</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+    <span class="n">dtobj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">epoch_days</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span> <span class="c1"># epoch dates are UTC by definition</span></div>
+
+<div class="viewcode-block" id="datetime_object_to_epoch_days"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_epoch_days">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_epoch_days</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+    <span class="n">dtime</span> <span class="o">=</span> <span class="n">dtobj</span> <span class="o">-</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">fmt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">dtime</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dtime</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">dtime</span><span class="o">.</span><span class="n">microseconds</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.0e6</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">86400</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="epoch_seconds_to_datetime_object"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.epoch_seconds_to_datetime_object">[docs]</a><span class="k">def</span> <span class="nf">epoch_seconds_to_datetime_object</span><span class="p">(</span><span class="n">epoch_seconds</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">epoch_days_to_datetime_object</span><span class="p">(</span><span class="n">epoch_seconds</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="mi">86400</span><span class="p">),</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="datetime_object_to_epoch_seconds"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_epoch_seconds">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_epoch_seconds</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">datetime_object_to_epoch_days</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="mi">86400</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="julian_days_to_datetime_object"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.julian_days_to_datetime_object">[docs]</a><span class="k">def</span> <span class="nf">julian_days_to_datetime_object</span><span class="p">(</span><span class="n">julian_days</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">epoch_days_to_datetime_object</span><span class="p">(</span><span class="n">julian_days</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="datetime_object_to_julian_days"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_julian_days">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_julian_days</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">datetime_object_to_epoch_days</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="decimal_year_to_datetime_object"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.decimal_year_to_datetime_object">[docs]</a><span class="k">def</span> <span class="nf">decimal_year_to_datetime_object</span><span class="p">(</span><span class="n">decimal_year</span><span class="p">):</span>
+
+    <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">decimal_year</span><span class="p">)</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="p">(</span><span class="n">decimal_year</span> <span class="o">-</span> <span class="n">year</span><span class="p">)</span> <span class="o">*</span> <span class="n">timedelta_functions</span><span class="p">(</span><span class="n">year</span><span class="p">)</span><span class="o">.</span><span class="n">days_per_year</span><span class="p">()</span>
+
+    <span class="n">dtobj</span> <span class="o">=</span>  <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span> <span class="c1"># Note: timedelta works on fractional days</span>
+
+    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span> <span class="c1"># epoch dates are UTC by definition</span></div>
+
+<div class="viewcode-block" id="datetime_object_to_decimal_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_decimal_year">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_decimal_year</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span>
+
+    <span class="n">yr</span><span class="p">,</span> <span class="n">mo</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">timedelta_functions</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">yr</span><span class="p">,</span> <span class="n">mo</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">seconds_since</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">timedelta_functions</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="o">.</span><span class="n">seconds_per_year</span><span class="p">())</span></div>
+
+<span class="c1">#################################################</span>
+<span class="c1"># date/time functions for datetime objects in UTC</span>
+<span class="c1">#################################################</span>
+
+<div class="viewcode-block" id="timezone_aware"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.timezone_aware">[docs]</a><span class="k">def</span> <span class="nf">timezone_aware</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">tzinfo</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="convert_local_to_utc"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.convert_local_to_utc">[docs]</a><span class="k">def</span> <span class="nf">convert_local_to_utc</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">timezone_aware</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span> <span class="c1"># create timezone aware datetime object</span>
+        <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="convert_utc_to_local"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.convert_utc_to_local">[docs]</a><span class="k">def</span> <span class="nf">convert_utc_to_local</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz</span><span class="p">):</span>
+
+    <span class="c1"># all dtobj passed to this function should already by tz aware</span>
+    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="get_timezone"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.get_timezone">[docs]</a><span class="k">def</span> <span class="nf">get_timezone</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz_abbreviation</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Stand-alone function to return all timezone possibilities for a given timezone abbreviation (e.g. &quot;CDT&quot;) &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">tz</span> <span class="k">for</span> <span class="n">tz</span> <span class="ow">in</span> <span class="n">pytz</span><span class="o">.</span><span class="n">all_timezones</span> <span class="k">if</span> <span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">tzname</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span> <span class="o">==</span> <span class="n">tz_abbreviation</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="timedelta_functions"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.timedelta_functions">[docs]</a><span class="k">class</span> <span class="nc">timedelta_functions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">microsecond</span><span class="p">))</span>
+
+<div class="viewcode-block" id="timedelta_functions.seconds_since"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.timedelta_functions.seconds_since">[docs]</a>    <span class="k">def</span> <span class="nf">seconds_since</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">-</span> <span class="n">datetime</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">microsecond</span><span class="p">)))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="timedelta_functions.days_per_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.timedelta_functions.days_per_year">[docs]</a>    <span class="k">def</span> <span class="nf">days_per_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">)</span><span class="o">.</span><span class="n">days</span></div>
+
+<div class="viewcode-block" id="timedelta_functions.seconds_per_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.timedelta_functions.seconds_per_year">[docs]</a>    <span class="k">def</span> <span class="nf">seconds_per_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="datetime_object_to_seconds_past_midnight"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.datetime_object_to_seconds_past_midnight">[docs]</a><span class="k">def</span> <span class="nf">datetime_object_to_seconds_past_midnight</span><span class="p">(</span><span class="n">dtobj</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mf">3600.0</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span> <span class="o">*</span> <span class="mf">60.0</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">second</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">dtobj</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.0e6</span></div>
+
+<div class="viewcode-block" id="round_time"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.round_time">[docs]</a><span class="k">def</span> <span class="nf">round_time</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minutes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microseconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+    <span class="n">nseconds</span> <span class="o">=</span> <span class="n">days</span> <span class="o">*</span> <span class="mi">86400</span> <span class="o">+</span> <span class="n">hours</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="n">minutes</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">seconds</span> <span class="o">+</span> <span class="n">microseconds</span> <span class="o">/</span> <span class="mf">1e6</span> 
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Round a datetime object to any time laps in seconds</span>
+<span class="sd">    nseconds : Closest number of seconds to round to, default 1 minute.</span>
+<span class="sd">    direction: &#39;up&#39;/&#39;down&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># convert to naive datetime object to work around &quot;TypeError: can&#39;t subtract offset-naive and offset-aware datetimes&quot;</span>
+    <span class="c1">#     dtseconds = (dtobj - dtobj.min).seconds</span>
+    <span class="n">naive</span> <span class="o">=</span> <span class="n">dtobj</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> 
+    <span class="n">dtseconds</span> <span class="o">=</span> <span class="p">(</span><span class="n">naive</span> <span class="o">-</span> <span class="n">naive</span><span class="o">.</span><span class="n">min</span><span class="p">)</span><span class="o">.</span><span class="n">seconds</span>
+
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+        <span class="n">rounding</span> <span class="o">=</span> <span class="p">(</span><span class="n">dtseconds</span> <span class="o">+</span> <span class="n">nseconds</span><span class="p">)</span> <span class="o">//</span> <span class="n">nseconds</span> <span class="o">*</span> <span class="n">nseconds</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
+        <span class="n">rounding</span> <span class="o">=</span> <span class="n">dtseconds</span> <span class="o">//</span> <span class="n">nseconds</span> <span class="o">*</span> <span class="n">nseconds</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rounding</span> <span class="o">=</span> <span class="p">(</span><span class="n">dtseconds</span> <span class="o">+</span> <span class="n">nseconds</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">//</span> <span class="n">nseconds</span> <span class="o">*</span> <span class="n">nseconds</span>
+
+    <span class="k">return</span> <span class="n">dtobj</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rounding</span><span class="o">-</span><span class="n">dtseconds</span><span class="p">,</span> <span class="o">-</span><span class="n">dtobj</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="date_increment"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_increment">[docs]</a><span class="k">def</span> <span class="nf">date_increment</span><span class="p">(</span><span class="n">start_dtobj</span><span class="p">,</span> <span class="n">end_dtobj</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microseconds</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+    <span class="n">dtobj</span> <span class="o">=</span> <span class="n">start_dtobj</span>
+
+    <span class="n">dtobjs</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_dtobj</span><span class="p">,]</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dtobj</span> <span class="o">&gt;=</span> <span class="n">end_dtobj</span><span class="p">):</span>
+        <span class="n">dtobj</span> <span class="o">=</span> <span class="n">dtobj</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">,</span> <span class="n">microseconds</span><span class="o">=</span><span class="n">microseconds</span><span class="p">)</span>
+        <span class="n">dtobjs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dtobjs</span></div>
+
+<div class="viewcode-block" id="to_array"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.to_array">[docs]</a><span class="k">def</span> <span class="nf">to_array</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">inp</span><span class="p">,]</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">*</span> <span class="n">length</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span> <span class="c1"># fails if object is not iterable</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">inp</span><span class="p">,]</span>
+            <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">*</span> <span class="n">length</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span></div>
+
+<span class="c1">##############################################</span>
+<span class="c1"># object(s) to work with arrays of dates/times </span>
+<span class="c1">##############################################</span>
+
+<div class="viewcode-block" id="date_conversions"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions">[docs]</a><span class="k">class</span> <span class="nc">date_conversions</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtobj</span><span class="o">=</span><span class="p">(),</span> <span class="n">tz</span><span class="o">=</span><span class="p">()):</span>
+
+        <span class="c1">#super(date_conversions, self).__init__()</span>
+
+        <span class="c1"># optional import of existing datetime objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">convert_local_to_utc</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">tz</span><span class="p">)]</span> <span class="c1"># create a timezone aware object and convert to UTC</span>
+
+<div class="viewcode-block" id="date_conversions.set_string_date"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.set_string_date">[docs]</a>    <span class="k">def</span> <span class="nf">set_string_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+        <span class="n">d_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+        <span class="n">t_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+        <span class="n">f_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">string_to_datetime_object</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">d_arr</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">,</span> <span class="n">f_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_string_date"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_string_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_string_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2"> %z (%Z)&quot;</span><span class="p">):</span>
+
+        <span class="n">t_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+        <span class="n">f_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_string_date</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">,</span> <span class="n">f_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.set_calendar_date"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.set_calendar_date">[docs]</a>    <span class="k">def</span> <span class="nf">set_calendar_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">):</span>
+
+        <span class="c1"># dates must be a tuple of tuples here. if not, it must be created.</span>
+
+        <span class="n">d_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+        <span class="n">t_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">calendar_date_to_datetime_object</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_calendar_date"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_calendar_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_calendar_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">):</span>
+
+        <span class="n">t_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_calendar_date</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.set_epoch_days"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.set_epoch_days">[docs]</a>    <span class="k">def</span> <span class="nf">set_epoch_days</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+        <span class="n">d_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+        <span class="n">r_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+        <span class="n">f_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">epoch_days_to_datetime_object</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">d_arr</span><span class="p">,</span> <span class="n">r_arr</span><span class="p">,</span> <span class="n">f_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_epoch_days"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_epoch_days">[docs]</a>    <span class="k">def</span> <span class="nf">get_epoch_days</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+        <span class="n">r_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+        <span class="n">f_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_epoch_days</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">r_arr</span><span class="p">,</span> <span class="n">f_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.set_epoch_seconds"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.set_epoch_seconds">[docs]</a>    <span class="k">def</span> <span class="nf">set_epoch_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+        <span class="n">d_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+        <span class="n">r_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+        <span class="n">f_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d_arr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">epoch_seconds_to_datetime_object</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">d_arr</span><span class="p">,</span> <span class="n">r_arr</span><span class="p">,</span> <span class="n">f_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_epoch_seconds"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_epoch_seconds">[docs]</a>    <span class="k">def</span> <span class="nf">get_epoch_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">):</span>
+
+        <span class="n">r_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+        <span class="n">f_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_epoch_seconds</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">r_arr</span><span class="p">,</span> <span class="n">f_arr</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="date_conversions.set_decimal_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.set_decimal_year">[docs]</a>    <span class="k">def</span> <span class="nf">set_decimal_year</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">):</span>
+
+        <span class="n">d_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">decimal_year_to_datetime_object</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">d_arr</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_decimal_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_decimal_year">[docs]</a>    <span class="k">def</span> <span class="nf">get_decimal_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_decimal_year</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.set_julian_days"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.set_julian_days">[docs]</a>    <span class="k">def</span> <span class="nf">set_julian_days</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">):</span>
+
+        <span class="n">d_arr</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">julian_days_to_datetime_object</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">d_arr</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_julian_days"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_julian_days">[docs]</a>    <span class="k">def</span> <span class="nf">get_julian_days</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_julian_days</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.add_time"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.add_time">[docs]</a>    <span class="k">def</span> <span class="nf">add_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microseconds</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">dy</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">sc</span><span class="p">,</span> <span class="n">microseconds</span><span class="o">=</span><span class="n">ms</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">ms</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">,</span> <span class="n">to_array</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">)),</span> <span class="n">to_array</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">)),</span> <span class="n">to_array</span><span class="p">(</span><span class="n">microseconds</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">)))]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_seconds_past_midnight"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_seconds_past_midnight">[docs]</a>    <span class="k">def</span> <span class="nf">get_seconds_past_midnight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime_object_to_seconds_past_midnight</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_days_per_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_days_per_year">[docs]</a>    <span class="k">def</span> <span class="nf">get_days_per_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">timedelta_functions</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="o">.</span><span class="n">days_per_year</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_days_per_month"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_days_per_month">[docs]</a>    <span class="k">def</span> <span class="nf">get_days_per_month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_day_of_the_week"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_day_of_the_week">[docs]</a>    <span class="k">def</span> <span class="nf">get_day_of_the_week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">d</span><span class="o">.</span><span class="n">weekday</span><span class="p">(),</span> <span class="n">calendar</span><span class="o">.</span><span class="n">day_name</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">weekday</span><span class="p">()])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.get_seconds_per_year"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.get_seconds_per_year">[docs]</a>    <span class="k">def</span> <span class="nf">get_seconds_per_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">timedelta_functions</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">year</span><span class="p">)</span><span class="o">.</span><span class="n">seconds_per_year</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date_conversions.round_time"><a class="viewcode-back" href="../ccg_date_utils.html#ccg_date_utils.date_conversions.round_time">[docs]</a>    <span class="k">def</span> <span class="nf">round_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">round_time</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtobj</span><span class="p">]</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+   
+    <span class="c1"># command line call: ./ccg_date_utils.py --debug </span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;--debug&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">):</span>
+
+        <span class="n">dates</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Fri Oct 30 08:03:12 2020&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-01&quot;</span><span class="p">,</span> <span class="s2">&quot;1970-01-02 00:00:00&quot;</span><span class="p">,</span> <span class="s2">&quot;2006-04-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-10-30T08:03:12.000000 -0500&quot;</span><span class="p">)</span> <span class="c1"># &quot;2020-10-30T08:03:12.000000 -0500 (CDT)&quot;</span>
+        <span class="n">tz</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;US/Central&quot;</span><span class="p">,</span><span class="s2">&quot;US/Mountain&quot;</span><span class="p">,</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span> <span class="s2">&quot;Europe/Madrid&quot;</span><span class="p">)</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%a</span><span class="s2"> %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2"> %z&quot;</span><span class="p">)</span> <span class="c1"># &quot;%Y-%m-%dT%H:%M:%S.%f %z (%Z)&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dates/timezones:&quot;</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">tz</span><span class="p">)</span>
+
+        <span class="n">dc</span> <span class="o">=</span> <span class="n">date_conversions</span><span class="p">()</span> <span class="c1"># create instance</span>
+        <span class="n">dc</span><span class="o">.</span><span class="n">set_string_date</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">tz</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Decimal year:&quot;</span><span class="p">,</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_decimal_year</span><span class="p">())</span>
+
+        <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;1970-01-01T00:00:00&quot;</span>
+        <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Epoch days since </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="p">),</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_epoch_days</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">))</span>
+       
+        <span class="c1">#import matplotlib.dates</span>
+        <span class="c1">#matplotlib.dates.set_epoch(ref)</span>
+        <span class="c1">#print(&quot;Epoch days since {} (matplotlib.dates.date2num):&quot;.format(ref), [matplotlib.dates.date2num(d) for d in dc.dtobj]) # matplotlib.dates does not include milliseconds</span>
+
+        <span class="kn">import</span> <span class="nn">matplotlib.dates</span>
+        <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;0001-01-01T00:00:00&quot;</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">set_epoch</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Julian days:&quot;</span><span class="p">,</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_julian_days</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Julian days since </span><span class="si">{}</span><span class="s2"> (matplotlib.dates.date2num):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="p">),</span> <span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">dtobj</span><span class="p">])</span> <span class="c1"># 2006-04-01 = 732401 (https://matplotlib.org/stable/api/dates_api.html#matplotlib.dates.set_epoch) </span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Calendar date (matplotlib.dates.num2date):&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_julian_days</span><span class="p">()])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;string date:&quot;</span><span class="p">,</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_string_date</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="p">))</span>
+        <span class="n">ndays</span> <span class="o">=</span> <span class="mi">90</span>
+        <span class="n">dc</span><span class="o">.</span><span class="n">add_time</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">ndays</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Add </span><span class="si">{}</span><span class="s2"> days:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndays</span><span class="p">),</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_calendar_date</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Add </span><span class="si">{}</span><span class="s2"> days:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndays</span><span class="p">),</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_string_date</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">dat</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">dat</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;#&#39;</span><span class="p">]</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        for d, f in zip(dates, fmt):</span>
+<span class="sd">            print(d, f)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dc</span> <span class="o">=</span> <span class="n">date_conversions</span><span class="p">()</span> <span class="c1"># create instance</span>
+        <span class="n">dc</span><span class="o">.</span><span class="n">set_string_date</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_decimal_year</span><span class="p">()):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.30f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

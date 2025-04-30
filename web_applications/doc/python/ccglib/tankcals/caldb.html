@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_cal_db — Get tank calibration results from database &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_calfit — Get fit to tank calibrations" href="calfit.html" />
+    <link rel="prev" title="Tank Calibrations and History" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tank Calibrations and History</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code> — Get tank calibration results from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calfit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code> — Get fit to tank calibrations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calunc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code> — Get typeB uncertainty for data (including tank calibrations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code> — Get history of tank usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refgasdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code> — Get assigned values for a tank from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tank Calibrations and History</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code> — Get tank calibration results from database</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tankcals/caldb.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_cal_db">
+<span id="ccg-cal-db-get-tank-calibration-results-from-database"></span><h1><a class="reference internal" href="#module-ccg_cal_db" title="ccg_cal_db"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code></a> — Get tank calibration results from database<a class="headerlink" href="#module-ccg_cal_db" title="Permalink to this headline"></a></h1>
+<p>Class for processing tank calibration results.</p>
+<p>Calibration data is in the ‘reftank’ database.  The table ‘calibrations’
+has the results, and the table ‘fill’ has filling information.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_cal_db.</span></span><span class="sig-name descname"><span class="pre">Calibrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syslist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillingcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">official</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uncfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reftank'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbconn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tank</strong> – tank serial number</p></li>
+<li><p><strong>gas</strong> – gas formula, e.g. ‘CO2’</p></li>
+<li><p><strong>syslist</strong> – comma separated list of instrument id’s to use, e.g. ‘L8,L10,L4’</p></li>
+<li><p><strong>fillingcode</strong> – A fill code letter A-Z. Use calibrations for this filling code only.</p></li>
+<li><p><strong>date</strong> – Get calibrations for this date only.  A datetime object.</p></li>
+<li><p><strong>method</strong> – Include calibrations for this method too. Method is set in cal raw file, e.g. ‘NDIR’, ‘CDRS’, ‘GC’…</p></li>
+<li><p><strong>official</strong> – Use calibrations for ‘official’ calibration systems only.  See INST_CODES dict below.</p></li>
+<li><p><strong>notes</strong> – Include data from the ‘notes’ field in output.</p></li>
+<li><p><strong>quiet</strong> – If true, suppress warning messages.</p></li>
+<li><p><strong>uncfile</strong> – If set, use a calibration uncertainty table different from default</p></li>
+<li><p><strong>database</strong> – Specify the database to use.</p></li>
+<li><p><strong>dbconn</strong> – Use an already created database connection instead of making a new connection.</p></li>
+<li><p><strong>readonly</strong> – Open database in readonly mode by default.  Set to ‘True’ to do updates.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Members:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>cals : list of dicts containing data about the calibration</p></li>
+<li><p>flasks : list of dicts with isotope data measured in flasks filled from the tank</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.checkDb">
+<span class="sig-name descname"><span class="pre">checkDb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cal_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.checkDb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.checkDb" title="Permalink to this definition"></a></dt>
+<dd><p>check results with data in database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cal_data</strong> – namedtuple containing
+(adate, mf, sd, ncycles, method, pressure, site, regulator, inst, system, flag)</p></li>
+<li><p><strong>verbose</strong> – boolean.  If true print out extra messages while updating.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.deleteDb">
+<span class="sig-name descname"><span class="pre">deleteDb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cal_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.deleteDb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.deleteDb" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a record from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cal_data</strong> – tuple containing
+(adate, co2, sd, ncycles, method, pressure, sitecode, regulator, inst, flag)</p></li>
+<li><p><strong>verbose</strong> – boolean.  If true print out extra messages while updating.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Class must be initialized with <code class="docutils literal notranslate"><span class="pre">readonly=False</span></code> argument for deletes</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.getAverage">
+<span class="sig-name descname"><span class="pre">getAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mygas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.getAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.getAverage" title="Permalink to this definition"></a></dt>
+<dd><p>Get the average value for the given tank serial number and fill code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.getAvgs">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">getAvgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.getAvgs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.getAvgs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the average, stddev, and n for given calibrations.
+The cals are for a single fillcode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.getFillCode">
+<span class="sig-name descname"><span class="pre">getFillCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.getFillCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.getFillCode" title="Permalink to this definition"></a></dt>
+<dd><p>Find the correct fill code for a given date.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.getFillDate">
+<span class="sig-name descname"><span class="pre">getFillDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.getFillDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.getFillDate" title="Permalink to this definition"></a></dt>
+<dd><p>Find the fill date for a given calendar date.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.getFlag">
+<span class="sig-name descname"><span class="pre">getFlag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.getFlag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.getFlag" title="Permalink to this definition"></a></dt>
+<dd><p>Get the flag for a calibration on given date</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.getValue">
+<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mygas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.getValue" title="Permalink to this definition"></a></dt>
+<dd><p>Get the value for the given tank and fill code that can be used
+to put an entry into the scale_assignments table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>namedtuple with (tzero, coef0, unc0, coef1, unc1, coef2, unc2)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>result</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showAverages">
+<span class="sig-name descname"><span class="pre">showAverages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showAverages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showAverages" title="Permalink to this definition"></a></dt>
+<dd><p>Print only average values for each fillcode, not individual calibrations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showCalsByFill">
+<span class="sig-name descname"><span class="pre">showCalsByFill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showCalsByFill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showCalsByFill" title="Permalink to this definition"></a></dt>
+<dd><p>Print cals by fill.  This will print a header for every fillcode,
+even if there are no cals for that fillcode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showDbList">
+<span class="sig-name descname"><span class="pre">showDbList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showDbList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showDbList" title="Permalink to this definition"></a></dt>
+<dd><p>Show serial number of tanks that have been calibrated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showFillList">
+<span class="sig-name descname"><span class="pre">showFillList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showFillList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showFillList" title="Permalink to this definition"></a></dt>
+<dd><p>Print out list of filling information for a tank</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showResults">
+<span class="sig-name descname"><span class="pre">showResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showheader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showflasks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legacy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showResults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showResults" title="Permalink to this definition"></a></dt>
+<dd><p>Print calibration results, either as table of dates and mole fractions,
+or as table of calibrations with average and standard deviation for
+each fill code.</p>
+<p>Formatting of output depends on the how the ‘fmt’ variable is set.
+Also co2c13 and co2o18 have different headers and format from other gases.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showTable">
+<span class="sig-name descname"><span class="pre">showTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showTable" title="Permalink to this definition"></a></dt>
+<dd><p>Print results in a table format.
+This means print decimal date instead of date string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.showTankSummary">
+<span class="sig-name descname"><span class="pre">showTankSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showheader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.showTankSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.showTankSummary" title="Permalink to this definition"></a></dt>
+<dd><p>Print out summary calibration results</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_cal_db.Calibrations.updateDb">
+<span class="sig-name descname"><span class="pre">updateDb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cal_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#Calibrations.updateDb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.Calibrations.updateDb" title="Permalink to this definition"></a></dt>
+<dd><p>Update the database with results of calibration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cal_data</strong> – namedtuple containing
+(adate, mf, sd, ncycles, method, pressure, site, regulator, inst, system, flag)</p></li>
+<li><p><strong>verbose</strong> – boolean.  If true print out extra messages while updating.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Class must be initialized with <code class="docutils literal notranslate"><span class="pre">readonly=False</span></code> argument for updates</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_cal_db.get_syslist">
+<span class="sig-prename descclassname"><span class="pre">ccg_cal_db.</span></span><span class="sig-name descname"><span class="pre">get_syslist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_cal_db.html#get_syslist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_cal_db.get_syslist" title="Permalink to this definition"></a></dt>
+<dd><p>Get list of instrument id’s for ‘official’ instruments</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Tank Calibrations and History" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="calfit.html" class="btn btn-neutral float-right" title="ccg_calfit — Get fit to tank calibrations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

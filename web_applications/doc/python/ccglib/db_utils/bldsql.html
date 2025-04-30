@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_bldsql — SQL Query builder class &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_dbutils — Database Convenience Routines" href="dbutils.html" />
+    <link rel="prev" title="ccg_db_conn — Database connection and query class" href="db_conn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Database routines</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="db_conn.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_db_conn</span></code> — Database connection and query class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_bldsql</span></code> — SQL Query builder class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sql-query-builder-class">SQL Query builder class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbutils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_dbutils</span></code> — Database Convenience Routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flaskdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_flask_data</span></code> — Get flask data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="insitudb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_insitu_data</span></code> — Get observatory in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="towerdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tower_data</span></code> — Get tower in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_instrument</span></code> — Get instrument history from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Database routines</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_bldsql</span></code> — SQL Query builder class</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/db_utils/bldsql.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_db.bldsql">
+<span id="ccg-bldsql-sql-query-builder-class"></span><span id="bldsql"></span><h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_bldsql</span></code> — SQL Query builder class<a class="headerlink" href="#module-ccg_db.bldsql" title="Permalink to this headline"></a></h1>
+<p>This module provides functions for programmatically building sql query and dml statements.  It handles paramatarized queries and variables and is most useful when building a query based on dynamic input.</p>
+<section id="sql-query-builder-class">
+<h2>SQL Query builder class<a class="headerlink" href="#sql-query-builder-class" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_db.bldsql.BldSQL">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">BldSQL</span></span><a class="headerlink" href="#ccg_db.bldsql.BldSQL" title="Permalink to this definition"></a></dt>
+<dd><p>Class to generate sql statements programmatically using a query builder</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.initQuery">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">initQuery</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.initQuery" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize/reset the query builder</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.table">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tableName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.table" title="Permalink to this definition"></a></dt>
+<dd><p>Add a table to the from clause.  Can be table name or table name with alias.  Join to other tables using where()</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.innerJoin">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">innerJoin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tableClause</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.innerJoin" title="Permalink to this definition"></a></dt>
+<dd><p>Join syntax is also supported.
+Add an inner join table with join conditions to existing table (previously added with from or innerjoin)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;table2 t2 on baseTable.num=t2.num&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results in “.. inner join table2 t2 on baseTable.num=t2.num…”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.leftJoin">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">leftJoin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tableClause</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.leftJoin" title="Permalink to this definition"></a></dt>
+<dd><p>Add a left join to the from clause to join to existing table (previously added with from or innerjoin)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.col">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.col" title="Permalink to this definition"></a></dt>
+<dd><p>Add a column to the select.  I can be just the column name or with an alias.  It can contain arbitrarily complex functions/case statements</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.where">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">whereClause</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bindParameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.where" title="Permalink to this definition"></a></dt>
+<dd><p>Add clause to the where conditions.  All clauses are and’d together.  If passing a bind parameter, use a %s place holder in the where clause like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;num=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">event_num</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>% can be escaped by doubling:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;name like &#39;joh</span><span class="si">%%</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If bind parameter is passed, you can also use replace=True to change the value (if you are using in a for loop for instance and useing the statment several times with a list of values)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.wherein">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">wherein</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">whereClause</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bindParameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.wherein" title="Permalink to this definition"></a></dt>
+<dd><p>This creates a ‘x in (list)’ clause.  Pass the whereClause as ‘x in’ and this will append the paren’d list “(%s,%s..)” for each bindParameter and then add them as parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wherein</span><span class="p">(</span><span class="s1">&#39;id_num in&#39;</span><span class="p">,[</span><span class="mi">23</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">66</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>will result in “… id_num in (%s,%s,%s,%s)” with each num in list bound to placeholders</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.distinct">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">distinct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.distinct" title="Permalink to this definition"></a></dt>
+<dd><p>Sets distinct in the select</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.orderby">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">orderby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.orderby" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a column to the order by clause (in order)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.groupby">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.groupby" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a column to the group by clause (in order)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.limit">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.limit" title="Permalink to this definition"></a></dt>
+<dd><p>Sets a row limit for result set</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.cmd">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">cmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.cmd" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a formatted sql string that can be passed to doquery or printed for debugging</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_db.bldsql.bind">
+<span class="sig-prename descclassname"><span class="pre">ccg_db.bldsql.</span></span><span class="sig-name descname"><span class="pre">bind</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_db.bldsql.bind" title="Permalink to this definition"></a></dt>
+<dd><p>Returns bindParameters in a tuple.  These can be passed to doquery</p>
+<p>Example:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Use directly</span>
+<span class="kn">import</span> <span class="nn">ccg_db.bldsql</span> <span class="k">as</span> <span class="nn">bldsql</span>
+<span class="n">sql</span> <span class="o">=</span> <span class="n">bldsql</span><span class="o">.</span><span class="n">BldSQL</span><span class="p">()</span>
+
+<span class="c1">#Or as a convience, an instance is created as part of the db_conn/doquery utilities</span>
+<span class="kn">import</span> <span class="nn">ccg_db.db_conn</span> <span class="k">as</span> <span class="nn">db_conn</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">db_conn</span><span class="o">.</span><span class="n">RO</span><span class="p">()</span>
+<span class="n">sql</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">sql</span> <span class="c1">#handle for the query builder included in db_conn</span>
+
+<span class="n">showMet</span><span class="o">=</span><span class="kc">True</span>
+
+<span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span> <span class="c1">#Resets/initializes</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;flask_event e&quot;</span><span class="p">)</span> <span class="c1">#Set tables and columns separately</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.num as event_num&quot;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.site s on e.site_num=s.num&quot;</span><span class="p">)</span> <span class="c1">#Can use join syntax or regular where = joins</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s1">&#39;s.code as site&#39;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;s.code&quot;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date&gt;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,(</span><span class="s1">&#39;2015-01-01&#39;</span><span class="p">))</span> <span class="c1">#binds parameters instead of passing text</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date&lt;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,(</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">))</span>
+
+<span class="c1">#conditional branching</span>
+<span class="k">if</span><span class="p">(</span><span class="n">showMet</span><span class="p">):</span>
+    <span class="n">sql</span><span class="o">.</span><span class="n">leftJoin</span><span class="p">(</span><span class="s2">&quot;flask_met met on e.num=met.event_num&quot;</span><span class="p">)</span> <span class="c1">#outer join</span>
+    <span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;met.narr_spec_humidity&quot;</span><span class="p">)</span>
+
+<span class="c1">#bind multiple</span>
+<span class="n">sites</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;aao&#39;</span><span class="p">,</span><span class="s1">&#39;crv&#39;</span><span class="p">,</span><span class="s1">&#39;bld&#39;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s1">&#39;s.code in&#39;</span><span class="p">,</span> <span class="n">sites</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span> <span class="c1">#returns list of dicts by default.  When no query is passed to doquery(), it&#39;s bldsql is used by default</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event: </span><span class="si">%s</span><span class="s2"> site: </span><span class="si">%s</span><span class="s2"> shum: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;event_num&#39;</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;site&#39;</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;narr_spec_humidity&#39;</span><span class="p">]))</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;/tmp/out.csv&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;csv&#39;</span><span class="p">)</span> <span class="c1">#write csv file</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="mi">380113</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380114</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380115</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380116</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380117</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380118</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380119</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380120</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380121</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380122</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>See <code class="docutils literal notranslate"><span class="pre">/ccg/python/ccglib/ccg_db/example.py</span></code> to run this example</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="db_conn.html" class="btn btn-neutral float-left" title="ccg_db_conn — Database connection and query class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dbutils.html" class="btn btn-neutral float-right" title="ccg_dbutils — Database Convenience Routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

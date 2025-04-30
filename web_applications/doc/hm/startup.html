@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Starting hm &mdash; python hm 0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="config.html" />
+    <link rel="prev" title="Software" href="software.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> python hm
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Starting hm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-runaction">Using runaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-output-from-hm">Handling Output from hm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#actions-that-write-to-stdout">Actions that write to stdout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#actions-that-store-data-in-last-data">Actions that store data in last_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hmsubs.html">hmsubs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq.html">daq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hp35900.html">hp35900</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">scpi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valco.html">valco</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runaction.html">RunAction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obsolete.html">Obsolete Actions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Starting hm</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/startup.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="starting-hm">
+<span id="startup"></span><h1>Starting hm<a class="headerlink" href="#starting-hm" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><p>The syntax for starting the hm program is</p>
+<p>[python] hm [-c config_file] [-l filename] [-d] [-t] [-a] [-q]</p>
+<dl>
+<dt>Options:</dt><dd><p><strong>-c config_file</strong>  Use <em>config_file</em> for hm configuration.  If not specified, <strong>hm</strong> will use <em>hm.conf</em>.</p>
+<p><strong>-l filename</strong> Use ‘filename’ for logging instead of the default ‘sys.log’</p>
+<p><strong>-d</strong> Switch logging to DEBUG level</p>
+<p><strong>-t</strong> Test mode.  Read in configuration and resource list, perform appropriate
+substitutions, and print out results.  Do not execute any actions.</p>
+<p><strong>-a</strong> Print action lines. Similar to -t, but print only action lines with
+appropriate substitutions.</p>
+<p><strong>-q</strong> Some actions will log detailed information.  <strong>-q</strong> will turn these off.</p>
+</dd>
+</dl>
+<p><strong>hm</strong> also requires a list of <a class="reference internal" href="actions.html#actions"><span class="std std-ref">Actions</span></a> to execute.  <strong>hm</strong> reads these from stdin,
+so you can either pipe a file of actions into <strong>hm</strong>, or redirect stdin. If we have a list of
+actions in a file called ‘start.act’, hm can be started with</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">start.act</span> <span class="pre">|</span> <span class="pre">hm</span> <span class="pre">-c</span> <span class="pre">myconfig.conf</span></code></p>
+<p>or</p>
+<p><code class="docutils literal notranslate"><span class="pre">hm</span> <span class="pre">-c</span> <span class="pre">myconfig.conf</span> <span class="pre">&lt;</span> <span class="pre">start.act</span></code></p>
+</div></blockquote>
+<p>You can also use shell ‘here’ documents to pass in action lines to <strong>hm</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="nv">port</span><span class="o">=</span><span class="m">3</span>
+<span class="nv">gas</span><span class="o">=</span><span class="s2">&quot;n2o&quot;</span>
+<span class="nv">file</span><span class="o">=</span><span class="s2">&quot;data.n2o&quot;</span>
+<span class="nv">port_off</span><span class="o">=</span><span class="m">4</span>
+
+hm<span class="w"> </span>-c<span class="w"> </span>magicc.conf<span class="w"> </span><span class="s">&lt;&lt;-EOF</span>
+<span class="s">0       MoveValve       SysSelect       @$gas</span>
+<span class="s">0       SendCommand     hp34970.2       @FlowStd</span>
+<span class="s">0       MoveValve       SampleSelect    $port</span>
+<span class="s">2       CloseRelay      hp34970.2       @MFC_valve</span>
+<span class="s">15      SampleData      hp34970.1       @FlowControl</span>
+<span class="s">32      ScaleValue      None            @FlowScale</span>
+<span class="s">32      LogData         $file           Replace</span>
+<span class="s">32      SendCommand     hp34970.2       @Flow_n2o</span>
+<span class="s">47      MoveValve       SampleSelect    $port_off</span>
+<span class="s">52      OpenRelay       hp34970.2       @MFC_valve</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+</div></blockquote>
+<section id="using-runaction">
+<h2>Using runaction<a class="headerlink" href="#using-runaction" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>An alternative way to use hm when programming in python is to use the <em>runaction</em> class.  <a class="reference internal" href="runaction.html#runaction"><span class="std std-ref">Read more on its usage here</span></a>.</p>
+</div></blockquote>
+</section>
+<section id="handling-output-from-hm">
+<h2>Handling Output from hm<a class="headerlink" href="#handling-output-from-hm" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Some <a class="reference internal" href="actions.html#actions"><span class="std std-ref">Actions</span></a> will take a reading from a device and store this value in <strong>hm’s</strong> internal <em>last_data</em> variable.
+This value can then be written to a file using the <a class="reference internal" href="hmsubs.html#log-data"><span class="std std-ref">LogData</span></a> action, which will write a single line to a file,
+the line consisting of a timestamp, the value, and the standard deviation of the value.</p>
+<p>For example, running this action</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>hm<span class="w"> </span><span class="s">&lt;&lt;-EOF</span>
+<span class="s">0 ReadNumber hp34970 None</span>
+<span class="s">0 LogData hp34970 data.txt Replace</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+<p>will overwrite the file ‘data.txt’ with a single line like</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">1398268403</span> <span class="pre">199.372833</span> <span class="pre">0.001022</span></code></p>
+</div></blockquote>
+<p>If you want to have a timestamp using an actual date and time, use the <a class="reference internal" href="hmsubs.html#log-datagmt"><span class="std std-ref">LogDataGMT</span></a> action.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">2012</span>&#160; <span class="pre">6</span> <span class="pre">12</span> <span class="pre">15</span> <span class="pre">28</span> <span class="pre">30</span> <span class="pre">202.185286</span> <span class="pre">0.001493</span></code></p>
+</div></blockquote>
+<p>which has fields year, month, day, hour, minute, second, value, standard deviation</p>
+<p>Some <a class="reference internal" href="actions.html#actions"><span class="std std-ref">Actions</span></a> send results to stdout, so it is up to the programmer to capture the output
+and handle that in some way.  For example, one of the actions, <a class="reference internal" href="obsolete.html#monitor-data"><span class="std std-ref">MonitorData</span></a>, will run forever
+and print a line of results at regular intervals.  To run <strong>hm</strong> with this action and to catch the output
+using a python script, you could use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_file</span> <span class="o">=</span> <span class="s2">&quot;hm.conf&quot;</span>
+<span class="n">action_dir</span> <span class="o">=</span> <span class="s2">&quot;actions&quot;</span>
+<span class="n">action_file</span> <span class="o">=</span> <span class="s2">&quot;monitor_co2.act&quot;</span>
+<span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;hm.py -c </span><span class="si">%s</span><span class="s2"> -q &lt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">action_dir</span><span class="p">,</span> <span class="n">action_file</span><span class="p">)</span>
+<span class="n">monitor</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="nb">print</span> <span class="n">line</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="actions-that-write-to-stdout">
+<h2>Actions that write to stdout<a class="headerlink" href="#actions-that-write-to-stdout" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Some <a class="reference internal" href="actions.html#actions"><span class="std std-ref">Actions</span></a> will write their results to stdout, and the program calling <strong>hm</strong> is responsible for
+handling the output.  These actions are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="obsolete.html#monitor-data"><span class="std std-ref">MonitorData</span></a></p></li>
+<li><p><a class="reference internal" href="obsolete.html#monitor-polled-data"><span class="std std-ref">MonitorPolledData</span></a></p></li>
+<li><p><a class="reference internal" href="obsolete.html#monitor-nonpolled-data"><span class="std std-ref">MonitorNonPolledData</span></a></p></li>
+<li><p><a class="reference internal" href="hmsubs.html#print-reply"><span class="std std-ref">PrintReply</span></a></p></li>
+<li><p><a class="reference internal" href="scpi.html#scan-data"><span class="std std-ref">ScanData</span></a></p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="actions-that-store-data-in-last-data">
+<h2>Actions that store data in last_data<a class="headerlink" href="#actions-that-store-data-in-last-data" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Some <a class="reference internal" href="actions.html#actions"><span class="std std-ref">Actions</span></a> will store data in <strong>hm’s</strong> internal <em>last_data</em> variable, which can be modified if needed
+or written to file.
+The following list are those actions that store their result in the <em>last_data</em> variable:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="scpi.html#read-number"><span class="std std-ref">ReadNumber</span></a></p></li>
+<li><p><a class="reference internal" href="scpi.html#read-value"><span class="std std-ref">ReadValue</span></a></p></li>
+<li><p><a class="reference internal" href="scpi.html#sample-data"><span class="std std-ref">SampleData</span></a></p></li>
+</ul>
+</div></blockquote>
+<p>There are some additional actions that operate and modify the <em>last_data</em>.  They are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="hmsubs.html#scale-value"><span class="std std-ref">ScaleValue</span></a></p></li>
+</ul>
+</div></blockquote>
+<p>The value in the <em>last_data</em> variable will be overwritten by another action, so the data must
+be handled before another action is run.  This is done using the actions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="hmsubs.html#log-data"><span class="std std-ref">LogData</span></a></p></li>
+<li><p><a class="reference internal" href="hmsubs.html#log-datagmt"><span class="std std-ref">LogDataGMT</span></a></p></li>
+<li><p><a class="reference internal" href="hmsubs.html#print-data"><span class="std std-ref">PrintData</span></a></p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p><strong>hm</strong> uses the python <a class="reference external" href="http://docs.python.org/2/library/logging">logging system</a> to record
+the actions it performs.  The file it logs information to is called ‘sys.log’, unless changed with
+the ‘-l’ option.  The default loglevel is INFO.  <strong>hm</strong> also will log ERROR level messages to stderr.
+The logging level can be changed with the -d switch, which will change the level to DEBUG for both
+file and stderr.</p>
+<p>Log Output Example:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>INFO    : 2012-11-16 11:27:35,857 ShowStatus sys.status Measuring channel 103
+DEBUG   : 2012-11-16 11:27:35,858 ConfigChannel command = CONF:VOLT:DC AUTO,MAX, (@103)
+DEBUG   : 2012-11-16 11:27:35,860 DeviceSend: CONF:VOLT:DC AUTO,MAX, (@103)
+INFO    : 2012-11-16 11:27:35,871 ConfigChannel hp34970 103 DCVOLT MAX
+DEBUG   : 2012-11-16 11:27:35,871 ReadNumber command = READ?
+DEBUG   : 2012-11-16 11:27:35,873 DeviceSendRead write: READ?
+DEBUG   : 2012-11-16 11:27:35,967 DeviceSendRead read: &#39;+2.36120000E+00&#39;
+DEBUG   : 2012-11-16 11:27:35,968 ReadNumber answer = +2.36120000E+00
+INFO    : 2012-11-16 11:27:35,969 ReadNumber hp34970 103 DCVOLT MAX 2.361200
+DEBUG   : 2012-11-16 11:27:35,969 ScaleValue: y = 0.000000 + 40.000000 * 2.361200
+INFO    : 2012-11-16 11:27:35,970 ScaleValue hp34970 0 40 94.448000
+INFO    : 2012-11-16 11:27:35,970 LogData /data/qc/2012/sample_flow/2012-11-07 Append 1353090455 94.448000 0.000000
+INFO    : 2012-11-16 11:27:35,971 ShowStatus sys.status Measuring channel 104
+DEBUG   : 2012-11-16 11:27:35,972 ConfigChannel command = CONF:VOLT:DC AUTO,MAX, (@104)
+DEBUG   : 2012-11-16 11:27:35,973 DeviceSend: CONF:VOLT:DC AUTO,MAX, (@104)
+INFO    : 2012-11-16 11:27:35,984 ConfigChannel hp34970 104 DCVOLT MAX
+DEBUG   : 2012-11-16 11:27:35,985 ReadNumber command = READ?
+DEBUG   : 2012-11-16 11:27:35,986 DeviceSendRead write: READ?
+DEBUG   : 2012-11-16 11:27:36,090 DeviceSendRead read: &#39;+8.62590000E-02&#39;
+DEBUG   : 2012-11-16 11:27:36,091 ReadNumber answer = +8.62590000E-02
+INFO    : 2012-11-16 11:27:36,092 ReadNumber hp34970 104 DCVOLT MAX 0.086259
+DEBUG   : 2012-11-16 11:27:36,092 ScaleValue: y = 0.000000 + 4.000000 * 0.086259
+INFO    : 2012-11-16 11:27:36,093 ScaleValue hp34970 0 4 0.345036
+INFO    : 2012-11-16 11:27:36,093 LogData /data/qc/2012/zero_flow/2012-11-07 Append 1353090456 0.345036 0.000000
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="software.html" class="btn btn-neutral float-left" title="Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="config.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

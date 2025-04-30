@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_calfit &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_calfit</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_calfit</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Procedures to calculate a drift corrected mole fraction value for cylinders.</span>
+
+<span class="sd">fitCalibrations() takes a list of cal results from ccg_cal_db.py</span>
+<span class="sd">and iteratively fits a weighted quadratic, linear, mean curve to the</span>
+<span class="sd">data, stopping when the highest degree coefficient is significant.</span>
+
+<span class="sd">Significance is made by comparing calculated t value of the coefficient</span>
+<span class="sd">with the t value from a two-tailed t distribution for 95% confidence and</span>
+<span class="sd">with the appropriate degrees of freedom.</span>
+
+<span class="sd">For a coefficient b,</span>
+
+<span class="sd">H0: b = 0</span>
+<span class="sd">Ha: b != 0</span>
+
+<span class="sd">t* = b/s(b)</span>
+
+<span class="sd">if |t*| &lt;= t(1-a/2; df), conclude H0</span>
+<span class="sd">if |t*| &gt; t(1-a/2; df), conclude Ha</span>
+
+<span class="sd">See for example, equation 3.17,</span>
+<span class="sd">&#39;Applied Linear Regression Models&#39;,</span>
+<span class="sd">Needer, Wasserman and Kutner 1983</span>
+
+<span class="sd">Usual way to use this function is through ccg_cal_db.getValue():</span>
+
+<span class="sd">    import ccg_cal_db</span>
+<span class="sd">    dt = datetime.datetime(2005, 1, 1)</span>
+<span class="sd">    c = ccg_cal_db.Calibrations(&quot;CC71623&quot;, &quot;CO2&quot;)</span>
+<span class="sd">    fillcode = c.getFillCode(dt)</span>
+<span class="sd">    t = c.getValue(&quot;co2&quot;, fillcode)</span>
+
+
+<span class="sd">It returns a namedtuple that can be used to populate the scale_assignments</span>
+<span class="sd">database table.  To do this, use the method</span>
+
+<span class="sd">    ccg_refgasdb.insertFromFit(serialnum, date, t, level=level, comment=comment)</span>
+
+<span class="sd">where t is the namedtuple result from fitCalibrations() or from ccg_cal_db.getValue()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="poly2"><a class="viewcode-back" href="../tankcals/calfit.html#ccg_calfit.poly2">[docs]</a><span class="k">def</span> <span class="nf">poly2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; quadratic polynomial &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">c</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span></div>
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="get_significance"><a class="viewcode-back" href="../tankcals/calfit.html#ccg_calfit.get_significance">[docs]</a><span class="k">def</span> <span class="nf">get_significance</span><span class="p">(</span><span class="n">dof</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Get probability of two tailed t distribution for</span>
+<span class="sd">        given degrees of freedom</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">CONF_INTERVAL</span> <span class="o">=</span> <span class="mi">95</span>  <span class="c1"># e.g. 95% confidence interval</span>
+    <span class="n">SIGLEVEL</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">CONF_INTERVAL</span><span class="o">/</span><span class="mf">100.0</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">SIGLEVEL</span><span class="o">/</span><span class="mi">2</span>
+<span class="c1">#    print(&quot;q is&quot;, q, &quot;df is&quot;, dof)</span>
+    <span class="n">tvalue</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">dof</span><span class="p">)</span>
+<span class="c1">#    print(&quot;tvalue is&quot;, tvalue)</span>
+
+    <span class="k">return</span> <span class="n">tvalue</span></div>
+
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="check_tstar"><a class="viewcode-back" href="../tankcals/calfit.html#ccg_calfit.check_tstar">[docs]</a><span class="k">def</span> <span class="nf">check_tstar</span><span class="p">(</span><span class="n">dof</span><span class="p">,</span> <span class="n">tstar</span><span class="p">,</span> <span class="n">tvalue</span><span class="p">,</span> <span class="n">debug</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Check how calculated tvalue compares with t probability</span>
+<span class="sd">    if tstar &lt;= tvalue, conclude that coefficient = 0, return False</span>
+<span class="sd">    if tstar &gt; tvalue, conclude that coefficient != 0, return True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">dof</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># if degrees of freedom is 0, i.e. exact fit (two points, linear fit)</span>
+        <span class="c1"># then check if the drift coefficient is much greater than uncertainty of coefficient.</span>
+        <span class="c1"># If so, use drift</span>
+        <span class="k">if</span> <span class="n">tstar</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;coef is &gt; 2*coef_unc, coefficient != 0&quot;</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tstar</span> <span class="o">&gt;</span> <span class="n">tvalue</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   calculated t is &gt; probability t, coefficient != 0&quot;</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   calculated t is &lt; probability t, assume coefficient = 0&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">success</span></div>
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="fitCalibrations"><a class="viewcode-back" href="../tankcals/calfit.html#ccg_calfit.fitCalibrations">[docs]</a><span class="k">def</span> <span class="nf">fitCalibrations</span><span class="p">(</span><span class="n">ocals</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Determine fit to calibrations</span>
+
+<span class="sd">    This function determines the time dependent fit to calibrations</span>
+<span class="sd">    for a reference tank.  Use the highest degree polynomial where the</span>
+<span class="sd">    coefficients of the fit are significant.</span>
+<span class="sd">    Fits are made for a polynomial function; quadratic and linear.</span>
+<span class="sd">    If the coefficient of the fit is significant, then accept that fit,</span>
+<span class="sd">    otherwise do another fit dropping one degree in the fit, i.e.</span>
+<span class="sd">    quadratic first, linear second, mean third.</span>
+
+<span class="sd">    Input:</span>
+<span class="sd">        ocals - list of dicts with calibration results.  These normally come</span>
+<span class="sd">            from the ccg_cal_db module.</span>
+
+<span class="sd">        debug - Print debugging information if True</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result - namedtuple containing (tzero, coef0, coef1, coef2, unc_c0, unc_c1, unc_c2, sd_resid, n, chisq)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tzero&#39;</span><span class="p">,</span> <span class="s1">&#39;coef0&#39;</span><span class="p">,</span> <span class="s1">&#39;coef1&#39;</span><span class="p">,</span> <span class="s1">&#39;coef2&#39;</span><span class="p">,</span> <span class="s1">&#39;unc_c0&#39;</span><span class="p">,</span> <span class="s1">&#39;unc_c1&#39;</span><span class="p">,</span> <span class="s1">&#39;unc_c2&#39;</span><span class="p">,</span> <span class="s1">&#39;sd_resid&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;chisq&#39;</span><span class="p">,</span> <span class="s1">&#39;calibrations&#39;</span><span class="p">]</span>
+<span class="c1">#    names = [&#39;tzero&#39;, &#39;coef0&#39;, &#39;coef1&#39;, &#39;coef2&#39;, &#39;unc_c0&#39;, &#39;unc_c1&#39;, &#39;unc_c2&#39;, &#39;sd_resid&#39;, &#39;n&#39;, &#39;chisq&#39;]</span>
+    <span class="n">Fit</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;calfit&#39;</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;dd&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ocals</span><span class="p">]</span>
+    <span class="n">np</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># if no cals, return default value</span>
+    <span class="k">if</span> <span class="n">np</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">999.99</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;mixratio&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ocals</span><span class="p">]</span>
+        <span class="n">ysd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cal_idxs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ocals</span><span class="p">:</span>
+            <span class="c1"># use measurement uncertainty if available, otherwise use standard deviation</span>
+            <span class="n">meas_unc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;meas_unc&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">meas_unc</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">meas_unc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;stddev&#39;</span><span class="p">]</span>
+            <span class="n">unc</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;typeB_unc&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">meas_unc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">ysd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unc</span><span class="p">)</span>
+            <span class="n">cal_idxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">])</span>
+
+        <span class="n">ysd2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ysd</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">tzero</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">ysd2</span><span class="p">)</span>  <span class="c1"># weighted average of central date</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">xp</span> <span class="o">-</span> <span class="n">tzero</span> <span class="k">for</span> <span class="n">xp</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>           <span class="c1"># calculate deviation from central date</span>
+
+        <span class="c1"># if only one cal, return it&#39;s value</span>
+        <span class="k">if</span> <span class="n">np</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">ysd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cal_idxs</span><span class="p">))</span>
+
+        <span class="c1"># two or more cals</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># count up number of unique x values</span>
+            <span class="c1"># Don&#39;t want to fit a quadratic to only 2 x values</span>
+            <span class="c1"># If number of unique y values is 1, just take the mean</span>
+            <span class="n">nx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">ny</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">degree</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">degree</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+                <span class="c1"># no quadratic fits for 3 cals</span>
+                <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">if</span> <span class="n">nx</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span> <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">nx</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span> <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">ny</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">minfit</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">degree</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">minfit</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">degree</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+                <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">minfit</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">degree</span> <span class="o">==</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+                <span class="n">maxfit</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="n">minfit</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="c1"># loop through the degrees of polynomial fit until</span>
+            <span class="c1"># the highest degree coefficient is significant</span>
+            <span class="k">for</span> <span class="n">pfit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxfit</span><span class="p">,</span> <span class="n">minfit</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+                <span class="c1"># estimate coefficients with a polynomial ols fit</span>
+                <span class="n">beta0</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pfit</span><span class="p">)</span>
+                <span class="n">beta0</span> <span class="o">=</span> <span class="n">beta0</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># reverse the order of coefficients for input into curve_fit</span>
+
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---------------&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;degree of fit:&quot;</span><span class="p">,</span> <span class="n">pfit</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fit parameters&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   number of points:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   number of unique x values:&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   number of unique y values:&quot;</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   x:&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   y:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   beta0:&quot;</span><span class="p">,</span> <span class="n">beta0</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   sigma:&quot;</span><span class="p">,</span> <span class="n">ysd</span><span class="p">)</span>
+
+                <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">poly2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">beta0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">ysd</span><span class="p">,</span> <span class="n">absolute_sigma</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">beta_sd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+
+                <span class="n">dof</span> <span class="o">=</span> <span class="n">np</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">popt</span><span class="p">)</span>
+                <span class="n">tvalue</span> <span class="o">=</span> <span class="n">get_significance</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span>
+                <span class="n">tstar</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="n">pfit</span><span class="p">]</span><span class="o">/</span><span class="n">beta_sd</span><span class="p">[</span><span class="n">pfit</span><span class="p">])</span>  <span class="c1"># test significance of highest degree coefficient</span>
+
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fit results&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   coefficients:&quot;</span><span class="p">,</span> <span class="n">popt</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   coefficients stdv:&quot;</span><span class="p">,</span> <span class="n">beta_sd</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   coefficient for degree&quot;</span><span class="p">,</span> <span class="n">pfit</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="n">popt</span><span class="p">[</span><span class="n">pfit</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   coefficient stdv for degree&quot;</span><span class="p">,</span> <span class="n">pfit</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="n">beta_sd</span><span class="p">[</span><span class="n">pfit</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   degrees of freedom&quot;</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   calculated t value is&quot;</span><span class="p">,</span> <span class="n">tstar</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   t probability is&quot;</span><span class="p">,</span> <span class="n">tvalue</span><span class="p">)</span>
+
+                <span class="n">success</span> <span class="o">=</span> <span class="n">check_tstar</span><span class="p">(</span><span class="n">dof</span><span class="p">,</span> <span class="n">tstar</span><span class="p">,</span> <span class="n">tvalue</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">success</span><span class="p">:</span> <span class="k">break</span>
+
+
+            <span class="c1"># calculate residuals and residual standard deviation</span>
+            <span class="n">yvals</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">popt</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">resid</span> <span class="o">=</span> <span class="n">yvals</span> <span class="o">-</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">rsd</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span>
+
+            <span class="c1"># reduced chi squared</span>
+            <span class="n">chisq</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">dof</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">round</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">resid</span><span class="o">/</span><span class="n">ysd</span><span class="p">))</span> <span class="o">/</span> <span class="n">dof</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+            <span class="c1"># build the result tuple.  Need an entry for all three coefficients</span>
+            <span class="n">coefs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">uncs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">popt</span><span class="p">)):</span>
+                <span class="n">coefs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">6</span><span class="p">)</span>
+                <span class="n">uncs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">beta_sd</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">6</span><span class="p">)</span>
+
+            <span class="n">t</span> <span class="o">=</span> <span class="p">((</span><span class="nb">round</span><span class="p">(</span><span class="n">tzero</span><span class="p">,</span> <span class="mi">6</span><span class="p">)),)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">uncs</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">rsd</span><span class="p">),)</span> <span class="o">+</span> <span class="p">((</span><span class="n">np</span><span class="p">),)</span> <span class="o">+</span> <span class="p">((</span><span class="n">chisq</span><span class="p">),)</span> <span class="o">+</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">cal_idxs</span><span class="p">),)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Fit</span><span class="o">.</span><span class="n">_make</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1282 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ccg_filter &mdash; ccglib.python 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+          
+
+          
+            
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>ccg_filter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ccg_filter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Class for computing the curve fitting/smoothing technique used by Thoning et al 1989.</span>
+
+<span class="sd">This technique uses the following step:</span>
+
+<span class="sd">   1 - Fit a function consisting of a polynomial and harmonics to the data</span>
+<span class="sd">   2 - Smooth the residuals from the function fit with a low-pass filter using</span>
+<span class="sd">       fft and user defined cutoff value.</span>
+<span class="sd">   3 - Calculate the inverse fft of the low-pass filter to get smoothed data in time domain.</span>
+<span class="sd">   4 - Determine the smoothed curve of interest by combining the function with the filtered data.</span>
+
+<span class="sd">The function to be fit to the data is specified in the routines &#39;fitFunc&#39; and &#39;harmonics&#39;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">atan2</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="nb">pow</span><span class="p">,</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">fftpack</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+
+<span class="c1">#--------------------------------------------------</span>
+<span class="c1"># Define the function we are trying to fit</span>
+<span class="c1"># This is a combination of a polynomial and harmonic function</span>
+<span class="c1">#--------------------------------------------------</span>
+<div class="viewcode-block" id="fitFunc"><a class="viewcode-back" href="../filter/ccgfilt.html#ccg_filter.fitFunc">[docs]</a><span class="k">def</span> <span class="nf">fitFunc</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">,</span> <span class="n">numharm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate the function at time x with coefficients given in params.</span>
+<span class="sd">    This is a combination of a polynomial with numpoly coefficients, and</span>
+<span class="sd">    a sin/cosine harmonic with numharm coefficients.</span>
+<span class="sd">    e.g., with numpoly=3 and numharm=2:</span>
+
+<span class="sd">        y = a + b*x + c*x^2 + d*sin(2*pi*x) + e*cos(2*pi*x) + f*sin(4*pi*x) + g*cos(4*pi*x) ...</span>
+
+<span class="sd">    where a = params[0], b = params[1], c = params[2], d = params[3] ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># polynomial part</span>
+    <span class="c1"># we need to reverse the order of the polynomial coefficients for input into polyval</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">numpoly</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># get harmonic part of function</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">harmonics</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">,</span> <span class="n">numharm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p</span><span class="o">+</span><span class="n">s</span></div>
+
+<span class="c1">#--------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">harmonics</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">,</span> <span class="n">numharm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; calculate the harmonic part of the function at time x &quot;&quot;&quot;</span>
+
+    <span class="c1"># harmonic part</span>
+    <span class="n">pi2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span>
+    <span class="k">if</span> <span class="n">numharm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># create an array s of correct size by explicitly evaluating first harmonic</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">numpoly</span><span class="p">]</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">pi2</span><span class="p">)</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="n">numpoly</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi2</span><span class="p">)</span>
+
+        <span class="c1"># do additional harmonics (nharm &gt; 1)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numharm</span><span class="p">):</span>
+            <span class="n">ix</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="n">numpoly</span>    <span class="c1"># index into params for harmonic coefficients</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">params</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">pi2</span><span class="p">)</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">pi2</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">numpoly</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">numharm</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">params</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">s</span>        <span class="c1"># amplitude gain factor</span>
+
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+
+
+<span class="c1">#--------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">errfunc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">,</span> <span class="n">numharm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; function to calc the difference between input values and function &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">y</span> <span class="o">-</span> <span class="n">fitFunc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">,</span> <span class="n">numharm</span><span class="p">)</span>
+
+<span class="c1">#--------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">partial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; calculate partial derivative of function with respect to parameter n at time x &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">numpoly</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">numpoly</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">ix</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">numpoly</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p</span>
+
+
+<span class="c1">#--------------------------------------------------</span>
+<div class="viewcode-block" id="ccgFilter"><a class="viewcode-back" href="../filter/ccgfilt.html#ccg_filter.ccgFilter">[docs]</a><span class="k">class</span> <span class="nc">ccgFilter</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Input Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xp : list</span>
+<span class="sd">        time values for input data.  Must be decimal dates.</span>
+<span class="sd">    yp : list</span>
+<span class="sd">        dependent values for input data</span>
+<span class="sd">    shortterm : int</span>
+<span class="sd">        Short term cutoff value in days for smoothing of data</span>
+<span class="sd">        Optional. Default is 80</span>
+<span class="sd">    longterm : int</span>
+<span class="sd">        Long term cutoff value in days for extracting trend from data</span>
+<span class="sd">        Optional. Default is 667</span>
+<span class="sd">    sampleinterval : int</span>
+<span class="sd">        Interval in days between samples, calculate equally spaced values at this interval</span>
+<span class="sd">        Optional. Default is calculated from xp</span>
+<span class="sd">    numpoly : int</span>
+<span class="sd">        Number of polynomial terms used in function fit - e.g. 3 = quadratic</span>
+<span class="sd">        Optional.  Default is 3</span>
+<span class="sd">    numharm : int</span>
+<span class="sd">        Number of harmonics used in function fit</span>
+<span class="sd">        Optional.  Default is 4</span>
+<span class="sd">    timezero : float</span>
+<span class="sd">        Value where x = 0 in the function coefficients</span>
+<span class="sd">        Optional.  Default is 0</span>
+<span class="sd">    gap : float</span>
+<span class="sd">        When determining equally spaced values for the fft,</span>
+<span class="sd">        if gap != 0, then gap is the number of days between samples that should</span>
+<span class="sd">        be filled in with values from the function, rather than linear interpolated.</span>
+<span class="sd">        Optional.  Default is 0.</span>
+<span class="sd">    use_gain_factor: boolean</span>
+<span class="sd">        Set to True if you want to include a gain factor to the harmonic amplitude.</span>
+<span class="sd">        This means the harmonics part of the function will have a linearly increasing</span>
+<span class="sd">        or decreasing amplitude with time.</span>
+<span class="sd">    debug: boolean</span>
+<span class="sd">        If true, print out extra information during calculations.</span>
+<span class="sd">        Optional.  Default is false</span>
+
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Input Data</span>
+<span class="sd">    xp : numpy array</span>
+<span class="sd">        Time value for input data</span>
+<span class="sd">    yp : numpy array</span>
+<span class="sd">        Dependent values for input data</span>
+<span class="sd">    np : int</span>
+<span class="sd">        Number of points in xp, yp</span>
+<span class="sd">    xinterp : numpy array</span>
+<span class="sd">        Equally spaced interpolated values from input data</span>
+
+<span class="sd">    For the function fit</span>
+<span class="sd">    numpoly : int</span>
+<span class="sd">        Number of polynomial terms used in function fit - e.g. 3 = quadratic</span>
+<span class="sd">    numharm : int</span>
+<span class="sd">        Number of harmonics used in function fit</span>
+<span class="sd">    timezero : float</span>
+<span class="sd">        Value where x = 0 in the function coefficients</span>
+<span class="sd">    params : numpy array</span>
+<span class="sd">        Parameters (coefficients) for the function fit</span>
+<span class="sd">    covar : numpy array</span>
+<span class="sd">        Covariance values of the parameters</span>
+<span class="sd">    numpm : int</span>
+<span class="sd">        Total number of parameters in the function</span>
+<span class="sd">    resid : numpy array</span>
+<span class="sd">        Residuals from function fit for times specified in input array xp</span>
+<span class="sd">    yinterp : numpy array</span>
+<span class="sd">        Equally spaced interpolated values of the residuals from the functions fit</span>
+<span class="sd">        for times specified in array xinterp</span>
+<span class="sd">    chisq : float</span>
+<span class="sd">        Reduced chi square value for the function fit</span>
+<span class="sd">    funcvar : float</span>
+<span class="sd">        Variance of function fit</span>
+
+<span class="sd">    For the filter</span>
+<span class="sd">    sampleinterval : int</span>
+<span class="sd">        Interval in days between equally spaced points used in the fft</span>
+<span class="sd">    dinterval : float</span>
+<span class="sd">        Sample interval in decimal years</span>
+<span class="sd">    shortterm : int</span>
+<span class="sd">        Short term cutoff value in days for smoothing of data</span>
+<span class="sd">    longterm : int</span>
+<span class="sd">        Long term cutoff value in days for extracting trend from data</span>
+<span class="sd">    smooth : numpy array</span>
+<span class="sd">        smoothed results from applying short term cutoff filter to residuals of data from the function.</span>
+<span class="sd">        Equally spaced at xinterp</span>
+<span class="sd">    trend : numpy array</span>
+<span class="sd">        trend results from applying long term cutoff filter to residuals of data from the function.</span>
+<span class="sd">        Equally spaced at xinterp</span>
+<span class="sd">    deriv : numpy array</span>
+<span class="sd">        derivative of function + trend.  Equally spaced at xinterp</span>
+<span class="sd">    ninterp : int</span>
+<span class="sd">        number of points in each of xinterp, smooth, trend</span>
+
+<span class="sd">    Misc.</span>
+<span class="sd">    rsd1 : float</span>
+<span class="sd">        Standard deviation of residuals about function</span>
+<span class="sd">    rsd2 : float</span>
+<span class="sd">        Standard deviation of residuals about smooth curve</span>
+<span class="sd">    debug : boolean</span>
+<span class="sd">        Flag for showing additional information during computation</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    For each of the methods below, the input value x can be a single point, a list, or a numpy array</span>
+
+<span class="sd">    getFunctionValue(x)</span>
+<span class="sd">    Returns the value of the function part of the filter at time x.</span>
+
+<span class="sd">    getSmoothValue(x)</span>
+<span class="sd">    Returns the &#39;smoothed&#39; data at time x.  This is function + self.smooth</span>
+
+<span class="sd">    getTrendValue(x)</span>
+<span class="sd">    Returns the &#39;trend&#39; of the data at time x.  This is polynomial part of function + self.trend</span>
+
+<span class="sd">    getHarmonicValue(x)</span>
+<span class="sd">    Returns the value of the harmonic part of the function at time x.</span>
+
+<span class="sd">    getPolyValue(x)</span>
+<span class="sd">    Returns the value of the polynomial part of the function at time x</span>
+
+<span class="sd">    getAmplitudes()</span>
+<span class="sd">    Get seasonal cycle amplitudes</span>
+<span class="sd">    Returns a list of tuples, each tuple has 6 values (year, total_amplitude, max_date, max_value, min_date, min_value)</span>
+
+
+<span class="sd">    Additional methods:</span>
+
+<span class="sd">    getFilterResponse(cutoff)</span>
+<span class="sd">      Returns the value of the filter for frequencies 0 - 10 cycles/year at given cutoff</span>
+
+<span class="sd">    getMonthlyMeans()</span>
+<span class="sd">      Return of list of tuples containing monthy means from the smoothed curve.</span>
+<span class="sd">      The value of the curve is computed at every sample interval, then summed up for each</span>
+<span class="sd">      month and the average computed.</span>
+
+<span class="sd">    getTrendCrossingDates()</span>
+<span class="sd">      Get the dates when the smoothed curve crosses the trend curve.</span>
+<span class="sd">      That is, when the detrended smooth seasonal cycle crosses 0.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">shortterm</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">longterm</span><span class="o">=</span><span class="mi">667</span><span class="p">,</span> <span class="n">sampleinterval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">numpolyterms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">numharmonics</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">timezero</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_gain_factor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="c1"># save input data as numpy arrays</span>
+        <span class="c1"># make sure data is sorted by x values</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xp</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># for some reason, doing an assignment causes problems later in polyval, i.e. a = xp doesn&#39;t work.</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xp</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yp</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yp</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yp</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+    <span class="c1">#    self.xp = numpy.array(xp)</span>
+    <span class="c1">#    self.yp = numpy.array(yp)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the average time interval between data points.</span>
+        <span class="c1"># Set the sampleinterval variable if not set on the command line.</span>
+        <span class="k">if</span> <span class="n">sampleinterval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="c1"># calculate the average interval between samples that are at least 1 day apart</span>
+            <span class="n">sd</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">sdiff</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">tx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">tx</span> <span class="o">&gt;</span> <span class="mf">0.002739</span><span class="p">:</span>
+                    <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">tx</span>
+                    <span class="n">sdiff</span> <span class="o">+=</span> <span class="n">diff</span>
+                    <span class="n">sd</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">tx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">avginterval</span> <span class="o">=</span> <span class="n">sdiff</span><span class="o">/</span><span class="n">sd</span> <span class="o">*</span> <span class="mi">365</span>
+
+            <span class="k">if</span> <span class="n">avginterval</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">avginterval</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span> <span class="o">=</span> <span class="n">avginterval</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;changed sampleinterval to &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span> <span class="o">=</span> <span class="n">sampleinterval</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span><span class="o">/</span><span class="mf">365.0</span> <span class="c1"># sample interval in decimal years</span>
+
+        <span class="c1"># If the data is actually an average over a relatively large time period,</span>
+        <span class="c1"># such as annual averages, change the number of harmonics to an appropriate value.</span>
+        <span class="n">nh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">365.0</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">nh</span> <span class="o">&lt;</span> <span class="n">numharmonics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span> <span class="o">=</span> <span class="n">nh</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;changed numharmonics to &quot;</span><span class="p">,</span> <span class="n">numharmonics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span> <span class="o">=</span> <span class="n">numharmonics</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_gain_factor</span> <span class="o">=</span> <span class="n">use_gain_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortterm</span> <span class="o">=</span> <span class="n">shortterm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span> <span class="o">=</span> <span class="n">longterm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span> <span class="o">=</span> <span class="n">numpolyterms</span>
+        <span class="k">if</span> <span class="n">timezero</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">xp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;changed timezero to &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span> <span class="o">=</span> <span class="n">timezero</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">numharm</span>
+
+        <span class="c1"># apply filter to data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter_data</span><span class="p">(</span><span class="n">gap</span><span class="p">)</span>
+
+        <span class="c1"># compute derivatives of polynomial and long term trend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_deriv</span><span class="p">()</span>
+
+        <span class="c1"># standard deviation of residuals about smooth curve</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSmoothValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rsd2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rmean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mean, rsd about smooth curve is&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsd2</span><span class="p">)</span>
+
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total time elapsed: &quot;</span><span class="p">,</span> <span class="n">t1</span><span class="o">-</span><span class="n">t0</span><span class="p">)</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_filter_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gap</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Perform the curve fitting/filtering &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Inside filter_data. ===&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Number of points = </span><span class="si">%d</span><span class="s2">, Sample Interval = </span><span class="si">%f</span><span class="s2"> days, </span><span class="si">%f</span><span class="s2"> years&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Cutoff 1 = </span><span class="si">%d</span><span class="s2">, Cutoff 2 = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shortterm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Numpoly = </span><span class="si">%d</span><span class="s2">, Numharm = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Time zero = </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  First point = </span><span class="si">%e</span><span class="s2">,</span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Last point = </span><span class="si">%e</span><span class="s2">,</span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">yp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="c1"># Remove the timezero value from the x data so that coefficients will be relative to the timezero date</span>
+        <span class="n">work</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span>
+
+
+        <span class="c1"># Fit the function to the data</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span>        <span class="c1"># initial parameter values set to 1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_gain_factor</span><span class="p">:</span>    <span class="c1"># add amplitude gain factor parameter with initial value of 0</span>
+            <span class="n">pm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">mesg</span><span class="p">,</span> <span class="n">ier</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errfunc</span><span class="p">,</span> <span class="n">pm</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Finished leastsq&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    param[</span><span class="si">%d</span><span class="s2">] = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    Covar = &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">)</span>
+
+
+        <span class="c1">#  calculate residuals from fit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yp</span> <span class="o">-</span> <span class="n">fitFunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">)</span>
+        <span class="n">rmean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rsd1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chisq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">)</span>    <span class="c1"># reduced chi square</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Finished residuals&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    rmean = </span><span class="si">%e</span><span class="s2">, rsd = </span><span class="si">%e</span><span class="s2">, chisq = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rmean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsd1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chisq</span><span class="p">))</span>
+
+        <span class="c1"># from http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.leastsq.html#scipy.optimize.leastsq</span>
+        <span class="c1"># &quot;This matrix must be multiplied by the residual variance to get the covariance of the parameter estimates - see curve_fit.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">covar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">covar</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">covar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">covar</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chisq</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chisq</span>
+
+        <span class="c1"># calculate variance of function fit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">funcvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_varnce</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polyvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_varnce</span><span class="p">(</span><span class="n">poly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  variance is&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_varnce</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Function variance is&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcvar</span><span class="p">)</span>
+
+
+        <span class="c1"># fit linear line to ends of residual data</span>
+        <span class="c1"># subtract this from residuals so ends are ~ near 0</span>
+        <span class="n">ca</span><span class="p">,</span> <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adjustend</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span><span class="p">)</span>
+        <span class="n">resid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resid</span> <span class="o">-</span> <span class="p">(</span><span class="n">ca</span> <span class="o">+</span> <span class="n">cb</span><span class="o">*</span><span class="n">work</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Finished adjustend&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    ca = </span><span class="si">%e</span><span class="s2">, cb = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ca</span><span class="p">,</span> <span class="n">cb</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    x[0] = </span><span class="si">%e</span><span class="s2">, x[</span><span class="si">%d</span><span class="s2">] = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">work</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span> <span class="n">work</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    resid[0] = </span><span class="si">%e</span><span class="s2">, resid[</span><span class="si">%d</span><span class="s2">] = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">resid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span> <span class="n">resid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+
+        <span class="c1"># Interpolate data at evenly spaced intervals (self.sampleinterval)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="n">yinterp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lin_interp</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">gap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ninterp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Interpolated points.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    Number of interpolated points: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ninterp</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    xinterp[np-1] = </span><span class="si">%e</span><span class="s2">, x[0] = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    yinterp[np-1] = </span><span class="si">%e</span><span class="s2">, y[0] = </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">yinterp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yinterp</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+
+        <span class="c1"># do fft on interpolated data</span>
+        <span class="c1"># we&#39;ll zero pad the data to an even power of 2</span>
+        <span class="c1"># This makes it the same method used in c version.</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">ceil</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">yinterp</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">2</span><span class="p">))))</span>
+        <span class="n">zzz</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+        <span class="n">nstart</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">n2</span> <span class="o">-</span> <span class="n">yinterp</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">nend</span> <span class="o">=</span> <span class="n">nstart</span> <span class="o">+</span> <span class="n">yinterp</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">zzz</span><span class="p">[</span><span class="n">nstart</span><span class="p">:</span><span class="n">nend</span><span class="p">]</span> <span class="o">=</span> <span class="n">yinterp</span>
+
+        <span class="n">fft</span> <span class="o">=</span> <span class="n">fftpack</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">zzz</span><span class="p">)</span>
+
+        <span class="c1"># do short term filter</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Do short term filter, cutoff = &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortterm</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freq_filter</span><span class="p">(</span><span class="n">fft</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortterm</span><span class="p">)</span>
+        <span class="n">yfilt</span> <span class="o">=</span> <span class="n">fftpack</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="n">yfilt</span><span class="p">[</span><span class="n">nstart</span><span class="p">:</span><span class="n">nend</span><span class="p">]</span> <span class="o">+</span> <span class="n">ca</span> <span class="o">+</span> <span class="n">cb</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span>
+
+
+        <span class="c1"># do long term filter</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Do long term filter, cutoff = &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freq_filter</span><span class="p">(</span><span class="n">fft</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span><span class="p">)</span>
+        <span class="n">yfilt</span> <span class="o">=</span> <span class="n">fftpack</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trend</span> <span class="o">=</span> <span class="n">yfilt</span><span class="p">[</span><span class="n">nstart</span><span class="p">:</span><span class="n">nend</span><span class="p">]</span> <span class="o">+</span> <span class="n">ca</span> <span class="o">+</span> <span class="n">cb</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span>
+
+
+        <span class="c1"># add linear fit and timezero back in to interpolated values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yinterp</span> <span class="o">=</span> <span class="n">yinterp</span> <span class="o">+</span> <span class="n">ca</span> <span class="o">+</span> <span class="n">cb</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span>
+
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_adjustend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determine the slope of the data based on just the ends, i.e. 1/4 of the cutoff &quot;&quot;&quot;</span>
+
+        <span class="c1"># check if length of data is too short to adjust</span>
+        <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="o">/</span><span class="mf">365.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="c1"># length of data to use is 1/4 of cutoff length</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">cutoff</span><span class="o">/</span><span class="mf">365.0</span><span class="o">/</span><span class="mf">4.0</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">c</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
+
+        <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">z</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">slope</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_lin_interp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">gap</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Linear interpolate between input data to get equally spaced values</span>
+<span class="sd">        at every sample interval.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># calculate the x values for evenly spaced data at the specified sampling interval</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="p">)</span>
+        <span class="n">xi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>        <span class="c1"># make sure last point is equal to last data point</span>
+
+        <span class="c1"># if there are multiple y data points at a single x value, then average them</span>
+        <span class="c1"># to get only 1 y data point for each x</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">xt</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">xp</span><span class="p">,</span> <span class="n">yp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">if</span> <span class="n">xp</span> <span class="o">==</span> <span class="n">xt</span><span class="p">:</span>
+                <span class="n">ys</span> <span class="o">+=</span> <span class="n">yp</span>
+                <span class="n">ns</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ya</span> <span class="o">=</span> <span class="n">ys</span><span class="o">/</span><span class="n">ns</span>
+                <span class="n">xx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="p">)</span>
+                <span class="n">yy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ya</span><span class="p">)</span>
+                <span class="n">ys</span> <span class="o">=</span> <span class="n">yp</span>
+                <span class="n">ns</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">xt</span> <span class="o">=</span> <span class="n">xp</span>
+        <span class="n">ya</span> <span class="o">=</span> <span class="n">ys</span><span class="o">/</span><span class="n">ns</span>
+        <span class="n">xx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="p">)</span>
+        <span class="n">yy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ya</span><span class="p">)</span>
+
+        <span class="c1"># calculate interpolation values at each x point</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+
+        <span class="c1"># if a gap setting was not made, use normal linear interpolation</span>
+        <span class="c1"># to get equally space points.</span>
+        <span class="c1"># Otherwise, fill in gaps using the function value (0) instead.</span>
+        <span class="k">if</span> <span class="n">gap</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">yi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+            <span class="n">ni</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
+            <span class="n">yi</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ni</span><span class="p">))</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ni</span><span class="p">):</span>
+                <span class="k">while</span> <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">xx</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xx</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">gap</span><span class="o">/</span><span class="mf">365.0</span><span class="p">:</span> <span class="c1">#  8*self.dinterval:</span>
+                    <span class="n">yi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">yi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+
+        <span class="k">return</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_freq_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">dinterv</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Apply low-pass filter to fft data.</span>
+<span class="sd">        Multiply each discrete frequency in fft by a</span>
+<span class="sd">        low-pass filter function value set by the value &#39;cutoff&#39;</span>
+<span class="sd">        input:</span>
+<span class="sd">            fft - results of fft</span>
+<span class="sd">            dinterv - sampling interval in years</span>
+<span class="sd">            cutoff - cutoff value in days</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fft</span><span class="p">)</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">cutoff</span><span class="o">/</span><span class="mf">365.0</span>    <span class="c1"># convert cutoff to years</span>
+        <span class="n">cutoff2</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">cf</span>    <span class="c1"># change to cycles/year</span>
+
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">fftpack</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">dinterv</span><span class="p">)</span>    <span class="c1"># get array of frequencies</span>
+        <span class="n">rw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vfilt</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">cutoff2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>    <span class="c1"># get filter value at frequencies</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">fft</span><span class="o">*</span><span class="n">rw</span>                <span class="c1"># apply filter values to fft</span>
+
+
+        <span class="k">return</span> <span class="n">filt</span>
+
+    <span class="c1"># this is how to do filtering at each frequency</span>
+    <span class="c1">#    filt = numpy.zeros( (len(fft)) )</span>
+    <span class="c1">#    b = 1.0/(n2*dinterv)</span>
+    <span class="c1">#    for i in range(1, n2-1, 2):</span>
+    <span class="c1">#        freq = (i+1)/2.0 * b</span>
+    <span class="c1">#        rw = self._fnfilt(freq, cutoff2, 6)</span>
+    <span class="c1">#        filt[i] = fft[i]*rw</span>
+    <span class="c1">#        filt[i+1] = fft[i+1]*rw</span>
+    <span class="c1">#</span>
+    <span class="c1">#    dmaxfreq = 1.0/(2*dinterv)</span>
+    <span class="c1">#    rw = self._fnfilt(dmaxfreq, cutoff2, 6)</span>
+    <span class="c1">#    filt[-1] = fft[-1]*rw</span>
+    <span class="c1">#    filt[0] = fft[0]</span>
+    <span class="c1">#    def _fnfilt(self, freq, sigma, power):</span>
+    <span class="c1">#    &quot;&quot;&quot; Determine filter value at freq &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#    z = pow((freq/sigma), power)</span>
+    <span class="c1">#    if z &gt; 20.0:</span>
+    <span class="c1">#        f = 1e-10</span>
+    <span class="c1">#    else:</span>
+    <span class="c1">#        f = 1.0 / pow(2.0, z)</span>
+    <span class="c1">#</span>
+    <span class="c1">#    return f</span>
+    <span class="c1">#</span>
+    <span class="c1">#    return filt</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_vfilt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; vectorized version of getting filter value at a frequency</span>
+<span class="sd">        input:</span>
+<span class="sd">            freq - array of frequencies</span>
+<span class="sd">            sigma - cutoff value in cycles/year</span>
+<span class="sd">            power - integer value for f/fc^power</span>
+<span class="sd">        returns:</span>
+<span class="sd">            array of filter values at each frequency</span>
+
+<span class="sd">        the clip statement insures against underflow, although</span>
+<span class="sd">        numpy seems to handle it internally anyway</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="n">freq</span><span class="o">/</span><span class="n">sigma</span><span class="p">),</span> <span class="n">power</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_compute_deriv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute derivative of trend.</span>
+<span class="sd">        This is the derivative of self.trend + derivative of polynomial part of the function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Connect trend data points with spline to get derivative at each point</span>
+        <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># compute derivative of polynomial at each interpolated data point</span>
+        <span class="c1"># we need to reverse order of polynomial coefficients for input into poly1d</span>
+        <span class="n">poly</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">polyder</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span> <span class="o">+=</span> <span class="n">pd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">)</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_varnce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poly</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; calculate variance of mean response, using equations from</span>
+<span class="sd">        https://en.wikipedia.org/wiki/Mean_and_predicted_response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># use first data point</span>
+    <span class="c1">#    x = self.xp[0] - self.timezero</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">covar</span>
+
+
+        <span class="c1"># calculate partial derivatives of function with respect to the parameters</span>
+        <span class="k">if</span> <span class="n">poly</span><span class="p">:</span>   <span class="c1"># polynomial only</span>
+            <span class="n">numparam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span>
+        <span class="k">else</span><span class="p">:</span>       <span class="c1"># entire function, poly + harmonics</span>
+            <span class="n">numparam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span>
+
+
+        <span class="n">dfdp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numparam</span><span class="p">):</span>
+            <span class="n">dfdp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">))</span>
+
+        <span class="n">df2</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numparam</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numparam</span><span class="p">):</span>
+                <span class="n">df2</span> <span class="o">+=</span> <span class="n">dfdp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">dfdp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">C</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+
+
+        <span class="k">return</span> <span class="n">df2</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_filtvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; calculate the filter variance at cutoff f &quot;&quot;&quot;</span>
+
+        <span class="c1"># First step: Compute weights of filter by filtering a single</span>
+        <span class="c1"># point in the middle of zero values (impulse response)</span>
+
+        <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span>
+            <span class="n">cutoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortterm</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cutoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span>
+
+        <span class="n">n0</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">cutoff</span><span class="o">/</span><span class="mf">365.0</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="p">)</span>
+
+    <span class="c1">#    z = 1</span>
+    <span class="c1">#    while pow(2, z) &lt; n0:</span>
+    <span class="c1">#        z += 1</span>
+    <span class="c1">#    n0 = pow(2, z)</span>
+
+        <span class="n">ytemp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n0</span><span class="p">))</span>
+        <span class="n">ytemp</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">n0</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># do fft</span>
+        <span class="n">fft</span> <span class="o">=</span> <span class="n">fftpack</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">ytemp</span><span class="p">)</span>
+
+        <span class="c1"># do filter</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  In filtvar, do filter, cutoff = &quot;</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="s2">&quot;n0 is &quot;</span><span class="p">,</span> <span class="n">n0</span><span class="p">)</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freq_filter</span><span class="p">(</span><span class="n">fft</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dinterval</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">fftpack</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="c1"># Compute sum of squares of weights</span>
+        <span class="n">ssw</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="o">*</span><span class="n">weights</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ssw =&quot;</span><span class="p">,</span> <span class="n">ssw</span><span class="p">)</span>
+
+        <span class="c1"># calculate residuals from smooth/trend curve</span>
+        <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">yp</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">)</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resid</span> <span class="o">-</span> <span class="n">yp</span>
+        <span class="n">rmean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>
+        <span class="n">rsd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">yy</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="c1"># Compute lag 1 auto covariance</span>
+        <span class="c1"># http://itl.nist.gov/div898/handbook/eda/section3/eda35c.htm</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">yy</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">rmean</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">yy</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">rmean</span><span class="p">))</span>
+        <span class="n">cor</span> <span class="o">=</span> <span class="n">sm</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">rsd</span><span class="o">*</span><span class="n">rsd</span><span class="p">)</span>    <span class="c1"># equivalent to sm/numpy.sum(numpy.square(yy-rmean))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cor is&quot;</span><span class="p">,</span> <span class="n">cor</span><span class="p">)</span>
+
+
+        <span class="c1"># Compute auto covariances</span>
+        <span class="c1"># r(k) = r(1)^k</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n0</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n0</span><span class="p">):</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">:</span> <span class="k">break</span> <span class="c1"># speed things up by ignoring really small values</span>
+                <span class="n">sm</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">weights</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+
+        <span class="n">var</span> <span class="o">=</span> <span class="n">rsd</span><span class="o">*</span><span class="n">rsd</span><span class="o">*</span><span class="p">(</span><span class="n">ssw</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">sm</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sm is&quot;</span><span class="p">,</span> <span class="n">sm</span><span class="p">,</span> <span class="s2">&quot;var is &quot;</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">var</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate statistics about the curve fitting. &quot;&quot;&quot;</span>
+
+        <span class="n">outs</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;No data points.  No Statistics available.&quot;</span>
+            <span class="k">return</span> <span class="n">outs</span>
+
+        <span class="c1"># calculate variance of each filter</span>
+        <span class="n">varf1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtvar</span><span class="p">(</span><span class="s2">&quot;short&quot;</span><span class="p">)</span>
+        <span class="n">varf2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtvar</span><span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">)</span>
+    <span class="c1">#        GetCalendarDate(self.timezero, &amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;*****  Filter Statistics.  *****</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Beginning date:                 </span><span class="si">%.6f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Ending date:                    </span><span class="si">%.6f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Number of data points:          </span><span class="si">%d</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;FUNCTION PARAMETERS</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Time = 0 on </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">timezero</span>  <span class="c1"># year, month, day</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Number of polynomial terms:     </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Number of harmonic terms:       </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Total Number of parameters:     </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpm</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Parameter          Value          Standard Deviation</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot; Polynomial</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">:</span> <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot; Harmonics</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">:</span> <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot; Amplitude Gain Factor</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%5d</span><span class="s2"> </span><span class="si">%20.6f</span><span class="s2"> </span><span class="si">%20.6f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Harmonic   Amplitude  Std. Dev.    Phase (degrees)  Std. Dev.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">ix</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="n">b</span>
+            <span class="n">siga</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span><span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">c</span>
+            <span class="n">sigtheta</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span><span class="o">+</span><span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%5d</span><span class="s2"> </span><span class="si">%11.2f</span><span class="s2"> </span><span class="si">%10.2f</span><span class="s2"> </span><span class="si">%16.2f</span><span class="s2"> </span><span class="si">%12.2f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">siga</span><span class="p">),</span> <span class="n">atan2</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">sigtheta</span><span class="p">)</span><span class="o">*</span><span class="mf">180.0</span><span class="o">/</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Full covariance matrix:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numpm</span><span class="p">):</span>
+                <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%13.4e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Reduced Chi squared value of function fit:  </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">chisq</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Residual standard deviation about function: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsd1</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;FILTER PARAMETERS</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Short term self cutoff:       </span><span class="si">%3d</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortterm</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Long term self cutoff:        </span><span class="si">%3d</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">longterm</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Sampling interval:            </span><span class="si">%3g</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampleinterval</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Function Standard Deviation:          </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">funcvar</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Polynomial Standard Deviation:        </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polyvar</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Short Term Filter Standard Deviation: </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">varf1</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Long  Term Filter Standard Deviation: </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">varf2</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Smoothed curve Standard Deviation:    </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">varf1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcvar</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Trend curve Standard Deviation:       </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">varf2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyvar</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Detrended Cycle Standard Deviation:   </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">varf2</span> <span class="o">+</span> <span class="n">varf1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">funcvar</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Growth Rate Standard Deviation:       </span><span class="si">%8.4f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">varf2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyvar</span><span class="p">))</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;Residual standard deviation about smooth curve: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsd2</span>
+
+        <span class="k">return</span> <span class="n">outs</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getAmplitudes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get amplitudes of seasonal cycle for each year.</span>
+<span class="sd">        The amplitude is from the detrended data, which is the</span>
+<span class="sd">        harmonic part of function + smooth curve - trend curve.</span>
+<span class="sd">        Find max and min values of this for each year, save the values</span>
+<span class="sd">        and the dates at which they occur.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        A list of tuples, each tuple has 6 values (year, total_amplitude, max_date, max_value, min_date, min_value)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get harmonic part of function at interpolated data points</span>
+        <span class="n">ycycle</span> <span class="o">=</span> <span class="n">harmonics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">)</span>
+
+        <span class="c1"># added short term smoothed data</span>
+        <span class="n">ycycle</span> <span class="o">=</span> <span class="n">ycycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span>
+
+        <span class="c1"># Find max and min values of the seasonal cycle</span>
+        <span class="n">tyear</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">amps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">amax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+        <span class="n">amin</span> <span class="o">=</span> <span class="mi">9999</span>
+        <span class="n">dmax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+        <span class="n">dmin</span> <span class="o">=</span> <span class="mi">9999</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="n">ycycle</span><span class="p">):</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">year</span> <span class="o">!=</span> <span class="n">tyear</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">tyear</span><span class="p">,</span> <span class="n">amax</span> <span class="o">-</span> <span class="n">amin</span><span class="p">,</span> <span class="n">dmax</span><span class="p">,</span> <span class="n">amax</span><span class="p">,</span> <span class="n">dmin</span><span class="p">,</span> <span class="n">amin</span><span class="p">)</span>
+                <span class="n">amps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="n">amax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+                <span class="n">amin</span> <span class="o">=</span> <span class="mi">9999</span>
+                <span class="n">dmax</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">dmin</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">tyear</span> <span class="o">=</span> <span class="n">year</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">amax</span><span class="p">:</span>
+                <span class="n">amax</span> <span class="o">=</span> <span class="n">y</span>
+                <span class="n">dmax</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">amin</span><span class="p">:</span>
+                <span class="n">amin</span> <span class="o">=</span> <span class="n">y</span>
+                <span class="n">dmin</span> <span class="o">=</span> <span class="n">x</span>
+
+        <span class="k">return</span> <span class="n">amps</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getFunctionValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determine the value of the function at time x.</span>
+<span class="sd">        x can be either a single point or a list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">fitFunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">xp</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">)</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getSmoothValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the &#39;smoothed&#39; data at time x</span>
+<span class="sd">        This is the function plus the smoothed residuals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ysmooth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">)</span>
+        <span class="n">ysmooth</span> <span class="o">=</span> <span class="n">ysmooth</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="n">ysmooth</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">yi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">yi</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getTrendValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the &#39;trend&#39; of the data at time x</span>
+<span class="sd">        This is the polynomial part of the function plus the trend of the residuals.</span>
+<span class="sd">        i.e., poly plus the long term filter of the residuals</span>
+<span class="sd">        Values outside the range of x will be given a Nan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ytrend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPolyValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">)</span>
+        <span class="n">ytrend</span> <span class="o">=</span> <span class="n">ytrend</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="n">ytrend</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">yi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">yi</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getPolyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the values of the polynomial part of the function time x</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A numpy 1d array with the polynomial values at the given x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">xa</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">xa</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">p</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getHarmonicValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the values of the harmonic part of the function time x</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A numpy 1d array with the harmonic values at the given x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">xa</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># get harmonic part of function at x</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">harmonics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">xa</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">y</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getGrowthRateValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the values of the derivative of the trend</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A numpy 1d array with the growth rate values at the given x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">)</span> <span class="c1"># , bounds_error=False)</span>
+        <span class="n">yi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">yi</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getFilterResponse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the filter response for a range of frequencies.</span>
+<span class="sd">        Input</span>
+<span class="sd">        -----</span>
+<span class="sd">            cutoff - cutoff value in days for the filter</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Two 1d numpy arrays, length 1000, with the frequency and the corresponding filter response</span>
+<span class="sd">        for the given cutoff.</span>
+
+<span class="sd">        Range of frequencies is 0 to 2*cutoff frequency, in 1000 steps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fmax</span> <span class="o">=</span> <span class="p">(</span><span class="mf">365.0</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">cutoff</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">cutoff</span><span class="o">/</span><span class="mf">365.0</span>
+        <span class="n">cutoff2</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">cf</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="n">rw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vfilt</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">cutoff2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>    <span class="c1"># get filter value at frequencies</span>
+
+        <span class="k">return</span> <span class="n">freq</span><span class="p">,</span> <span class="n">rw</span>
+
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getMonthlyMeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get monthly mean values from the smoothed curve</span>
+<span class="sd">        Note: first and last months could be incomplete</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        A list of tuples, each tuple has 5 values (year, month, value, std. deviation, n)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ysmooth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSmoothValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ysmooth</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="n">xdata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tyear</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">tmonth</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ysmooth</span><span class="p">):</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calendarDate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">year</span> <span class="o">!=</span> <span class="n">tyear</span> <span class="ow">or</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span> <span class="o">!=</span> <span class="n">tmonth</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">mean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                        <span class="n">std</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">mean</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">std</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tyear</span><span class="p">,</span> <span class="n">tmonth</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">tyear</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">tmonth</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span>
+
+        <span class="k">if</span> <span class="n">a</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                <span class="n">std</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">std</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getAnnualMeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get annual mean values from the smoothed curve</span>
+<span class="sd">        Note: first and last years could be incomplete</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        A list of tuples, each tuple has 4 values (year, value, std. deviation, n)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ysmooth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSmoothValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ysmooth</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span>
+
+        <span class="n">firstyear</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">lastyear</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">firstyear</span><span class="p">,</span> <span class="n">lastyear</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">year</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">year</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ysmooth</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ysmooth</span><span class="p">[</span><span class="n">w</span><span class="p">],</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">year</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">getTrendCrossingDates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the dates when the smoothed curve crosses the trend curve.</span>
+<span class="sd">        That is, when the detrended smooth seasonal cycle crosses 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get harmonic part of function at interpolated data points</span>
+        <span class="n">ycycle</span> <span class="o">=</span> <span class="n">harmonics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">timezero</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numpoly</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numharm</span><span class="p">)</span>
+
+        <span class="c1"># added short term smoothed data</span>
+        <span class="n">ycycle</span> <span class="o">=</span> <span class="n">ycycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span>
+
+        <span class="n">tcup</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tcdown</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ty</span> <span class="o">=</span> <span class="n">ycycle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xinterp</span><span class="p">,</span> <span class="n">ycycle</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">ty</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">tcup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ty</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">tcdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">ty</span> <span class="o">=</span> <span class="n">y</span>
+
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">tcup</span><span class="p">,</span> <span class="n">tcdown</span><span class="p">)</span>
+
+
+    <span class="c1">#------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">calendarDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decyear</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Convert decimal date to calendar components &quot;&quot;&quot;</span>
+
+        <span class="n">dyr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">decyear</span><span class="p">)</span>
+        <span class="n">fyr</span> <span class="o">=</span> <span class="n">decyear</span> <span class="o">-</span> <span class="n">dyr</span>
+
+        <span class="k">if</span> <span class="n">dyr</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nsec</span> <span class="o">=</span> <span class="n">fyr</span> <span class="o">*</span> <span class="p">(</span><span class="mi">366</span><span class="o">*</span><span class="mi">86400</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nsec</span> <span class="o">=</span> <span class="n">fyr</span> <span class="o">*</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">86400</span><span class="p">)</span>
+
+        <span class="n">nsec</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">nsec</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">dyr</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">nsec</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dt</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

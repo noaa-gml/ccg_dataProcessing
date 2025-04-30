@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data &mdash; Tower Next Generation Software Data Processing  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Analyer Data Files" href="datafiles.html" />
+    <link rel="prev" title="Software" href="software.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Tower Next Generation Software Data Processing
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dataacq.html">GGGRN In-Situ Data Acquisition</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dataacq.html#topics">Topics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hardware.html">Hardware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-transfer">Data Transfer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sqlite-database">Sqlite database</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text-files">Text Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datafiles.html">Analyer Data Files</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tower Next Generation Software Data Processing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dataacq.html">GGGRN In-Situ Data Acquisition</a> &raquo;</li>
+      <li>Data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data">
+<h1>Data<a class="headerlink" href="#data" title="Permalink to this headline"></a></h1>
+<p>Data acquired from the measurement system, as well as configuration settings, are stored in a <a class="reference external" href="https://www.sqlite.org/index.html">sqlite</a>
+database. Database tables for measured data, qc signal data, sensor configuration, reference gas information, and operator log entries are
+used.</p>
+<p>Data is extracted from the database tables once an hour into text files, and these files are transferred to GML in Boulder, as well as used for
+long-term backup of the data.  Only the last <code class="docutils literal notranslate"><span class="pre">35</span> <span class="pre">days</span></code> of data are stored in the database.</p>
+<section id="data-transfer">
+<h2>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this headline"></a></h2>
+<p>Once an hour, a cron job runs a script that finds newly modified text data files since the last data transfer, and creates a tar package file with these files.
+Transfer of the tar files is initiated from Boulder.  The tar files are stored in the <code class="docutils literal notranslate"><span class="pre">$HOME/data/tmp/</span></code> directory.  Once a transfer of data
+back to Boulder is successful, the tar files are removed from the directory.  A hidden file in the directory, named <code class="docutils literal notranslate"><span class="pre">.lasttransfer</span></code> is used to determine
+when the last successful data transfer was done.  The timestamp on this file is changed after the data transfer from Boulder.</p>
+<p>Scripts used:</p>
+<ul class="simple">
+<li><p>bin/transfer - Bash shell script to find modified files and create tar files</p></li>
+<li><p>src/fetch.sh - Bash shell script to extract data from database and create text files.</p></li>
+</ul>
+</section>
+<section id="sqlite-database">
+<h2>Sqlite database<a class="headerlink" href="#sqlite-database" title="Permalink to this headline"></a></h2>
+<p>Several tables are used.  The tables can be created using the <code class="docutils literal notranslate"><span class="pre">src/schema.py</span></code> script.</p>
+<dl class="simple">
+<dt>qc</dt><dd><p>data from qc system</p>
+</dd>
+<dt>data</dt><dd><p>data from analyzer output</p>
+</dd>
+<dt>sensors</dt><dd><p>sensor configuration</p>
+</dd>
+<dt>tanks</dt><dd><p>history of reference tanks used on the system</p>
+</dd>
+<dt>operator_log</dt><dd><p>operator log entries</p>
+</dd>
+<dt>sample</dt><dd><p>times when a new sample is measured</p>
+</dd>
+<dt>response</dt><dd><p>response coefficients of analyzer from mode 2 measurements.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The sensor configuration file is the primary source of data for the sensors database table. Any changes to sensors must be made in the file, and the database table updated from that.</p>
+</div>
+<p>Database schema:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">qc</span> <span class="p">(</span>
+        <span class="k">time</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="n">value</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">sensor_num</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="k">time</span><span class="p">,</span> <span class="n">sensor_num</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">data</span> <span class="p">(</span>
+        <span class="k">time</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="n">gas</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">value</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">stdv</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="k">mode</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="n">sample</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="k">time</span><span class="p">,</span> <span class="n">gas</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sensors</span> <span class="p">(</span>
+        <span class="n">num</span> <span class="nb">integer</span> <span class="k">primary</span> <span class="k">key</span> <span class="n">autoincrement</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+        <span class="n">device</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">channel</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="n">name</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">units</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">field_name</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="k">source</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="k">location</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="nb">interval</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="n">min_limit</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">max_limit</span> <span class="nb">real</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sqlite_sequence</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">seq</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tanks</span> <span class="p">(</span>
+        <span class="n">serial_number</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">gas</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="k">type</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">label</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">value</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">online_date</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">mod_date</span> <span class="nb">text</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">operator_log</span> <span class="p">(</span>
+        <span class="nb">date</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">subject</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="k">comment</span> <span class="nb">text</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sample</span> <span class="p">(</span>
+        <span class="k">time</span> <span class="nb">integer</span> <span class="k">primary</span> <span class="k">key</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+        <span class="n">sample</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">label</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="k">mode</span> <span class="nb">integer</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">response</span> <span class="p">(</span>
+        <span class="k">time</span> <span class="nb">integer</span><span class="p">,</span>
+        <span class="n">gas</span> <span class="nb">text</span><span class="p">,</span>
+        <span class="n">c0</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">c1</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">c2</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">rsd</span> <span class="nb">real</span><span class="p">,</span>
+        <span class="n">n</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="k">time</span><span class="p">,</span> <span class="n">gas</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="text-files">
+<h2>Text Files<a class="headerlink" href="#text-files" title="Permalink to this headline"></a></h2>
+<p>Once an hour, a cron job runs that extracts recent data from the database and
+stores the data in text files. The script that is run for this cron job is
+<code class="docutils literal notranslate"><span class="pre">/home/ccg/src/fetch.sh</span></code>.  Files are placed in the <code class="docutils literal notranslate"><span class="pre">/home/ccg/data</span></code> directory tree,
+with separate directories for the analyzer data and the qc data.</p>
+<p>Analyzer data file format. Fields are</p>
+<ul class="simple">
+<li><p>date</p></li>
+<li><p>time</p></li>
+<li><p>10 second analyzer value</p></li>
+<li><p>standard deviation of analyzer value</p></li>
+<li><p>mode number</p></li>
+<li><p>sample</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>2022-04-15 00:00:00  4.12084e+02  6.08355e-01 1 Line2
+2022-04-15 00:00:10  4.11954e+02  7.38100e-01 1 Line2
+2022-04-15 00:00:20  4.12244e+02  9.61171e-01 1 Line2
+2022-04-15 00:00:30  4.11947e+02  6.51103e-01 1 Line2
+2022-04-15 00:00:40  4.12099e+02  7.87062e-01 1 Line2
+2022-04-15 00:00:50  4.12622e+02  4.28305e-01 1 Line2
+2022-04-15 00:01:00  4.12045e+02  8.49197e-01 1 Line2
+2022-04-15 00:01:10  4.12033e+02  6.99224e-01 1 Line2
+2022-04-15 00:01:20  4.11708e+02  6.94431e-01 1 Line2
+2022-04-15 00:01:30  4.11994e+02  8.12480e-01 1 Line2
+2022-04-15 00:01:40  4.11542e+02  8.51008e-01 1 Line2
+2022-04-15 00:01:50  4.11937e+02  8.70063e-01 1 Line2
+2022-04-15 00:02:00  4.11625e+02  5.39065e-01 1 Line2
+2022-04-15 00:02:10  4.12224e+02  4.82123e-01 1 Line2
+2022-04-15 00:02:20  4.12184e+02  5.34709e-01 1 Line2
+2022-04-15 00:02:30  4.12306e+02  7.88240e-01 1 Line2
+2022-04-15 00:02:40  4.11877e+02  4.88756e-01 1 Line2
+2022-04-15 00:02:50  4.11853e+02  6.86201e-01 1 Line2
+2022-04-15 00:03:00  4.11995e+02  6.29614e-01 1 Line2
+</pre></div>
+</div>
+<p>QC data file format. Fields are</p>
+<ul class="simple">
+<li><p>date</p></li>
+<li><p>time</p></li>
+<li><p>value</p></li>
+<li><p>sensor number</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>2022-05-18 00:00:16  3.28385e+00 2
+2022-05-18 00:00:46  4.20067e+00 2
+2022-05-18 00:01:16  4.25223e+00 2
+2022-05-18 00:01:46  5.68042e+00 2
+2022-05-18 00:02:16  4.20376e+00 2
+2022-05-18 00:02:46  4.43549e+00 2
+2022-05-18 00:03:16  4.58956e+00 2
+2022-05-18 00:03:46  4.58103e+00 2
+2022-05-18 00:04:16  4.80742e+00 2
+2022-05-18 00:04:46  5.25690e+00 2
+2022-05-18 00:05:16  4.12008e+00 2
+2022-05-18 00:05:46  4.91966e+00 2
+2022-05-18 00:06:16  5.93791e+00 2
+2022-05-18 00:06:46  4.46158e+00 2
+2022-05-18 00:07:16  6.05938e+00 2
+2022-05-18 00:07:46  3.47135e+00 2
+2022-05-18 00:08:16  4.68332e+00 2
+2022-05-18 00:08:46  4.18964e+00 2
+2022-05-18 00:09:16  2.45844e+00 2
+2022-05-18 00:09:46  4.15412e+00 2
+2022-05-18 00:10:16  4.36686e+00 2
+2022-05-18 00:10:46  6.24088e+00 2
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="software.html" class="btn btn-neutral float-left" title="Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="datafiles.html" class="btn btn-neutral float-right" title="Analyer Data Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

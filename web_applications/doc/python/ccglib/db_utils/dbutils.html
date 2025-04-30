@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_dbutils — Database Convenience Routines &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_flask_data — Get flask data from database" href="flaskdb.html" />
+    <link rel="prev" title="ccg_bldsql — SQL Query builder class" href="bldsql.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Database routines</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="db_conn.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_db_conn</span></code> — Database connection and query class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bldsql.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_bldsql</span></code> — SQL Query builder class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_dbutils</span></code> — Database Convenience Routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flaskdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_flask_data</span></code> — Get flask data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="insitudb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_insitu_data2</span></code> — Get observatory in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="towerdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tower_data</span></code> — Get tower in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_instrument</span></code> — Get instrument history from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Database routines</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_dbutils</span></code> — Database Convenience Routines</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/db_utils/dbutils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_dbutils">
+<span id="ccg-dbutils-database-convenience-routines"></span><h1><a class="reference internal" href="#module-ccg_dbutils" title="ccg_dbutils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_dbutils</span></code></a> — Database Convenience Routines<a class="headerlink" href="#module-ccg_dbutils" title="Permalink to this headline"></a></h1>
+<p>Convenience routines for common database requests</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_dbutils.csv">
+<span class="sig-prename descclassname"><span class="pre">ccg_dbutils.</span></span><span class="sig-name descname"><span class="pre">csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.csv" title="Permalink to this definition"></a></dt>
+<dd><p>Convert list to ‘,’ separated string</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_dbutils.</span></span><span class="sig-name descname"><span class="pre">dbUtils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ccgg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'db-int2'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for convenience functions for common database requests</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>readonly</strong> (<em>bool</em>) – If False, open database connection in read/write mode.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>readonly=False</strong> should only be set when using the FlaskDataTag routines</p>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_dbutils</span><span class="o">.</span><span class="n">dbUtils</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteCode</span><span class="p">(</span><span class="mi">75</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteName</span><span class="p">(</span><span class="s1">&#39;MLO&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">getSiteNameFromNum</span><span class="p">(</span><span class="mi">75</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.addFlaskDataTag">
+<span class="sig-name descname"><span class="pre">addFlaskDataTag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datanum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tagnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.addFlaskDataTag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.addFlaskDataTag" title="Permalink to this definition"></a></dt>
+<dd><p>add tag number from flask data number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.dbTableExists">
+<span class="sig-name descname"><span class="pre">dbTableExists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.dbTableExists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.dbTableExists" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a table exists in a database</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.delFlaskDataTag">
+<span class="sig-name descname"><span class="pre">delFlaskDataTag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datanum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tagnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.delFlaskDataTag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.delFlaskDataTag" title="Permalink to this definition"></a></dt>
+<dd><p>remove tag number from flask data number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.doquery">
+<span class="sig-name descname"><span class="pre">doquery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.doquery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.doquery" title="Permalink to this definition"></a></dt>
+<dd><p>Do a simple general query of the database.</p>
+<p>This method calls the doquery() method in <a class="reference internal" href="db_conn.html#db-conn"><span class="std std-ref">ccg_db_conn</span></a> but uses
+only two arguments, ‘query’ and ‘parameters’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.flaskPairDiff">
+<span class="sig-name descname"><span class="pre">flaskPairDiff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sitecode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">programs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.flaskPairDiff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.flaskPairDiff" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Compute flask pair difference for a given site,gas and project number</dt><dd><p>for dates from ‘start’ up to but not including ‘end’</p>
+</dd>
+</dl>
+<p>Only uses unflagged flask data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sitecode</strong> (<em>str</em>) – Three letter site code</p></li>
+<li><p><strong>gas</strong> (<em>str</em>) – Gas formula, e.g. ‘CO2’</p></li>
+<li><p><strong>start</strong> (<em>str</em>) – Start date, e.g. ‘2021-04-06’</p></li>
+<li><p><strong>end</strong> (<em>str</em>) – End date, e.g. ‘2021-04-06’</p></li>
+<li><p><strong>project</strong> (<em>int</em>) – Project number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A list of tuples, each tuple contains</dt><dd><p>(date, method, flaskid1, flaskid2, value1, value2, abs(value2-value1))</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getBinInfo">
+<span class="sig-name descname"><span class="pre">getBinInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stacode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getBinInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getBinInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Get any binning information for a site code and project number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getCurrentScale">
+<span class="sig-name descname"><span class="pre">getCurrentScale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getCurrentScale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getCurrentScale" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the current scale number and name for the gas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict with
+d[‘idx’] - scale number
+d[‘name’] - scale name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getDefaultScale">
+<span class="sig-name descname"><span class="pre">getDefaultScale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getDefaultScale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getDefaultScale" title="Permalink to this definition"></a></dt>
+<dd><p>Return the default scale table name for the given gas abbr</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getFillCode">
+<span class="sig-name descname"><span class="pre">getFillCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serial_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getFillCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getFillCode" title="Permalink to this definition"></a></dt>
+<dd><p>Get the filling code for tank with ‘serial_num’ on given date</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>serial_num</strong> – serial number of the reference tank</p></li>
+<li><p><strong>date</strong> – Either a datetime or date instance for the date</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>fill code of the tank on given date. If no fill code available returns ‘-’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getFlaskDataTagList">
+<span class="sig-name descname"><span class="pre">getFlaskDataTagList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datanum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getFlaskDataTagList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getFlaskDataTagList" title="Permalink to this definition"></a></dt>
+<dd><p>get tag numbers available for flask data number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getFlaskDataTags">
+<span class="sig-name descname"><span class="pre">getFlaskDataTags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datanum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getFlaskDataTags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getFlaskDataTags" title="Permalink to this definition"></a></dt>
+<dd><p>get tag numbers already assigned to flask data number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getFlaskMethodList">
+<span class="sig-name descname"><span class="pre">getFlaskMethodList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stacode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameternum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getFlaskMethodList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getFlaskMethodList" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of flask sample method codes for a parameter at a site</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stacode</strong> (<em>str</em>) – Three letter station code</p></li>
+<li><p><strong>project</strong> (<em>int</em>) – Project number</p></li>
+<li><p><strong>parameternum</strong> (<em>int</em><em> or </em><em>list</em>) – Parameter number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Return a list of flask methods that have been used for the site/project/parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getGasFormula">
+<span class="sig-name descname"><span class="pre">getGasFormula</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gasnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getGasFormula"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getGasFormula" title="Permalink to this definition"></a></dt>
+<dd><p>Get parameter formula from number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getGasInfo">
+<span class="sig-name descname"><span class="pre">getGasInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getGasInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getGasInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Get parameter info from formula</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getGasInfoFromNum">
+<span class="sig-name descname"><span class="pre">getGasInfoFromNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getGasInfoFromNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getGasInfoFromNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get parameter info from number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getGasName">
+<span class="sig-name descname"><span class="pre">getGasName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getGasName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getGasName" title="Permalink to this definition"></a></dt>
+<dd><p>Get parameter name from formula</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getGasNameFromNum">
+<span class="sig-name descname"><span class="pre">getGasNameFromNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gasnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getGasNameFromNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getGasNameFromNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get parameter name from number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getGasNum">
+<span class="sig-name descname"><span class="pre">getGasNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getGasNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getGasNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get parameter number from formula or name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getInstrumentNum">
+<span class="sig-name descname"><span class="pre">getInstrumentNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inst_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getInstrumentNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getInstrumentNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get instrument number from id character string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getIntakeHeights">
+<span class="sig-name descname"><span class="pre">getIntakeHeights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stacode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getIntakeHeights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getIntakeHeights" title="Permalink to this definition"></a></dt>
+<dd><p>Get all intake heights from an insitu table</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getParameterList">
+<span class="sig-name descname"><span class="pre">getParameterList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stacode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getParameterList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getParameterList" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of parameters that have been measured at a site for a given project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stacode</strong> (<em>str</em>) – Three letter station code</p></li>
+<li><p><strong>project</strong> (<em>int</em>) – Project number</p></li>
+<li><p><strong>strategy</strong> (<em>int</em><em> or </em><em>list</em>) – Strategy number or list of strategy numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Return a list of dicts that contain the parameter numbers, formulas and names
+of the parameters. keys are ‘parameter_num’, ‘formula’, ‘name’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getPrelimDate">
+<span class="sig-name descname"><span class="pre">getPrelimDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getPrelimDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getPrelimDate" title="Permalink to this definition"></a></dt>
+<dd><p>Return date for preliminary data for a site code and gas</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getProgramAbbrFromProject">
+<span class="sig-name descname"><span class="pre">getProgramAbbrFromProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getProgramAbbrFromProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getProgramAbbrFromProject" title="Permalink to this definition"></a></dt>
+<dd><p>Get program abbreviation from a project number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getProgramNum">
+<span class="sig-name descname"><span class="pre">getProgramNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abbr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getProgramNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getProgramNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get program number from a single or list of program abbreviations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getProjectName">
+<span class="sig-name descname"><span class="pre">getProjectName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projectnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getProjectName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getProjectName" title="Permalink to this definition"></a></dt>
+<dd><p>Get project name from project number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getScaleName">
+<span class="sig-name descname"><span class="pre">getScaleName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getScaleName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getScaleName" title="Permalink to this definition"></a></dt>
+<dd><p>return the scale name for a given scale number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getScaleNum">
+<span class="sig-name descname"><span class="pre">getScaleNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getScaleNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getScaleNum" title="Permalink to this definition"></a></dt>
+<dd><p>return the scale number for a given scale name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteCode">
+<span class="sig-name descname"><span class="pre">getSiteCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteCode" title="Permalink to this definition"></a></dt>
+<dd><p>Get a site code from a site number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteInfo">
+<span class="sig-name descname"><span class="pre">getSiteInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Get site information from a site code.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteInfoFromNum">
+<span class="sig-name descname"><span class="pre">getSiteInfoFromNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteInfoFromNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteInfoFromNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get site information from a site number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteList">
+<span class="sig-name descname"><span class="pre">getSiteList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteList" title="Permalink to this definition"></a></dt>
+<dd><p>Get list of sites for a given project and strategy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<em>int</em>) – Project number</p></li>
+<li><p><strong>strategy</strong> (<em>int</em><em> or </em><em>list</em>) – Single number or list of strategy numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a list of dicts containing the site code, name and country.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteName">
+<span class="sig-name descname"><span class="pre">getSiteName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteName" title="Permalink to this definition"></a></dt>
+<dd><p>Get a site name from a site code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteNameFromNum">
+<span class="sig-name descname"><span class="pre">getSiteNameFromNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteNameFromNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteNameFromNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get a site name from a site number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSiteNum">
+<span class="sig-name descname"><span class="pre">getSiteNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSiteNum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSiteNum" title="Permalink to this definition"></a></dt>
+<dd><p>Get the site number for a site code. Returns -1 if code is not found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getSitePrograms">
+<span class="sig-name descname"><span class="pre">getSitePrograms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sitecode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gasnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getSitePrograms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getSitePrograms" title="Permalink to this definition"></a></dt>
+<dd><p>Get list of program abbr and numbers that have analyzed flasks for a gas at a site</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sitecode</strong> – Three letter site code</p></li>
+<li><p><strong>projnum</strong> – Single or list of project numbers</p></li>
+<li><p><strong>gasnum</strong> – Single or list of gas numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a list of dicts with progam abbreviation and program number.
+Keys are ‘program_num’, ‘name’, ‘abbr’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getStrategies">
+<span class="sig-name descname"><span class="pre">getStrategies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stacode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getStrategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getStrategies" title="Permalink to this definition"></a></dt>
+<dd><p>Get sampling strategies that are used for a project at a site.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stacode</strong> (<em>str</em>) – Three letter station code</p></li>
+<li><p><strong>project</strong> (<em>int</em><em> or </em><em>list</em>) – Single number or list of project numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of strategy numbers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>slist (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getTableColumnNames">
+<span class="sig-name descname"><span class="pre">getTableColumnNames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getTableColumnNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getTableColumnNames" title="Permalink to this definition"></a></dt>
+<dd><p>get column names of table in database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_dbutils.dbUtils.getTables">
+<span class="sig-name descname"><span class="pre">getTables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchstr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_dbutils.html#dbUtils.getTables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_dbutils.dbUtils.getTables" title="Permalink to this definition"></a></dt>
+<dd><p>Get database tables that match a search string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>searchstr</strong> (<em>str</em>) – String to match a table name.  Do not include wildcard characters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a list of dicts with one key; ‘table_name’</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>d (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bldsql.html" class="btn btn-neutral float-left" title="ccg_bldsql — SQL Query builder class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="flaskdb.html" class="btn btn-neutral float-right" title="ccg_flask_data — Get flask data from database" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

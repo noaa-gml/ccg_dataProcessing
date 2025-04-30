@@ -1,0 +1,8 @@
+
+:mod:`ccg_flask_data` --- Get flask data from database
+======================================================
+
+.. automodule:: ccg_flask_data
+   :members:
+   :undoc-members:
+   :show-inheritance:

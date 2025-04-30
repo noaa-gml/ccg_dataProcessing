@@ -1,0 +1,71 @@
+
+:mod:`ccgcrv` --- Driver program for ccg_filter curve fit
+============================================================================
+
+.. code-block:: python
+
+        usage: ccgcrv.py [-h] [--npoly NPOLY] [--nharm NHARM] [--interv INTERV]
+                         [--short SHORT] [--long LONG] [--gap GAP] [--gain]
+                         [--timez TIMEZ] [-f FILE] [-s SAMPLEFILE] [--equal]
+                         [--sample] [--cal] [--hour] [--date DATE] [--user USER]
+                         [--showheader] [--orig] [--func] [--poly] [--smooth]
+                         [--trend] [--detrend] [--smcycle] [--harm] [--res] [--smres]
+                         [--trres] [--ressm] [--gr] [--coef COEF] [--stats] [--amp]
+                         [--mm] [--annual]
+                         args
+
+        Apply curve fitting/filtering to input data and print results.
+
+        positional arguments:
+          args
+
+        optional arguments:
+          -h, --help            show this help message and exit
+
+        Filter Options:
+          --npoly NPOLY         Number of polynomial terms in function.
+          --nharm NHARM         Number of harmonic terms in function.
+          --interv INTERV       Sampling interval of the data in days.
+          --short SHORT         Short-term filter cutoff in days.
+          --long LONG           Long-term filter cutoff in days.
+          --gap GAP             Fill gaps larger than GAP days with function value
+                                instead of linear interpolation.
+          --gain                Use seasonal amplitude gain factor in function fit.
+          --timez TIMEZ         Specify time zero for coefficients of function.
+                                Default is year of first data point.
+
+        Output Options:
+          -f FILE, --file FILE  Write equally spaced or user spaced output data to
+                                file instead of stdout.
+          -s SAMPLEFILE, --samplefile SAMPLEFILE
+                                Write sample spaced output data to file instead of
+                                stdout.
+          --equal               Output data at equal intervals.
+          --sample              Output data at sample data times (default).
+          --cal                 Output dates in calendar format.
+          --hour                Include hour in calendar format.
+          --date DATE           Output data starting at date.
+          --user USER           Output data based on user supplied dates in file.
+          --showheader          Include header on output to identify columns.
+
+        Output Parameters to include:
+          --orig                Output original data points.
+          --func                Output function values.
+          --poly                Output polynomial values.
+          --smooth              Output smoothed data.
+          --trend               Output long term trend values.
+          --detrend             Output detrended values.
+          --smcycle             Output smoothed, detrended annual cycle.
+          --harm                Output values of annual harmonic functions.
+          --res                 Output residuals from the function.
+          --smres               Output smoothed residuals from the function.
+          --trres               Output long-term smoothed residuals from the function.
+          --ressm               Output residuals from the smoothed curve.
+          --gr                  Output growth rate values.
+          --coef COEF           Output coefficients from index num1 to index num2.
+                                e.g. 1,4
+          --stats               Output table of summary statistics for curve fit.
+          --amp                 Output table of statistics for annual amplitudes.
+          --mm                  Output Monthly means computed using smooth curve.
+          --annual              Output Annual means computed using smooth curve.
+

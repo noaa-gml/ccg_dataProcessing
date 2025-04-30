@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_calfit — Get fit to tank calibrations &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_uncdata_all — Get typeB uncertainty for data (including tank calibrations)" href="calunc.html" />
+    <link rel="prev" title="ccg_cal_db — Get tank calibration results from database" href="caldb.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tank Calibrations and History</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="caldb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code> — Get tank calibration results from database</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code> — Get fit to tank calibrations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calunc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code> — Get typeB uncertainty for data (including tank calibrations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code> — Get history of tank usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refgasdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code> — Get assigned values for a tank from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tank Calibrations and History</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code> — Get fit to tank calibrations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tankcals/calfit.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_calfit">
+<span id="ccg-calfit-get-fit-to-tank-calibrations"></span><h1><a class="reference internal" href="#module-ccg_calfit" title="ccg_calfit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code></a> — Get fit to tank calibrations<a class="headerlink" href="#module-ccg_calfit" title="Permalink to this headline"></a></h1>
+<p>Procedures to calculate a drift corrected mole fraction value for cylinders.</p>
+<p>fitCalibrations() takes a list of cal results from ccg_cal_db.py
+and iteratively fits a weighted quadratic, linear, mean curve to the
+data, stopping when the highest degree coefficient is significant.</p>
+<p>Significance is made by comparing calculated t value of the coefficient
+with the t value from a two-tailed t distribution for 95% confidence and
+with the appropriate degrees of freedom.</p>
+<p>For a coefficient b,</p>
+<p>H0: b = 0
+Ha: b != 0</p>
+<p>t* = b/s(b)</p>
+<p>if <a href="#id1"><span class="problematic" id="id2">|t*|</span></a> &lt;= t(1-a/2; df), conclude H0
+if <a href="#id3"><span class="problematic" id="id4">|t*|</span></a> &gt; t(1-a/2; df), conclude Ha</p>
+<p>See for example, equation 3.17,
+‘Applied Linear Regression Models’,
+Needer, Wasserman and Kutner 1983</p>
+<p>Usual way to use this function is through ccg_cal_db.getValue():</p>
+<blockquote>
+<div><p>import ccg_cal_db
+dt = datetime.datetime(2005, 1, 1)
+c = ccg_cal_db.Calibrations(“CC71623”, “CO2”)
+fillcode = c.getFillCode(dt)
+t = c.getValue(“co2”, fillcode)</p>
+</div></blockquote>
+<p>It returns a namedtuple that can be used to populate the scale_assignments
+database table.  To do this, use the method</p>
+<blockquote>
+<div><p>ccg_refgasdb.insertFromFit(serialnum, date, t, level=level, comment=comment)</p>
+</div></blockquote>
+<p>where t is the namedtuple result from fitCalibrations() or from ccg_cal_db.getValue()</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_calfit.check_tstar">
+<span class="sig-prename descclassname"><span class="pre">ccg_calfit.</span></span><span class="sig-name descname"><span class="pre">check_tstar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_calfit.html#check_tstar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_calfit.check_tstar" title="Permalink to this definition"></a></dt>
+<dd><p>Check how calculated tvalue compares with t probability
+if tstar &lt;= tvalue, conclude that coefficient = 0, return False
+if tstar &gt; tvalue, conclude that coefficient != 0, return True</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_calfit.fitCalibrations">
+<span class="sig-prename descclassname"><span class="pre">ccg_calfit.</span></span><span class="sig-name descname"><span class="pre">fitCalibrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ocals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_calfit.html#fitCalibrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_calfit.fitCalibrations" title="Permalink to this definition"></a></dt>
+<dd><p>Determine fit to calibrations</p>
+<p>This function determines the time dependent fit to calibrations
+for a reference tank.  Use the highest degree polynomial where the
+coefficients of the fit are significant.
+Fits are made for a polynomial function; quadratic and linear.
+If the coefficient of the fit is significant, then accept that fit,
+otherwise do another fit dropping one degree in the fit, i.e.
+quadratic first, linear second, mean third.</p>
+<dl>
+<dt>Input:</dt><dd><dl class="simple">
+<dt>ocals - list of dicts with calibration results.  These normally come</dt><dd><p>from the ccg_cal_db module.</p>
+</dd>
+</dl>
+<p>debug - Print debugging information if True</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>result - namedtuple containing (tzero, coef0, coef1, coef2, unc_c0, unc_c1, unc_c2, sd_resid, n, chisq)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_calfit.get_significance">
+<span class="sig-prename descclassname"><span class="pre">ccg_calfit.</span></span><span class="sig-name descname"><span class="pre">get_significance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_calfit.html#get_significance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_calfit.get_significance" title="Permalink to this definition"></a></dt>
+<dd><p>Get probability of two tailed t distribution for
+given degrees of freedom</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_calfit.poly2">
+<span class="sig-prename descclassname"><span class="pre">ccg_calfit.</span></span><span class="sig-name descname"><span class="pre">poly2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_calfit.html#poly2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_calfit.poly2" title="Permalink to this definition"></a></dt>
+<dd><p>quadratic polynomial</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="caldb.html" class="btn btn-neutral float-left" title="ccg_cal_db — Get tank calibration results from database" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="calunc.html" class="btn btn-neutral float-right" title="ccg_uncdata_all — Get typeB uncertainty for data (including tank calibrations)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

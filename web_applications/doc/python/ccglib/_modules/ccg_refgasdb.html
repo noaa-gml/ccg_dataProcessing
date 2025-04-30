@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_refgasdb &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_refgasdb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_refgasdb</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A class for holding and manipulating reference gas information</span>
+<span class="sd">from one of the scales tables.</span>
+<span class="sd">Generally used for getting an assigned value for a tank on a certain date.</span>
+
+<span class="sd">MODIFIED TO USE NEW STYLE db TABLES THAT INCLUDE TIME DEPENDENT UNCERTAINTIES - AMC</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">ccg_dates</span>
+<span class="kn">import</span> <span class="nn">ccg_dbutils</span>
+<span class="kn">import</span> <span class="nn">ccg_tankhistory</span>
+
+<span class="n">DEFAULT</span> <span class="o">=</span> <span class="o">-</span><span class="mf">999.99</span>
+
+<span class="c1">##################################################################</span>
+<div class="viewcode-block" id="calcAssignedValue"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.calcAssignedValue">[docs]</a><span class="k">def</span> <span class="nf">calcAssignedValue</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate the mole fraction value from coefficients on the given date &quot;&quot;&quot;</span>
+
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">decimalDateFromDatetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">dd</span> <span class="o">-</span> <span class="n">result</span><span class="o">.</span><span class="n">tzero</span>
+    <span class="n">mr</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">coef0</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">coef1</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">coef2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">unc_c0</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">unc_c1</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">unc_c2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># include this to be similar to prediction interval - modified Nov 29, 2023</span>
+    <span class="c1"># result.sd_resid default value is 0, so no need to check if valid value exists</span>
+    <span class="n">unc</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">sd_resid</span><span class="o">*</span><span class="n">result</span><span class="o">.</span><span class="n">sd_resid</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span></div>
+
+<span class="c1">##################################################################</span>
+<div class="viewcode-block" id="refgas"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas">[docs]</a><span class="k">class</span> <span class="nc">refgas</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Class for getting assigned value information.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        refgas = ccg_refgasdb.refgas(sp, sn=[&#39;CC71636&#39;], scale = &quot;CO_X2014&quot;, database=db, startdate=sdt, enddate=edt, moddate=md, verbose=&quot;&quot;, debug=True|False)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sp : The gas species of interest (e.g. &#39;CO2&#39;)</span>
+<span class="sd">        sn : List of tank serial numbers</span>
+<span class="sd">        scale : Name of the scale to use (default is current scale as defined in the reftank.scale DB table)</span>
+<span class="sd">        database : Use a different database for refgas assignments</span>
+<span class="sd">        startdate : Only include information after this date. Can be datetime object or valid date string.</span>
+<span class="sd">        enddate : Don&#39;t include information after this date. Can be datetime object or valid date string.</span>
+<span class="sd">        moddate : Modification date.  Use assigned values prior to this date.  Pass in as python datetime or as &quot;yyyy-mm-dd&quot; string.</span>
+
+<span class="sd">    Members:</span>
+
+<span class="sd">        refgas - A list of namedtuples with information on the reference gases</span>
+<span class="sd">            Fields are</span>
+<span class="sd">            [&#39;serial_number&#39;, &#39;start_date&#39;, &#39;tzero&#39;, &#39;coef0&#39;, &#39;coef1&#39;, &#39;coef2&#39;, &#39;unc_c0&#39;, &#39;unc_c1&#39;, &#39;unc_c2&#39;, &#39;sd_resid&#39;, &#39;standard_unc&#39;, &#39;level&#39;, &#39;mod_date&#39;, &#39;comment&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">sp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">sn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">database</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">use_history_table</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">startdate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">enddate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">moddate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">debug</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a reference gas object.</span>
+<span class="sd">        There are 3 ways of getting reference gas data:</span>
+<span class="sd">        1 - Directly from the scale tables</span>
+<span class="sd">        2 - From a text file</span>
+<span class="sd">        3 - From the scale tables but also using the tank history table. (observatory)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sp: the gas species, REQUIRED unless a scale is passed.</span>
+
+<span class="sd">            sn: list of tank serial numbers to get information for.  If none, get all tanks</span>
+
+<span class="sd">            scale: the scale to use.  Default is current scale for the gas.</span>
+
+<span class="sd">            database: optional, if set then use refgas assignments from this database instead of default db.</span>
+
+<span class="sd">            location: set to specify location from tank history table.  Only used if use_history_table=True</span>
+
+<span class="sd">            use_history_table: optional, if set then get tank history for the given species and location</span>
+<span class="sd">                to filter out tank serial numbers, then combine with values from scale table.  Mainly</span>
+<span class="sd">                needed for observatory working tanks</span>
+
+<span class="sd">            startdate: use reference gas information after this date, i.e. ignore info before this date</span>
+<span class="sd">                   This is a datetime object</span>
+
+<span class="sd">            enddate: ignore info after this date.</span>
+<span class="sd">                 This is a datetime object</span>
+
+<span class="sd">            moddate: optional, if specified, modifications of assignments after this date</span>
+<span class="sd">                 are not included. This must be a python datetime object or &quot;yyyy-mm-dd&quot;</span>
+<span class="sd">                 format string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sp_num</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_hour</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_minute</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tank_history</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">startdate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">startdate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enddate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">enddate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">moddate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">9999</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">moddate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In class refgas, must specify either species or scale.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">database</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;reftank&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_dbutils</span><span class="o">.</span><span class="n">dbUtils</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="n">readonly</span><span class="p">)</span>
+
+        <span class="c1"># create a namedtuple object to hold results. will give it same names as in database tables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getTableColumnNames</span><span class="p">(</span><span class="s2">&quot;scale_assignments&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;fill_code&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Row</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;row&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_names</span><span class="p">)</span>
+
+        <span class="c1"># allow sp to be passed in as formula, name, or number</span>
+        <span class="c1"># convert name or number to formula for use</span>
+        <span class="k">if</span> <span class="n">sp</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># assume sp is a number</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sp_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getGasFormula</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp_num</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># sp is a string</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sp_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sp</span> <span class="o">=</span> <span class="n">sp</span>
+
+        <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getCurrentScale</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_num</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getScaleNum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;ERROR: Can&#39;t find scale number for scale &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scale for </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="n">use_history_table</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Getting reference gas values from history table and database.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_history</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tank_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_history</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sn</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">snlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">sn</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">snlist</span> <span class="o">=</span> <span class="n">sn</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># only use serial numbers from tank history</span>
+                <span class="n">snlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">serial_number</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tank_history</span><span class="p">]</span>
+                <span class="n">snlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">snlist</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_db_refgas</span><span class="p">(</span><span class="n">snlist</span><span class="p">,</span> <span class="n">enddate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterByDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Getting reference gas values from database </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">database</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="c1">#read DB table for scale</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">sn</span> <span class="o">=</span> <span class="p">[</span><span class="n">sn</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_db_refgas</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_history</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No reference gas information found for </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="p">,</span> <span class="n">sn</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_read_db_refgas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialnums</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">startdate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enddate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read assigned values for reference gases from database.</span>
+
+<span class="sd">        Return a list of namedtuples with the information.</span>
+<span class="sd">        (sn, start_dt, mdate, t0, coef0, coef1, coef2, unc_co, unc_c1, unc_c2, sd_resid, standard_unc, level, comment)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get data from database, sorted by sn, start date, modification date</span>
+        <span class="n">whereclause</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM scale_assignments &quot;</span>
+
+        <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;scale_num=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_num</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">startdate</span><span class="p">:</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;start_date&gt;=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">startdate</span><span class="o">.</span><span class="n">date</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">enddate</span><span class="p">:</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;start_date&lt;=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">enddate</span><span class="o">.</span><span class="n">date</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">serialnums</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">serialnums</span><span class="p">]</span>  <span class="c1"># surround the serial number with single quote</span>
+            <span class="n">whereclause</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;serial_number in (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">whereclause</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;WHERE &quot;</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">whereclause</span><span class="p">)</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot; ORDER BY serial_number, start_date, assign_date&quot;</span>
+
+        <span class="c1"># There can be multiple assignments with the same start_date for a tank.</span>
+        <span class="c1"># We want the one with the latest assign_date.</span>
+        <span class="c1"># This statement will get the latest assign_date for each unique start_date for each tank.</span>
+        <span class="c1"># The limit 999999 is needed to keep the descending sort.</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select * from (&quot;</span> <span class="o">+</span> <span class="n">sql</span> <span class="o">+</span> <span class="s2">&quot; desc limit 999999) as zzz group by serial_number, start_date&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+
+                <span class="c1"># convert start date from date to datetime</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span>
+                <span class="n">start_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;comment&#39;</span><span class="p">]:</span>
+                    <span class="n">line</span><span class="p">[</span><span class="s1">&#39;comment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;comment&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">line</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_dt</span>
+                <span class="n">line</span><span class="p">[</span><span class="s1">&#39;fill_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fillcode</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;serial_number&#39;</span><span class="p">],</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Row</span><span class="p">(</span><span class="o">**</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1">#        print(&quot;@@@&quot;)</span>
+<span class="c1">#        for row in data: print(row)</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_read_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get entries from tank_history table for the specified location &quot;&quot;&quot;</span>
+
+        <span class="n">hist</span> <span class="o">=</span> <span class="n">ccg_tankhistory</span><span class="o">.</span><span class="n">tankhistory</span><span class="p">(</span><span class="n">gas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+
+        <span class="c1"># filter out results that come before start date</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">filterByDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.filterByDate"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.filterByDate">[docs]</a>    <span class="k">def</span> <span class="nf">filterByDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startdate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find entries that have start_date &gt;= given startdate,</span>
+<span class="sd">        and the last entry before the startdate.</span>
+
+<span class="sd">        Need to save, for each tank label, the last entry before start date, and any after start date</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tmpdata</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="c1"># save the data by the tank serial number</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+            <span class="n">tmpdata</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">serial_number</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmpdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">tmpdata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">))</span> <span class="c1"># sort by date</span>
+            <span class="n">tmplist</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tmpdata</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;</span> <span class="n">startdate</span><span class="p">:</span>
+                    <span class="n">tmplist</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">]</span>       <span class="c1"># last one before start date</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tmplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   <span class="c1"># any after start date</span>
+
+            <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tmplist</span><span class="p">)</span>    <span class="c1"># save entries for this tank label</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getRefgasBySerialNumber"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getRefgasBySerialNumber">[docs]</a>    <span class="k">def</span> <span class="nf">getRefgasBySerialNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">fillcode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">showWarn</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get mixing ratio of tank with serial number on adate.</span>
+<span class="sd">            Pass adate as python datetime.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">DEFAULT</span>
+        <span class="n">unc</span> <span class="o">=</span> <span class="n">DEFAULT</span><span class="o">/</span><span class="mf">10.0</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">decimalDateFromDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAssignment</span><span class="p">(</span><span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">fillcode</span><span class="o">=</span><span class="n">fillcode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">showWarn</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mr</span> <span class="o">==</span> <span class="n">DEFAULT</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Assigned value for &quot;</span><span class="p">,</span> <span class="n">sernum</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">adate</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="s2">&quot;not found.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_mr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">dd</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">mr</span><span class="p">,</span> <span class="n">unc</span><span class="p">)</span></div>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getAssignment"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getAssignment">[docs]</a>    <span class="k">def</span> <span class="nf">getAssignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">fillcode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the refgas row that is the correct one for the given date.</span>
+
+<span class="sd">        Because there can be multiple rows for a tank, use the one that has</span>
+<span class="sd">        the latest assign_date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># make sure adate is a datetime.datetime instance</span>
+        <span class="n">adate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">decimalDateFromDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+
+        <span class="c1"># get the fill code for the requested date</span>
+        <span class="k">if</span> <span class="n">fillcode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fillcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fillcode</span><span class="p">(</span><span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">)</span>
+
+        <span class="c1"># make sure results are sorted by start date, mod date so that most recent mod date is last</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">,</span> <span class="s1">&#39;assign_date&#39;</span><span class="p">))</span>
+<span class="c1">#        print(&quot;$$$&quot;)</span>
+<span class="c1">#        for row in self.refgas: print(row)</span>
+
+        <span class="c1"># find the refgas assignment row that matches the serial number and fill code</span>
+        <span class="c1"># and comes before or on the requested date</span>
+        <span class="c1"># There can be multiple start dates for the same tank filling.</span>
+        <span class="c1"># Find the last start date before the desired date here</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">get assignment for&quot;</span><span class="p">,</span> <span class="n">sernum</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="s2">&quot;for fillcode&quot;</span><span class="p">,</span> <span class="n">fillcode</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+<span class="c1">#            if self.debug: print(row)</span>
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">serial_number</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="n">sernum</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;found&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">start_date</span><span class="p">,</span> <span class="n">adate</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">assign_date</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">fill_code</span><span class="p">,</span> <span class="n">fillcode</span><span class="p">)</span>
+<span class="c1">#            fcode = self._get_fillcode(sernum, row.start_date)</span>
+            <span class="n">fcode</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">fill_code</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;=</span> <span class="n">adate</span>
+                <span class="ow">and</span> <span class="n">row</span><span class="o">.</span><span class="n">assign_date</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span>
+                <span class="ow">and</span> <span class="n">fcode</span> <span class="o">==</span> <span class="n">fillcode</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">row</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getAssignedValue"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getAssignedValue">[docs]</a>    <span class="k">def</span> <span class="nf">getAssignedValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">showWarn</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Convenience method for getting assigned value for a tank</span>
+
+<span class="sd">        Input:</span>
+<span class="sd">            sernum - serial number of tank</span>
+<span class="sd">            adate - date on which to calculate the assigned value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            val - assigned value, as a single float, not as a tuple like</span>
+<span class="sd">                  in getRefgasBySerialNumber</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">adate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+        <span class="n">val</span><span class="p">,</span> <span class="n">unc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefgasBySerialNumber</span><span class="p">(</span><span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">showWarn</span><span class="o">=</span><span class="n">showWarn</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">999</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">val</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getRefgasByLabel"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getRefgasByLabel">[docs]</a>    <span class="k">def</span> <span class="nf">getRefgasByLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">showWarn</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get serial number and mixing ratio of tank on adate based on label.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label - label of the tank (R0, S1, S2 ...)</span>
+<span class="sd">            adate - Date to get assignment for.  Either a python datetime or &quot;yyyy-mm-dd&quot; string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result - namedtuple with (serial num, val, unc) </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">DEFAULT</span>
+        <span class="n">unc</span> <span class="o">=</span> <span class="n">DEFAULT</span><span class="o">/</span><span class="mf">10.0</span>
+        <span class="n">sernum</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_history</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GetRefgasByLabel only valid when using tank_history database tables&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">sernum</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span><span class="p">)</span>
+
+        <span class="c1"># make sure adate is a datetime.datetime instance</span>
+        <span class="n">adate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">decimalDateFromDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_history</span><span class="p">:</span>
+            <span class="c1"># Find serial number of tank for given date and label</span>
+            <span class="c1"># already sorted by label, date, so that last match is the one to use</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tank_history</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span> <span class="o">!=</span> <span class="n">label</span><span class="p">:</span> <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;=</span> <span class="n">adate</span><span class="p">:</span>
+                    <span class="n">sernum</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">serial_number</span>
+                    <span class="n">fillcode</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">fill_code</span>
+
+            <span class="k">if</span> <span class="n">sernum</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">showWarn</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING in ccg_refgasdb.py: Cannot find tank with label </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">adate</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># find correct refgas entry for serial number and date</span>
+                <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefgasBySerialNumber</span><span class="p">(</span><span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">fillcode</span><span class="o">=</span><span class="n">fillcode</span><span class="p">,</span> <span class="n">showWarn</span><span class="o">=</span><span class="n">showWarn</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># NEED TO RE-SORT BY LABEL/DATE RATHER THAN SERIAL NUMBER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">label</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">and</span> <span class="n">row</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;=</span> <span class="n">adate</span> <span class="ow">and</span> <span class="n">row</span><span class="o">.</span><span class="n">assign_date</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span><span class="p">:</span>
+                    <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_mr</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">dd</span><span class="p">)</span>
+                    <span class="n">sernum</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">serial_number</span>
+
+            <span class="k">if</span> <span class="n">showWarn</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mr</span> <span class="o">==</span> <span class="n">DEFAULT</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Assigned value for &quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">adate</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="s2">&quot;not found.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+<span class="c1">#        return (sernum, mr, unc)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;refgas&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;serial_num&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;unc&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">_make</span><span class="p">((</span><span class="n">sernum</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span><span class="p">))</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_get_fillcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_number</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the fill code for given tank serial number</span>
+<span class="sd">        on the given date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getFillCode</span><span class="p">(</span><span class="n">serial_number</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">date</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">code</span>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getEntries"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getEntries">[docs]</a>    <span class="k">def</span> <span class="nf">getEntries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get all refgas entries where label=label &quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_history</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tank_history</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_calc_mr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calculate the mole fraction value from coefficients &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dd</span> <span class="o">-</span> <span class="n">result</span><span class="o">.</span><span class="n">tzero</span>
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">coef0</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">coef1</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">coef2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">unc_c0</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">unc_c1</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">unc_c2</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># include this to be similar to prediction interval - modified Nov 29, 2023</span>
+        <span class="c1"># result.sd_resid default value is 0, so no need to check if valid value exists</span>
+        <span class="n">unc</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">sd_resid</span><span class="o">*</span><span class="n">result</span><span class="o">.</span><span class="n">sd_resid</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mr</span><span class="p">,</span> <span class="n">unc</span>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getInfo"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sernum</span><span class="p">,</span> <span class="n">adate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return the information on the standard rather than the assigned value.</span>
+<span class="sd">        Pass adate as python datetime or &quot;yyyy-mm-dd&quot; string.</span>
+
+<span class="sd">        Output line = sn yr mo dy t0 coef0 coef1 coef2 transfer_unc standard_unc level mod_date #comment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># make sure adate is a datetime.datetime instance</span>
+        <span class="n">adate</span> <span class="o">=</span> <span class="n">ccg_dates</span><span class="o">.</span><span class="n">getDatetime</span><span class="p">(</span><span class="n">adate</span><span class="p">)</span>
+
+        <span class="n">infoline</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">serial_number</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">sernum</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span> <span class="o">&lt;=</span> <span class="n">adate</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">assign_date</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span><span class="p">:</span>
+                <span class="n">infoline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_info</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">infoline</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">info</span></div>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_format_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Format the information line.</span>
+<span class="sd">        normal output:</span>
+<span class="sd">            sn year month day [hour] t0 coef0 unc_c0 coef1 unc_c1 coef2 unc_c2 sd_resid unc2 level</span>
+
+<span class="sd">        if verbose add:</span>
+<span class="sd">            # moddate comments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">date_str</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %m </span><span class="si">%d</span><span class="s2"> %H %M&quot;</span><span class="p">)</span>
+
+        <span class="n">frmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%-15s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%9.4f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%14.6f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">frmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">serial_number</span><span class="p">,</span> <span class="n">date_str</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">tzero</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">coef0</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">unc_c0</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">coef1</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">unc_c1</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">coef2</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">unc_c2</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">sd_resid</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">standard_unc</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">+=</span> <span class="s2">&quot; #</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">assign_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">t</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">info</span>
+
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.getHistory"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.getHistory">[docs]</a>    <span class="k">def</span> <span class="nf">getHistory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sernum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the history of the standard.  All fills, all modifications.</span>
+<span class="sd">        Output line = sn yr mo dy t0 coef0 coef1 coef2 transfer_unc standard_unc level mod_date #comment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">serial_number</span> <span class="o">==</span> <span class="n">sernum</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+                <span class="n">info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_info</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">info</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.printTable"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.printTable">[docs]</a>    <span class="k">def</span> <span class="nf">printTable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; prints a table of all standards (each start date) selected by the</span>
+<span class="sd">        modification date if passed.  Does not print comments.</span>
+<span class="sd">        Output line = sn yr mo dy t0 coef0 unc_c0 coef1 unc_c1 coef2 unc_c2 sd_resid standard_unc level #</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">oldkey</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># write header to table</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;#SerialNumber Year Month Day Hour Minute&quot;</span>
+        <span class="n">header</span> <span class="o">+=</span> <span class="s2">&quot; Tzero  coef0  unc_c0   coef1  unc_c1   coef2  unc_c2   sd_resid  standard_unc  level&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">+=</span> <span class="s2">&quot;  #moddate comment&quot;</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+        <span class="c1"># sort by label, date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refgas</span><span class="p">:</span>
+
+            <span class="c1">#Test moddate, if &gt; passed moddate then don&#39;t put into table</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">assign_date</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">moddate</span><span class="p">:</span> <span class="k">continue</span>
+
+            <span class="c1">#Test to see if current line is a new modification of the previous line.</span>
+            <span class="c1">#If it is then remove the previous line.</span>
+            <span class="n">newkey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">serial_number</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">newkey</span> <span class="o">==</span> <span class="n">oldkey</span><span class="p">:</span>
+                <span class="n">info</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">oldkey</span> <span class="o">=</span> <span class="n">newkey</span>
+            <span class="n">info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_info</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">table</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.insert"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_number</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">tzero</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">coef0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">coef1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">coef2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert a new entry into the scale assignments database table.</span>
+
+<span class="sd">        For now, only parts of the fields are updated. Uncertainty terms are ignored here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;insert into scale_assignments &quot;</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;set serial_number=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">serial_number</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;scale_num=</span><span class="si">%s</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_num</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;start_date=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">start_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;start_date=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">start_date</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;tzero=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">tzero</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;coef0=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">coef0</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;coef1=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">coef1</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;coef2=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">coef2</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;level=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">level</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;comment=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">comment</span>
+<span class="c1">#        print(sql)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="refgas.insertFromFit"><a class="viewcode-back" href="../tankcals/refgasdb.html#ccg_refgasdb.refgas.insertFromFit">[docs]</a>    <span class="k">def</span> <span class="nf">insertFromFit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_number</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">calfit</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert a new entry into the scale assignments database table.</span>
+
+<span class="sd">        Input</span>
+<span class="sd">            serial_number - serial number of the tank</span>
+<span class="sd">            start_date - date when to start using the assigned values</span>
+<span class="sd">            calfit - a namedtuple from ccg_calfit.fitCalibrations()</span>
+<span class="sd">            level - level of the tank, e.g. &#39;primary&#39;, &#39;secondary&#39; ...</span>
+<span class="sd">            comment - a text comment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;insert into scale_assignments &quot;</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;set serial_number=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">serial_number</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;scale_num=</span><span class="si">%s</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_num</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;start_date=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">start_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;start_date=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">start_date</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;tzero=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">tzero</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;coef0=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">coef0</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;coef1=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">coef1</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;coef2=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">coef2</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;unc_c0=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">unc_c0</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;unc_c1=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">unc_c1</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;unc_c2=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">unc_c2</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;sd_resid=</span><span class="si">%f</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">sd_resid</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;n=</span><span class="si">%d</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">calfit</span><span class="o">.</span><span class="n">n</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;level=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="n">level</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;assign_date=&#39;</span><span class="si">%s</span><span class="s2">&#39;, &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span>
+        <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;comment=&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">comment</span>
+<span class="c1">#        print(sql)</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">insert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cal_idx</span> <span class="ow">in</span> <span class="n">calfit</span><span class="o">.</span><span class="n">calibrations</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;insert into scale_assignment_calibrations set &quot;</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;scale_assignment_num=</span><span class="si">%s</span><span class="s2">, &quot;</span>
+            <span class="n">sql</span> <span class="o">+=</span> <span class="s2">&quot;calibrations_idx=</span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">cal_idx</span><span class="p">),</span> <span class="n">insert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+        <span class="k">return</span> <span class="n">idx</span></div></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">sdt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+    <span class="n">edt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">23</span><span class="p">)</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">refgas</span><span class="p">(</span><span class="s2">&quot;CO2&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;CA06138&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;SPO&quot;</span><span class="p">,</span> <span class="n">use_history_table</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">startdate</span><span class="o">=</span><span class="n">sdt</span><span class="p">,</span> <span class="n">enddate</span><span class="o">=</span><span class="n">edt</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#    ref = refgas(&quot;CO2&quot;, [&quot;CA06138&quot;], location=&quot;SPO&quot;, use_history_table=True, debug=True)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-----&quot;</span><span class="p">)</span>
+<span class="c1">#    for row in ref.refgas:</span>
+<span class="c1">#        print(row)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">getAssignment</span><span class="p">(</span><span class="s2">&quot;CA06138&quot;</span><span class="p">,</span> <span class="n">sdt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+
+.. highlight:: rest
+
+.. _actions:
+
+Actions
+=======================
+
+        **hm** uses a list of lines called 'action lines' to determine what it is supposed to do.  
+        Multiple lines can be stored in a file, and the file is passed into **hm** on :ref:`startup`.
+        Each action line consists of 4 parts, separated by spaces:
+
+        * time
+        * action name
+        * device
+        * options
+
+        The ``time`` value is a time in seconds after the start of **hm** at which to execute the desited *action*.
+        The ``action name`` is one of the actions described on separate pages.
+        The ``device`` is the device name specified in the hm :ref:`config` file.
+        The ``options`` can be a single word or multiple words specifying the option values that are needed by the 
+        *action name*.
+
+        The ``options`` field has in addition two special ways of specifying the option values.  If the field is a
+        single word that has '@' as the first character, then the values from the :ref:`config` file that 
+        correspond to that name are substituted.  Secondly, if the field is of the from $1, $2, $3 ..., then the
+        $n is replaced with its corresponding command line argument when hm is started. For example,  if **hm** 
+        is started like this:
+
+                ``hm -c hm.conf 101 < close_relay.act``
+
+        and the file 'close_relay.act' has this:
+
+                ``0 CloseRelay HP34970 $1``
+
+        then the value '101' will be substituted as the option value for the CloseRelay action.  The argument '101' 
+        is the first argument passed to **hm**, so it is used instead of '$1'.  Similarly, if there was a
+        second argument following '101', then that would be used instead of '$2' and so on.
+
+
+Actions by Module
+^^^^^^^^^^^^^^^^^
+
+        Here is a list of all actions (*in alphabetical order*) for each module.  There can be the same action name in a subclass
+        of **hmsubs**, and that method will be used instead of the method in **hmsubs** if that module is used by the device. 
+
+        * :ref:`hmsubs <hmsubs>`
+                - :ref:`CheckDevice <checkdevice>`
+                - DeviceClear
+                - LockInterface
+                - LogData
+                - LogDataGMT
+                - LogEntry
+                - MonitorOutput
+                - MonitorDevice
+                - Noop
+                - PrintData
+                - PrintDataGMT
+                - PrintReply
+                - :ref:`QueryDevice <checkdevice>`
+                - ReadDevice
+                - ScaleValue
+                - SendCommand
+                - SendMultilineCommand
+                - ShowStatus
+                - StartLog
+                - StopLog
+        * :ref:`hp35900 <hp35900>`
+                - :ref:`StartRun <startrun>`
+                - :ref:`StopRun <stoprun>`
+                - :ref:`StoreData <storedata>`
+        * lgr *Under development*
+        * picarro *Under development*
+                - GetPicarroBuffer
+        * pp
+                - PPRun
+        * :ref:`scpi <scpi>`
+                - CloseRelay
+                - ConfigChannel
+                - DeviceClear
+                - MeasureChannel
+                - OpenRelay
+                - ReadChannel
+                - ReadData
+                - ReadNumber
+                - ReadValue
+                - SampleData
+                - ScaleChannel
+                - ScanData
+                - SingleScan
+                - StartScan
+                - StopScan
+                - SwitchValve
+        * :ref:`valco <valco>`
+                - :ref:`TurnUniversalActuator <valco_turn_valve>`
+                - :ref:`TurnValve <valco_turn_valve>`
+                - :ref:`ValcoCurrentPosition <valco_current_position>`
+                - :ref:`ValcoFindStops <valco_find_stops>`

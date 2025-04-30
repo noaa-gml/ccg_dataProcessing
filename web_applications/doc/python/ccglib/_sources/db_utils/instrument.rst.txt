@@ -1,0 +1,9 @@
+
+
+:mod:`ccg_instrument` --- Get instrument history from database
+==============================================================
+
+.. automodule:: ccg_instrument
+   :members:
+   :undoc-members:
+   :show-inheritance:

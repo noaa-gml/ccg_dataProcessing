@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_tankhistory — Get history of tank usage &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_refgasdb — Get assigned values for a tank from database" href="refgasdb.html" />
+    <link rel="prev" title="ccg_uncdata_all — Get typeB uncertainty for data (including tank calibrations)" href="calunc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tank Calibrations and History</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="caldb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code> — Get tank calibration results from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calfit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code> — Get fit to tank calibrations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calunc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code> — Get typeB uncertainty for data (including tank calibrations)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code> — Get history of tank usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refgasdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code> — Get assigned values for a tank from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tank Calibrations and History</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code> — Get history of tank usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tankcals/history.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_tankhistory">
+<span id="ccg-tankhistory-get-history-of-tank-usage"></span><h1><a class="reference internal" href="#module-ccg_tankhistory" title="ccg_tankhistory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code></a> — Get history of tank usage<a class="headerlink" href="#module-ccg_tankhistory" title="Permalink to this headline"></a></h1>
+<p>A class for dealing with the tank_history database table,
+which contains usage information for tanks used on various systems,
+especially for observatories.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_tankhistory.insert_tank_history">
+<span class="sig-prename descclassname"><span class="pre">ccg_tankhistory.</span></span><span class="sig-name descname"><span class="pre">insert_tank_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stacode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_tankhistory.html#insert_tank_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_tankhistory.insert_tank_history" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a new entry into the tank_history database table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stacode</strong> (<em>str</em>) – station code</p></li>
+<li><p><strong>system</strong> (<em>str</em>) – system name</p></li>
+<li><p><strong>serial_number</strong> (<em>str</em>) – tank serial number</p></li>
+<li><p><strong>label</strong> (<em>str</em>) – tank usage label</p></li>
+<li><p><strong>start_date</strong> (<em>str</em><em> or </em><em>datetime</em>) – start date of tank usage</p></li>
+<li><p><strong>gases</strong> (<em>list</em>) – list of gases that tank is used for</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – comment</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_tankhistory.tankhistory">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_tankhistory.</span></span><span class="sig-name descname"><span class="pre">tankhistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_tankhistory.html#tankhistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_tankhistory.tankhistory" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for holding tank history information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gas</strong> – gas species</p></li>
+<li><p><strong>location</strong> – sitecode, e.g. brw, mlo …</p></li>
+<li><p><strong>label</strong> – find entries with this tank label, e.g. R0, S1, …</p></li>
+<li><p><strong>system</strong> – system name, e.g. ndir, lgr, picarro …</p></li>
+<li><p><strong>date</strong> – Only include information where the tank is active on this date.
+Can be datetime object or valid date string.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_tankhistory.tankhistory.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#ccg_tankhistory.tankhistory.data" title="Permalink to this definition"></a></dt>
+<dd><p>A list of namedtuples with information on the reference gases.
+Field names are (‘site’, ‘system’, ‘gas’, ‘serial_number’, ‘label’, ‘start_date’, ‘fill_code’)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_tankhistory.tankhistory.filterByDate">
+<span class="sig-name descname"><span class="pre">filterByDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startdate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enddate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_tankhistory.html#tankhistory.filterByDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_tankhistory.tankhistory.filterByDate" title="Permalink to this definition"></a></dt>
+<dd><p>Find entries that have start_date &gt;= given startdate.</p>
+<p>Need to save, for each tank label, the last entry before start date, and any after start date</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_tankhistory.tankhistory.filterByLabel">
+<span class="sig-name descname"><span class="pre">filterByLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_tankhistory.html#tankhistory.filterByLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_tankhistory.tankhistory.filterByLabel" title="Permalink to this definition"></a></dt>
+<dd><p>Find entries that have label</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_tankhistory.tankhistory.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_tankhistory.html#tankhistory.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_tankhistory.tankhistory.search" title="Permalink to this definition"></a></dt>
+<dd><p>search entries that match given arguments</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="calunc.html" class="btn btn-neutral float-left" title="ccg_uncdata_all — Get typeB uncertainty for data (including tank calibrations)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="refgasdb.html" class="btn btn-neutral float-right" title="ccg_refgasdb — Get assigned values for a tank from database" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; python hm 0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Modules" href="modules.html" />
+    <link rel="prev" title="Starting hm" href="startup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> python hm
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Starting hm</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#devices">Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#virtual-devices">Virtual Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resources">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hmsubs.html">hmsubs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq.html">daq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hp35900.html">hp35900</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">scpi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valco.html">valco</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runaction.html">RunAction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obsolete.html">Obsolete Actions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<span id="config"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><p><strong>hm</strong> depends on a configuration file to specify the <a class="reference internal" href="#devices"><span class="std std-ref">Devices</span></a> with which to communicate.  It also specifies
+<a class="reference internal" href="#resources"><span class="std std-ref">Resources</span></a> that enable you to use names that refer to options that are used by <strong>hm</strong>.  The default configuration
+file name is ‘hm.conf’.  The config file name can be changed by using the -c switch when <a class="reference internal" href="startup.html#startup"><span class="std std-ref">Starting hm</span></a>.</p>
+<p>Comments can be entered in the configuration file using the ‘#’ character.  Anything on the same line after the ‘#’
+character is a comment. Blank lines are also ignored.</p>
+</div></blockquote>
+<section id="devices">
+<span id="id1"></span><h2>Devices<a class="headerlink" href="#devices" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p><strong>hm</strong> needs to know what devices to communicate with.  Currently, <strong>hm</strong> communicates with devices using either a
+serial interface or a file interface (such as Aerodyne analyzers).  Devices are specified in the configuration file using the format</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">devicename</span> <span class="pre">interface</span> <span class="pre">device_file</span> <span class="pre">0</span> <span class="pre">baud</span></code></p>
+</div></blockquote>
+<p>where</p>
+<ul class="simple">
+<li><p>‘device’ is the literal word ‘device’</p></li>
+<li><p>‘devicename’ is a name assigned to the device</p></li>
+<li><p>‘interface’ is the word ‘serial’</p></li>
+<li><p>‘device_file’ is the linux device file for the serial interface</p></li>
+<li><p>‘baud’ is the baud rate for the serial interface</p></li>
+</ul>
+<p>For example, we want to communicate with an Agilent 34970 Data Acquistion/Control device, which
+is connected to a serial interface using the device file ‘/dev/ttyS0’ at 57600 baud.  You would
+enter a line in the configuration file with:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">HP34970</span> <span class="pre">serial</span> <span class="pre">/dev/ttyS0</span> <span class="pre">0</span> <span class="pre">57600</span></code></p>
+</div></blockquote>
+<p>Each device must have a unique name, so if you have multiple devices of the same type, you can
+append an ‘.n’ to the name to distinguish them, e.g. if we added a second 34970 device, add a line:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">HP34970.2</span> <span class="pre">serial</span> <span class="pre">/dev/ttyS1</span> <span class="pre">0</span> <span class="pre">57600</span></code></p>
+</div></blockquote>
+<p>The device name will be the name used for the device in all ‘<a class="reference internal" href="actions.html#actions"><span class="std std-ref">action lines</span></a>’ used by <strong>hm</strong>.</p>
+<p>For devices where the interface is <em>file</em>, the configuration line would look like</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">aerodyne</span> <span class="pre">file</span> <span class="pre">/path/to/file</span> <span class="pre">0</span> <span class="pre">0</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="virtual-devices">
+<h2>Virtual Devices<a class="headerlink" href="#virtual-devices" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Certain devices can be daisy-chained together on one interface.  For example, multiple valco stream selection valves
+can be connected together and have only one serial interace to the computer.  Each valve has a unique id setting
+to distinguish it from the others.  In cases like this, we need to define each valve on the chain as a ‘virtual device’.
+This can be done by setting a line in the configuration file for each valve, with a unique name and options for the valve.
+The configuration line looks like</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">virtualdevicename</span> <span class="pre">devicename</span> <span class="pre">options</span></code></p>
+</div></blockquote>
+<p>For example suppose we have a device definition line in our configuration file:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>device ValcoValves /dev/ttyUSB1 0 9600
+</pre></div>
+</div>
+<p>Then we define each valve as a virtual device with:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>StdSelectValve ValcoValves multiposition 0 8
+SampleSelectValve ValcoValves multiposition 1 4
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where the fields are</dt><dd><ul class="simple">
+<li><p>virtual device name</p></li>
+<li><p>device name</p></li>
+<li><p>type of valve</p></li>
+<li><p>valve id number</p></li>
+<li><p>number of positions</p></li>
+</ul>
+</dd>
+</dl>
+<p>When creating action lines, the virtual device name can be used instead of the actual device name, e.g.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">TurnValve</span> <span class="pre">StdSelectValve</span> <span class="pre">3</span></code></p>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">StdSelectValve</span></code> field will be replaced with the actual device name, and the valve id number will be
+used when communicating with the valve.</p>
+</div></blockquote>
+</section>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Because the software is broken into multiple subclasses depending on instrument, <strong>hm</strong> needs to know which
+module to use for communicating with the instrument.  Modules are specified in the configuration file using the format</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">devicename</span> <span class="pre">modulename</span></code></p>
+</div></blockquote>
+<p>where</p>
+<ul class="simple">
+<li><p>‘module’ is the literal word ‘module’</p></li>
+<li><p>‘devicename’ is a name assigned to the device</p></li>
+<li><p>‘modulename’ is a python module name assigned to the device (without the <em>.py</em> extension).  See ‘<a class="reference internal" href="modules.html#modules"><span class="std std-ref">modules</span></a>’ section.</p></li>
+</ul>
+<p>For example, the HP34970 device shown in the example above needs a line in the configuration file</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">HP34970</span> <span class="pre">scpi</span></code></p>
+</div></blockquote>
+<p>because the HP34970 device uses the SCPI protocal for communications.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a module is not defined for a device, the generic ‘hmsubs’ module is used.</p>
+</div>
+</div></blockquote>
+</section>
+<section id="resources">
+<span id="id2"></span><h2>Resources<a class="headerlink" href="#resources" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Another thing the configuration file can do is to assign a name to various option values.  This is called a ‘resource’.
+This name is then used in the ‘action lines’ by <strong>hm</strong>.  This way, you can modify the option values in
+just one place, the configuration file.</p>
+<p>A resource is basically a ‘name value’ pair.  For example, let’s say we want to assign the name ‘W1’ to relay number 101 on
+a device.  We would enter:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">W1</span> <span class="pre">101</span></code></p>
+</div></blockquote>
+<p>in the configuration file.  Now anytime we create an action line for this relay, we use the keyword <code class="docutils literal notranslate"><span class="pre">&#64;W1</span></code> instead of the number 101, i.e.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">CloseRelay</span> <span class="pre">HP34970</span> <span class="pre">&#64;W1</span></code></p>
+</div></blockquote>
+<p>The value part of the resource does not need to be a single word.  Some actions require multiple options expressed as a space delimited string.
+For example, the <a class="reference internal" href="scpi.html#config-channel"><span class="std std-ref">ConfigChannel</span></a> action takes an option that requires both a location and type values.  This can be specified as
+a resource with</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">Licor</span> <span class="pre">101</span> <span class="pre">DCVOLT</span></code></p>
+</div></blockquote>
+<p>and used in an action line with</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ConfigChannel</span> <span class="pre">HP34970</span> <span class="pre">&#64;Licor</span></code></p>
+</div></blockquote>
+<p>which would configure channel 101 on the HP34970 to read DC volts.</p>
+</div></blockquote>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Here is a complete configuration file, used by the magicc flask analysis system</p>
+</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Configuration file for magicc flask analysis</span>
+<span class="c1">#</span>
+<span class="c1"># There are 2 columns of data:</span>
+<span class="c1"># 1st column is an identifier string</span>
+<span class="c1"># 2nd column is the option value.</span>
+<span class="c1">#</span>
+<span class="c1"># First specify device addresses and interface types</span>
+<span class="c1">#</span>
+
+<span class="c1"># device settings for connection to digi neo 4 port serial card</span>
+device<span class="w"> </span>HP34970.1<span class="w">        </span>serial<span class="w"> </span>/dev/ttyn1a<span class="w">  </span><span class="m">0</span><span class="w"> </span><span class="m">19200</span>
+device<span class="w"> </span>HP34970.2<span class="w">        </span>serial<span class="w"> </span>/dev/ttyn1b<span class="w">  </span><span class="m">0</span><span class="w"> </span><span class="m">19200</span>
+device<span class="w"> </span>HP35900.1<span class="w">        </span>serial<span class="w"> </span>/dev/ttyn1c<span class="w">  </span><span class="m">0</span><span class="w"> </span><span class="m">38400</span>
+device<span class="w"> </span>HP35900.2<span class="w">        </span>serial<span class="w"> </span>/dev/ttyn1d<span class="w">  </span><span class="m">0</span><span class="w"> </span><span class="m">38400</span>
+
+<span class="c1"># Connection to built-in serial port on computer</span>
+device<span class="w"> </span>vurf<span class="w">             </span>serial<span class="w"> </span>/dev/ttyn1e<span class="w">  </span><span class="m">1</span><span class="w"> </span><span class="m">9600</span>
+
+module<span class="w"> </span>HP34970.1<span class="w"> </span>scpi
+module<span class="w"> </span>HP34970.2<span class="w"> </span>scpi
+module<span class="w"> </span>HP35900.1<span class="w"> </span>hp35900
+module<span class="w"> </span>HP35900.2<span class="w"> </span>hp35900
+module<span class="w"> </span>vurf<span class="w"> </span>vurf
+
+
+<span class="c1"># Next specify files used</span>
+
+log_file<span class="w">        </span>sys.log
+data_file<span class="w">       </span>gc.tmp
+
+<span class="c1"># misc. stuff</span>
+
+slice_width_a<span class="w">   </span>AVSL<span class="w"> </span><span class="m">100</span>
+slice_width_b<span class="w">   </span>BVSL<span class="w"> </span><span class="m">100</span>
+sample_rate<span class="w">     </span><span class="m">10</span>
+
+
+<span class="c1"># CH4 (FID) and H2 (HePDD) are on HP35900.2</span>
+<span class="c1"># CO (RGA) and N2O (ECD) is on HP35900.1</span>
+
+channel_ch4<span class="w">     </span>A
+channel_n2o<span class="w">     </span>B
+channel_co<span class="w">      </span>A
+channel_h2<span class="w">      </span>B
+
+query_a/d<span class="w">       </span>SYID
+query_relay<span class="w">     </span>*IDN?
+query_io<span class="w">        </span>*IDN?
+query_dvm<span class="w">       </span>*IDN?
+query_d/a<span class="w">       </span>*IDN?
+query_34970<span class="w">     </span>*IDN?
+query_vurf<span class="w">      </span>VERSION?
+
+<span class="c1"># Information for the stream selection valve.</span>
+<span class="c1"># Options are:</span>
+<span class="c1">#   digital io device name,</span>
+<span class="c1">#   number of positions,</span>
+<span class="c1">#   digital io out device channel,</span>
+<span class="c1">#   digital io in device channel, -1 if not used</span>
+
+SysSelect<span class="w">       </span>hp34970.2<span class="w"> </span><span class="m">8</span><span class="w">  </span><span class="m">201</span><span class="w"> </span>-1
+SampleSelect<span class="w">    </span>hp34970.2<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">202</span><span class="w"> </span>-1
+TankCalSelect<span class="w">   </span>hp34970.2<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">301</span><span class="w"> </span>-1
+Carousel<span class="w">        </span>hp34970.2<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">302</span><span class="w"> </span>-1
+Evac_Valco<span class="w">      </span>hp34970.1<span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="m">301</span><span class="w"> </span>-1
+
+<span class="c1"># Where each analyzer is located on SysSelect valve</span>
+vent<span class="w">            </span><span class="m">1</span>
+n2o<span class="w">             </span><span class="m">2</span>
+ch4<span class="w">             </span><span class="m">3</span>
+h2<span class="w">              </span><span class="m">4</span>
+co<span class="w">              </span><span class="m">5</span>
+co2<span class="w">             </span><span class="m">6</span>
+vent2<span class="w">           </span><span class="m">7</span>
+sys_off<span class="w">         </span><span class="m">8</span>
+
+<span class="c1"># Where reference gases are on sample select valve</span>
+
+n2o_S1<span class="w">          </span><span class="m">1</span>
+n2o_S1_off<span class="w">      </span><span class="m">2</span>
+n2o_ref<span class="w">         </span><span class="m">1</span>
+n2o_ref_off<span class="w">     </span><span class="m">2</span>
+h2_ref<span class="w">          </span><span class="m">5</span>
+h2_ref_off<span class="w">      </span><span class="m">6</span>
+co_ref<span class="w">          </span><span class="m">5</span>
+co_ref_off<span class="w">      </span><span class="m">6</span>
+ch4_ref<span class="w">         </span><span class="m">3</span>
+ch4_ref_off<span class="w">     </span><span class="m">4</span>
+co2_L<span class="w">           </span><span class="m">7</span>
+co2_L_off<span class="w">       </span><span class="m">8</span>
+co2_M<span class="w">           </span><span class="m">9</span>
+co2_M_off<span class="w">       </span><span class="m">10</span>
+co2_H<span class="w">           </span><span class="m">11</span>
+co2_H_off<span class="w">       </span><span class="m">12</span>
+tank_sample<span class="w">     </span><span class="m">13</span>
+tank_sample_off<span class="w"> </span><span class="m">14</span>
+flask<span class="w">           </span><span class="m">15</span>
+sample_off<span class="w">      </span><span class="m">16</span>
+
+<span class="c1"># Where CO standard gases are on TankCalSelect valve</span>
+
+co_S1<span class="w">           </span><span class="m">1</span>
+co_S2<span class="w">           </span><span class="m">2</span>
+co_S3<span class="w">           </span><span class="m">3</span>
+co_S4<span class="w">           </span><span class="m">4</span>
+co_S5<span class="w">           </span><span class="m">5</span>
+co_S6<span class="w">           </span><span class="m">6</span>
+
+<span class="c1"># Where N2O standard gases are on TankCalSelect valve</span>
+
+n2o_S2<span class="w">          </span><span class="m">1</span>
+n2o_S3<span class="w">          </span><span class="m">2</span>
+n2o_S4<span class="w">          </span><span class="m">3</span>
+n2o_S5<span class="w">          </span><span class="m">4</span>
+n2o_S6<span class="w">          </span><span class="m">5</span>
+n2o_S7<span class="w">          </span><span class="m">6</span>
+n2o_S8<span class="w">          </span><span class="m">7</span>
+n2o_S9<span class="w">          </span><span class="m">8</span>
+
+<span class="c1"># Where conditioning gas is on Carousel during preanalysis</span>
+car_cond_evac<span class="w">           </span><span class="m">14</span>
+car_cond_gas<span class="w">            </span><span class="m">15</span>
+car_cond_gas_off<span class="w">        </span><span class="m">16</span>
+
+<span class="c1"># Port assignments on Evac_Valco valve</span>
+<span class="c1">#       Carousel valco valve connected to COM</span>
+system_on<span class="w">       </span><span class="m">1</span>
+system_off<span class="w">      </span><span class="m">2</span>
+vacuum_on<span class="w">       </span><span class="m">3</span>
+vacuum_off<span class="w">      </span><span class="m">4</span>
+
+<span class="c1"># Misc. relay locations</span>
+
+TransferPump<span class="w">       </span><span class="m">108</span>
+ZeroRelay<span class="w">          </span><span class="m">109</span>
+MFC_valve<span class="w">          </span><span class="m">111</span>
+He_vent_valve<span class="w">      </span><span class="m">107</span>
+
+<span class="c1">#</span>
+<span class="c1"># Information for load/inject valve.</span>
+<span class="c1"># Options are:</span>
+<span class="c1">#   Relay device name,</span>
+<span class="c1">#   relay channel for load line,</span>
+<span class="c1">#   relay channel for inject line.</span>
+<span class="c1"># (n2o valve is reverse of normal)</span>
+
+Ch4Load<span class="w">         </span>hp34970.2<span class="w">       </span><span class="m">101</span><span class="w"> </span><span class="m">102</span>
+N2oLoad<span class="w">         </span>hp34970.2<span class="w">       </span><span class="m">104</span><span class="w"> </span><span class="m">103</span>
+H2Load<span class="w">          </span>hp34970.2<span class="w">       </span><span class="m">105</span><span class="w"> </span><span class="m">106</span>
+
+<span class="c1"># Mass flow controller voltage output sampling</span>
+<span class="c1"># and scaling values (voltage -&gt; sccm)</span>
+<span class="c1"># Options are sample rate in milliseconds,</span>
+<span class="c1"># number of readings,</span>
+<span class="c1"># channel where voltage is on mux,</span>
+<span class="c1"># type of reading to make</span>
+<span class="c1">#</span>
+<span class="c1"># Set D/A values for co2 flow and for</span>
+<span class="c1"># all other flows.</span>
+<span class="c1"># Scaling for controller is</span>
+<span class="c1"># 0-500 mV = 0 - 500 cc/minute</span>
+<span class="c1"># for output,</span>
+<span class="c1"># 0-5V = 0-500 cc/minute for</span>
+<span class="c1"># input</span>
+FlowControl<span class="w">             </span><span class="m">500</span><span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="m">102</span><span class="w"> </span>DCVOLT
+FlowScale<span class="w">               </span><span class="m">0</span><span class="w"> </span><span class="m">100</span><span class="w">  </span><span class="c1">#Magicc_1 mfc</span>
+
+
+<span class="c1">#  **************************************************************</span>
+Flow_co2<span class="w">                </span>SOURCE:VOLT<span class="w"> </span><span class="m">1</span>.50,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1"># 150 ml/min</span>
+<span class="c1">#   ***************************************************************</span>
+
+
+Flow_co2_std<span class="w">            </span>SOURCE:VOLT<span class="w"> </span><span class="m">1</span>.50,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1"># 150 ml/min</span>
+Flow_co2_std_high<span class="w">       </span>SOURCE:VOLT<span class="w"> </span><span class="m">1</span>.50,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1"># 150 ml/min</span>
+
+
+Flow_co<span class="w">                 </span>SOURCE:VOLT<span class="w"> </span><span class="m">5</span>.00<span class="w"> </span>,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1">#200 ml/min, VURF controls flow rate</span>
+Flow_n2o<span class="w">                </span>SOURCE:VOLT<span class="w"> </span><span class="m">1</span>.80,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1"># 180 ml/min</span>
+Flow_ch4<span class="w">                </span>SOURCE:VOLT<span class="w"> </span><span class="m">0</span>.60,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1">#  60 ml/min   original</span>
+Flow_h2<span class="w">                 </span>SOURCE:VOLT<span class="w"> </span><span class="m">0</span>.60,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1">#  60 ml/min</span>
+FlowVent<span class="w">                </span>SOURCE:VOLT<span class="w"> </span><span class="m">2</span>.00,<span class="o">(</span>@304<span class="o">)</span><span class="w">  </span><span class="c1"># 200 ml/min  oiginal</span>
+FlowFull<span class="w">                </span>SOURCE:VOLT<span class="w"> </span><span class="m">5</span>.0<span class="w"> </span>,<span class="o">(</span>@304<span class="o">)</span><span class="w">   </span><span class="c1"># 500 ml/min</span>
+FlowStd<span class="w">                 </span>SOURCE:VOLT<span class="w"> </span><span class="m">2</span>.00,<span class="o">(</span>@304<span class="o">)</span><span class="w">   </span><span class="c1"># 200 ml/min  original</span>
+ConditionFlow<span class="w">           </span>SOURCE:VOLT<span class="w"> </span><span class="m">2</span>.20,<span class="o">(</span>@304<span class="o">)</span><span class="w">   </span><span class="c1"># 220 ml/min</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Location of signals on A/D board.</span>
+<span class="c1">#</span>
+
+mfc<span class="w">                     </span><span class="m">102</span><span class="w"> </span>DCVOLT
+HPS<span class="w">                     </span><span class="m">103</span><span class="w"> </span>DCVOLT
+Press_Transducer<span class="w">        </span><span class="m">104</span><span class="w">     </span>DCVOLT
+Press_Scale<span class="w">             </span>-1.2<span class="w">    </span><span class="m">12</span>.0
+ndir_temp<span class="w">               </span><span class="m">500</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">105</span><span class="w"> </span>DCVOLT
+ndir_temp_scale<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">10</span>
+ndir_press<span class="w">              </span><span class="m">500</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">106</span><span class="w">      </span>DCVOLT
+ndir_press_scale<span class="w">        </span><span class="m">75</span><span class="w">      </span><span class="m">3</span>
+
+
+<span class="c1"># Co2 ndir voltage output</span>
+<span class="c1"># 1st line is for single reading through ReadValue</span>
+<span class="c1"># 2nd line is for multiple readings through SampleData</span>
+
+Licor<span class="w">           </span><span class="m">101</span><span class="w"> </span>DCVOLT
+Ndir<span class="w">            </span><span class="m">500</span><span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="m">101</span><span class="w"> </span>DCVOLT
+NdirScale<span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+Vurf<span class="w">            </span><span class="m">1000</span><span class="w"> </span><span class="m">45</span><span class="w"> </span>None
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="startup.html" class="btn btn-neutral float-left" title="Starting hm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

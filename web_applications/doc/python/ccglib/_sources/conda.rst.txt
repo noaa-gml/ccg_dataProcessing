@@ -1,0 +1,46 @@
+
+conda python --- Consistent python environment across gml servers
+========================================================================
+
+.. module::conda 
+      :synopsis: Common python installation
+
+This is a common installation of python 3 that can be used on centos 7/8 servers and linux workstations with access to /ccg nfs share.
+
+
+Installation instructions
+-------------------------
+
+.. function:: ~/.bash_profile
+
+   Add this to the end of your ~/.bash_profile (or ~/.bashrc if you use that)
+ 
+   .. code-block:: bash
+
+      if [ -f /ccg/python/.miniconda_bashrc ]; then
+         source /ccg/python/.miniconda_bashrc
+      fi 
+
+   You will need to log out and back in or source above for it to take effect.
+
+Using ccglib python packages
+----------------------------
+
+To transparently use the ccglib python packages, users must set the PYTHONPATH environment variable correctly.
+
+Running the above bash script which will set the PYTHONPATH environment variable to include ``/ccg/python/ccglib`` when searching for modules.  A user can also set the PYTHONPATH variable with 
+
+   .. code-block:: bash
+
+      export PYTHONPATH=/ccg/python/ccglib
+
+If PYTHONPATH is set, then packages can be imported like
+
+   .. code-block:: python
+
+      import ccg_db_conn
+
+where the ``ccg_db_conn`` module resides in the directory ``/ccg/python/ccglib``.
+
+
+  

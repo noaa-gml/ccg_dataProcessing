@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_uncdata_all — Get typeB uncertainty for data (including tank calibrations) &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_tankhistory — Get history of tank usage" href="history.html" />
+    <link rel="prev" title="ccg_calfit — Get fit to tank calibrations" href="calfit.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tank Calibrations and History</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="caldb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_cal_db</span></code> — Get tank calibration results from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calfit.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_calfit</span></code> — Get fit to tank calibrations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code> — Get typeB uncertainty for data (including tank calibrations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tankhistory</span></code> — Get history of tank usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refgasdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_refgasdb</span></code> — Get assigned values for a tank from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tank Calibrations and History</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code> — Get typeB uncertainty for data (including tank calibrations)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tankcals/calunc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ccg-uncdata-all-get-typeb-uncertainty-for-data-including-tank-calibrations">
+<h1><a class="reference internal" href="#module-ccg_uncdata_all" title="ccg_uncdata_all"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_uncdata_all</span></code></a> — Get typeB uncertainty for data (including tank calibrations)<a class="headerlink" href="#ccg-uncdata-all-get-typeb-uncertainty-for-data-including-tank-calibrations" title="Permalink to this headline"></a></h1>
+<span class="target" id="module-ccg_uncdata_all"></span><p>class for determining uncertainty values to apply to in-situ or flask data</p>
+<p>Uses the ‘master’ uncertainty file, which has values for all gases for
+flask and observatory.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_uncdata_all.</span></span><span class="sig-name descname"><span class="pre">dataUnc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uncfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_uncdata_all.html#dataUnc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_uncdata_all.dataUnc" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>class for determining uncertainty values to apply to in-situ or flask data</p>
+<p>Usage:</p>
+<blockquote>
+<div><p>myunc = dataUnc(project, gas, site, system, uncfile=None, debug=False)
+unc = myunc.getUncertainty(site, adate, value)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> – measurement project, either ‘flask’, ‘cals’, or ‘insitu’</p></li>
+<li><p><strong>gas</strong> – gas formula</p></li>
+<li><p><strong>site</strong> – site code</p></li>
+<li><p><strong>system</strong> – system id string</p></li>
+<li><p><strong>uncfile</strong> – file name with uncertainty rules</p></li>
+<li><p><strong>debug</strong> – print debugging information if True</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.self.getUncertainty">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">getUncertainty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.self.getUncertainty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Arguments</span> <span class="pre">are</span> <span class="pre">criteria</span> <span class="pre">for</span> <span class="pre">finding</span> <span class="pre">matching</span> <span class="pre">rules</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.site">
+<span class="sig-name descname"><span class="pre">site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.site" title="Permalink to this definition"></a></dt>
+<dd><p>site code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.adate">
+<span class="sig-name descname"><span class="pre">adate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.adate" title="Permalink to this definition"></a></dt>
+<dd><p>analysis date</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.value" title="Permalink to this definition"></a></dt>
+<dd><p>float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.method">
+<span class="sig-name descname"><span class="pre">method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.method" title="Permalink to this definition"></a></dt>
+<dd><p>sampling method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.inst">
+<span class="sig-name descname"><span class="pre">inst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.inst" title="Permalink to this definition"></a></dt>
+<dd><p>instrument id</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.system">
+<span class="sig-name descname"><span class="pre">system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_uncdata_all.dataUnc.system" title="Permalink to this definition"></a></dt>
+<dd><p>system name</p>
+</dd></dl>
+
+<p>The uncertainty rule file contains rules for flask, cals, and insitu projects,
+and for all analysis sites and systems and gases. All rules are contained in this one file.
+The class creation arguments will pre-filter the uncertainty rules.  The final rules to be used
+are determined in getUncertainty() for an individual measurement.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.getTotalUncertainty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">getTotalUncertainty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uncs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_uncdata_all.html#dataUnc.getTotalUncertainty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_uncdata_all.dataUnc.getTotalUncertainty" title="Permalink to this definition"></a></dt>
+<dd><p>Get total uncertainty, which is sqrt of sum of squares
+of each individual uncertainty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.getUncertainties">
+<span class="sig-name descname"><span class="pre">getUncertainties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_uncdata_all.html#dataUnc.getUncertainties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_uncdata_all.dataUnc.getUncertainties" title="Permalink to this definition"></a></dt>
+<dd><p>Find uncertainty values that match input criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>site</strong> (<em>str</em>) – site code</p></li>
+<li><p><strong>adate</strong> (<em>datetime</em>) – analysis date</p></li>
+<li><p><strong>mf</strong> (<em>float</em>) – mole fraction, used if uncertainy method is ‘value’</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – sample method</p></li>
+<li><p><strong>inst</strong> (<em>str</em>) – analyzer id string</p></li>
+<li><p><strong>system</strong> (<em>str</em>) – system name e.g. ‘pic’, ‘ndir’, ‘magicc-1’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of uncertainty values to be combined for total uncertainty</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>params</p>
+</dd>
+</dl>
+<p>The input parameters must match a line from the uncertainty file to be used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_uncdata_all.dataUnc.getUncertainty">
+<span class="sig-name descname"><span class="pre">getUncertainty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_uncdata_all.html#dataUnc.getUncertainty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_uncdata_all.dataUnc.getUncertainty" title="Permalink to this definition"></a></dt>
+<dd><p>return uncertainty value for given criteria</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="calfit.html" class="btn btn-neutral float-left" title="ccg_calfit — Get fit to tank calibrations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="history.html" class="btn btn-neutral float-right" title="ccg_tankhistory — Get history of tank usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

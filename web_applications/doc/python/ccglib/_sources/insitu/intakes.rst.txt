@@ -1,0 +1,8 @@
+
+:mod:`ccg_insitu_intakes` --- Get intake heights
+===================================================================
+
+.. automodule:: ccg_insitu_intake
+   :members:
+   :undoc-members:
+   :show-inheritance:

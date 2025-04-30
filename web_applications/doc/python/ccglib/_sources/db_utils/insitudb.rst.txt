@@ -1,0 +1,9 @@
+
+
+:mod:`ccg_insitu_data2` --- Get observatory in-situ data from database
+======================================================================
+
+.. automodule:: ccg_insitu_data2
+   :members:
+   :undoc-members:
+   :show-inheritance:

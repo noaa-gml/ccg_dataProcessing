@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>scpi &mdash; python hm 0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> python hm
+          
+
+          
+            
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Starting hm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valco.html">valco</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>scpi</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/scip.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scpi">
+<h1>scpi<a class="headerlink" href="#scpi" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="closerelay">
+<h2>CloseRelay<a class="headerlink" href="#closerelay" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Close a relay on a switch device.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">CloseRelay</span> <span class="pre">device</span> <span class="pre">207</span></code></p>
+</div></blockquote>
+<p>The option value is a single number which contains both ‘card’ value and ‘relay’ value.  <em>card</em> is
+the first digit of the number, and <em>relay</em> is the remaining digits.  So 207 would be card 2, relay 7.</p>
+</div></blockquote>
+</div>
+<div class="section" id="configchannel">
+<span id="config-channel"></span><h2>ConfigChannel<a class="headerlink" href="#configchannel" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Configure a channel on a multiplexor.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ConfigChannel</span> <span class="pre">device</span> <span class="pre">location</span> <span class="pre">type</span></code></p>
+</div></blockquote>
+<p>where <em>location</em> is the card/channel location,
+and <em>type</em> is the measurement type (dcvolt, resistance, current etc.).
+The location and type syntax are device dependent.
+Type must be one of DCVOLT, ACVOLT, RES, FRES, TC, THER THERREF, RTD, FRTD, DCCURR</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">ConfigChannel</span> <span class="n">hp34970</span> <span class="nd">@co2_ndir</span>
+<span class="ow">or</span>
+<span class="mi">0</span> <span class="n">ConfigChannel</span> <span class="n">hp34970</span> <span class="mi">101</span> <span class="n">DCVOLT</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>DeviceClear
+MeasureChannel
+OpenRelay
+———</p>
+<blockquote>
+<div><p>Open a relay on a switch device.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">OpenRelay</span> <span class="pre">device</span> <span class="pre">207</span></code></p>
+</div></blockquote>
+<p>The option value is a single number which contains both ‘card’ value and ‘relay’ value.  <em>card</em> is
+the first digit of the number, and <em>relay</em> is the remaining digits.  So 207 would be card 2, relay 7.</p>
+</div></blockquote>
+<p>ReadValue
+ReadNumber
+ReadData
+ReadChannel</p>
+</div>
+<div class="section" id="sampledata">
+<span id="sample-data"></span><h2>SampleData<a class="headerlink" href="#sampledata" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Read data from a device at a specified sample rate
+for a specified number of times.  Store the average of the
+readings in the last_data variable. Use <span class="xref std std-ref">log_data</span> or <span class="xref std std-ref">log_datagmt</span> routines
+to save the readings to file.</p>
+<p>Be warned that this routine does NOT return to the main
+loop in hm.c UNTIL all readings have been taken.</p>
+<p>Action line syntax is:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">SampleData</span>&#160; <span class="pre">device</span> <span class="pre">interval</span> <span class="pre">number</span> <span class="pre">channel_configuration</span></code></p>
+</div></blockquote>
+<p>channel_configuration is optional, and if included, then configure the channel
+using ConfigChannel before taking each reading.  The channel_configuration
+string is passed into ConfigChannel as the option.</p>
+<p>e.g.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">SampleData</span> <span class="pre">device</span> <span class="pre">100</span> <span class="pre">50</span> <span class="pre">200</span> <span class="pre">DCVOLT</span></code></p>
+</div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">SampleData</span> <span class="pre">device</span> <span class="pre">100</span> <span class="pre">50</span></code></p>
+</div></blockquote>
+<p>The first example is for a device that will be configured to read from
+channel 200 for dc voltage, and 50 readings will be taken at 100 millisecond intervals.
+Use this option if another process is using the device at the same time
+and may change channels.</p>
+<p>The second example is for a device that does not need to be configured
+but just have a value read back. Use this option if onlye one process will
+be using the device.  Should run a ConfigChannel first to ensure channel config.</p>
+</div></blockquote>
+</div>
+<div class="section" id="scandata">
+<h2>ScanData<a class="headerlink" href="#scandata" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Scans list of channels on Agilent 34970.
+Assumes channels already configured</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ScanData</span> <span class="pre">device</span>&#160; <span class="pre">channel_list</span>&#160; <span class="pre">time_avg</span>&#160; <span class="pre">rate</span></code></p>
+</div></blockquote>
+<ul class="simple">
+<li><p><em>channel_list</em> list of channel numbers, comma separated</p></li>
+<li><p><em>time_avg</em>  time to have device average over</p></li>
+<li><p><em>rate</em> time between sweeps in secondes</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="scalechannel">
+<h2>ScaleChannel<a class="headerlink" href="#scalechannel" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="singlescan">
+<h2>SingleScan<a class="headerlink" href="#singlescan" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="startscan">
+<h2>StartScan<a class="headerlink" href="#startscan" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="stopscan">
+<h2>StopScan<a class="headerlink" href="#stopscan" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="switchvalve">
+<h2>SwitchValve<a class="headerlink" href="#switchvalve" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Turn a 2 postion <strong>Valco</strong> valve to the either the load position
+or inject position by using relays for activating the load or
+inject line.</p>
+<p>Option string should contain either ‘Load’ or ‘Inject’</p>
+<p>Syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">SwitchValve</span>&#160;&#160;&#160;&#160; <span class="pre">valve_name</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">Inject</span> <span class="pre">|</span> <span class="pre">Load</span></code></p>
+</div></blockquote>
+<p>Requires a line in the <a class="reference internal" href="config.html#config"><span class="std std-ref">Configuration</span></a> file with the valve_name-option pair,
+where the option string should contain:</p>
+<ul class="simple">
+<li><p>the device name where the relays are connected,</p></li>
+<li><p>the channel of the relay for the load line,</p></li>
+<li><p>the channel of the relay for the inject line.</p></li>
+</ul>
+<p>e.g.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">Ch4Load</span>&#160; <span class="pre">VxiRelay</span> <span class="pre">200</span> <span class="pre">201</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2014, Kirk Thoning.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

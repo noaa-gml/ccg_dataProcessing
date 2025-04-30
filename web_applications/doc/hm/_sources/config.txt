@@ -1,0 +1,291 @@
+
+
+.. highlight:: rest
+
+.. _config:
+
+Configuration
+=============
+
+        **hm** depends on a configuration file to specify the :ref:`devices` with which to communicate.  It also specifies 
+        :ref:`resources` that enable you to use names that refer to options that are used by **hm**.  The default configuration
+        file name is 'hm.conf'.  The config file name can be changed by using the -c switch when :ref:`startup`.
+
+        Comments can be entered in the configuration file using the '#' character.  Anything on the same line after the '#' 
+        character is a comment. Blank lines are also ignored.
+
+.. _devices:
+
+Devices
+-------
+
+        **hm** needs to know what devices to communicate with.  Currently, **hm** only communicates with devices using a
+        serial interface.  Devices are specified in the configuration file using the format
+
+                ``device devicename interface device_file 0 baud``
+
+        where 
+
+        * 'device' is the literal word 'device'
+        * 'devicename' is a name assigned to the device
+        * 'interface' is the word 'serial'
+        * 'device_file' is the linux device file for the serial interface
+        * 'baud' is the baud rate for the serial interface
+
+        For example, we want to communicate with an Agilent 34970 Data Acquistion/Control device, which
+        is connected to a serial interface using the device file '/dev/ttyS0' at 57600 baud.  You would
+        enter a line in the configuration file with:
+
+                ``device HP34970 serial /dev/ttyS0 0 57600``
+
+
+        Each device must have a unique name, so if you have multiple devices of the same type, you can
+        append an '.n' to the name to distinguish them, e.g. if we added a second 34970 device, add a line:
+
+                ``device HP34970.2 serial /dev/ttyS1 0 57600``
+
+        The device name will be the name used for the device in all ':ref:`action lines <actions>`' used by **hm**.
+
+.. _resources:
+
+Resources
+---------
+
+        Another thing the configuration file can do is to assign a name to various option values.  This is called a 'resource'.
+        This name is then used in the 'action lines' by **hm**.  This way, you can use modify the option values in 
+        just one place, the configuration file.
+
+        A resource is basically a 'name value' pair.  For example, let's say we want to assign the name 'W1' to relay number 101 on 
+        a device.  We would enter:
+
+                ``W1 101``
+
+        in the configuration file.  Now anytime we create an action line for this relay, we use the keyword ``@W1`` instead of the number 101, i.e.
+
+                ``0 CloseRelay HP34970 @W1``
+
+        The value part of the resource does not need to be a single word.  Some actions require multiple options expressed as a space delimited string.
+        For example, the :ref:`config_channel` action takes an option that requires both a location and type values.  This can be specified as 
+        a resource with
+
+                ``Licor 101 DCVOLT``
+
+        and used in an action line with
+
+                ``0 ConfigChannel HP34970 @Licor``
+
+        which would configure channel 101 on the HP34970 to read DC volts.
+
+        
+
+
+Example
+-------
+
+        Here is a complete configuration file, used by the magicc flask analysis system::
+
+                                
+                # 
+                # Configuration file for magicc flask analysis
+                #
+                # There are 2 columns of data:
+                # 1st column is an identifier string
+                # 2nd column is the option value.
+                #
+                # First specify device addresses and interface types
+                #
+
+                # device settings for connection to digi neo 4 port serial card
+                device HP34970.1	serial /dev/ttyn1a  0 19200
+                device HP34970.2	serial /dev/ttyn1b  0 19200
+                device HP35900.1	serial /dev/ttyn1c  0 38400
+                device HP35900.2	serial /dev/ttyn1d  0 38400
+
+                # Connection to built-in serial port on computer
+                device vurf             serial /dev/ttyn1e  1 9600
+
+
+                # Next specify files used
+
+                log_file	sys.log
+                data_file	gc.tmp
+
+                # misc. stuff
+
+                slice_width_a	AVSL 100
+                slice_width_b	BVSL 100
+                sample_rate	10
+
+
+                # CH4 (FID) and H2 (HePDD) are on HP35900.2
+                # CO (RGA) and N2O (ECD) is on HP35900.1
+
+                channel_ch4	A
+                channel_n2o	B
+                channel_co	A
+                channel_h2	B
+
+                query_a/d	SYID
+                query_relay	*IDN?
+                query_io	*IDN?
+                query_dvm	*IDN?
+                query_d/a	*IDN?
+                query_34970     *IDN?
+                query_vurf      VERSION?
+
+                # Information for the stream selection valve.
+                # Options are:
+                #   digital io device name,
+                #   number of positions, 
+                #   digital io out device channel,
+                #   digital io in device channel, -1 if not used
+
+                SysSelect	hp34970.2 8  201 -1
+                SampleSelect	hp34970.2 16 202 -1
+                TankCalSelect	hp34970.2 10 301 -1
+                Carousel	hp34970.2 16 302 -1
+                Evac_Valco	hp34970.1 4  301 -1
+
+                # Where each analyzer is located on SysSelect valve
+                vent		1
+                n2o		2
+                ch4		3
+                h2		4
+                co		5
+                co2		6
+                vent2		7
+                sys_off		8
+
+                # Where reference gases are on sample select valve
+
+                n2o_S1		1
+                n2o_S1_off	2
+                n2o_ref		1
+                n2o_ref_off	2
+                h2_ref		5
+                h2_ref_off	6
+                co_ref		5
+                co_ref_off	6
+                ch4_ref		3
+                ch4_ref_off	4
+                co2_L		7
+                co2_L_off	8 
+                co2_M		9 
+                co2_M_off	10
+                co2_H		11
+                co2_H_off	12
+                tank_sample	13
+                tank_sample_off	14
+                flask		15
+                sample_off	16
+
+                # Where CO standard gases are on TankCalSelect valve
+
+                co_S1		1
+                co_S2		2
+                co_S3		3
+                co_S4		4
+                co_S5		5
+                co_S6		6
+
+                # Where N2O standard gases are on TankCalSelect valve
+
+                n2o_S2		1
+                n2o_S3		2
+                n2o_S4		3
+                n2o_S5		4
+                n2o_S6		5
+                n2o_S7		6
+                n2o_S8		7
+                n2o_S9		8
+
+                # Where conditioning gas is on Carousel during preanalysis
+                car_cond_evac		14
+                car_cond_gas		15
+                car_cond_gas_off	16
+
+                # Port assignments on Evac_Valco valve
+                #	Carousel valco valve connected to COM
+                system_on	1
+                system_off	2
+                vacuum_on	3
+                vacuum_off	4
+
+                # Misc. relay locations
+
+                TransferPump	   108
+                ZeroRelay	   109
+                MFC_valve	   111
+                He_vent_valve	   107
+
+                #
+                # Information for load/inject valve.
+                # Options are:
+                #   Relay device name,
+                #   relay channel for load line,
+                #   relay channel for inject line.
+                # (n2o valve is reverse of normal)
+
+                Ch4Load		hp34970.2	101 102
+                N2oLoad		hp34970.2	104 103
+                H2Load		hp34970.2	105 106
+
+                # Mass flow controller voltage output sampling
+                # and scaling values (voltage -> sccm)
+                # Options are sample rate in milliseconds, 
+                # number of readings,
+                # channel where voltage is on mux,
+                # type of reading to make
+                #
+                # Set D/A values for co2 flow and for
+                # all other flows.  
+                # Scaling for controller is
+                # 0-500 mV = 0 - 500 cc/minute
+                # for output,
+                # 0-5V = 0-500 cc/minute for
+                # input
+                FlowControl		500 20 102 DCVOLT
+                FlowScale		0 100  #Magicc_1 mfc
+
+
+                #  **************************************************************
+                Flow_co2		SOURCE:VOLT 1.50,(@304)  # 150 ml/min
+                #   ***************************************************************
+
+
+                Flow_co2_std		SOURCE:VOLT 1.50,(@304)  # 150 ml/min
+                Flow_co2_std_high	SOURCE:VOLT 1.50,(@304)  # 150 ml/min
+
+
+                Flow_co			SOURCE:VOLT 5.00 ,(@304)  #200 ml/min, VURF controls flow rate
+                Flow_n2o		SOURCE:VOLT 1.80,(@304)  # 180 ml/min
+                Flow_ch4		SOURCE:VOLT 0.60,(@304)  #  60 ml/min   original
+                Flow_h2			SOURCE:VOLT 0.60,(@304)  #  60 ml/min
+                FlowVent		SOURCE:VOLT 2.00,(@304)  # 200 ml/min  oiginal
+                FlowFull		SOURCE:VOLT 5.0 ,(@304)   # 500 ml/min
+                FlowStd			SOURCE:VOLT 2.00,(@304)   # 200 ml/min  original
+                ConditionFlow		SOURCE:VOLT 2.20,(@304)   # 220 ml/min 
+
+
+                #
+                # Location of signals on A/D board.
+                #
+
+                mfc			102 DCVOLT
+                HPS			103 DCVOLT
+                Press_Transducer	104	DCVOLT
+                Press_Scale		-1.2	12.0
+                ndir_temp		500 10 105 DCVOLT
+                ndir_temp_scale		0	10
+                ndir_press		500 10 106	DCVOLT
+                ndir_press_scale	75	3
+
+
+                # Co2 ndir voltage output 
+                # 1st line is for single reading through ReadValue
+                # 2nd line is for multiple readings through SampleData
+
+                Licor		101 DCVOLT
+                Ndir		500 60 101 DCVOLT
+                NdirScale	0 1
+                Vurf    	1000 45 None

@@ -1,0 +1,22 @@
+
+.. highlight:: rest
+
+.. _intro:
+
+Introduction
+=============
+
+This documentation describes the python version of the 'next generation' of data processing software.
+
+
+        - Create analyzer data files from tower 'raw' .dat files
+
+        - Create qc files from tower 'raw' .dat files
+
+        - Create averaged 'raw' files from the analyzer data files.
+
+        - Apply quality control flagging to the raw files.
+
+        - Calculate mole fraction values from raw files, insert into database
+
+        - ???

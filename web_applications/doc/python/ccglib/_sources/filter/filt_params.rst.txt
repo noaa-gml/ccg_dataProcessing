@@ -1,0 +1,7 @@
+:mod:`ccg_filter_params` --- Dataclass for ccg_filter parameters
+==================================================================
+
+.. automodule:: ccg_filter_params
+   :members:
+   :show-inheritance:
+   :noindex:

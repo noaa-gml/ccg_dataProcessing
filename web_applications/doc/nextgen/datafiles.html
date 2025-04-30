@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analyer Data Files &mdash; Tower Next Generation Software Data Processing  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Data" href="data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Tower Next Generation Software Data Processing
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataacq.html">GGGRN In-Situ Data Acquisition</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Analyer Data Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#processing-program">Processing Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-format">File Format</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tower Next Generation Software Data Processing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Analyer Data Files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/datafiles.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="analyer-data-files">
+<span id="datafiles"></span><h1>Analyer Data Files<a class="headerlink" href="#analyer-data-files" title="Permalink to this headline"></a></h1>
+<p>These files contain short term (30-second) analyzer values.  The original source data comes
+from the tower ‘raw’ .dat files located at /ccg/towers/<em>stacode</em>/rawdata/ where <em>stacode</em> is the
+three letter station code for the site, e.g. ‘lef’.</p>
+<section id="processing-program">
+<h2>Processing Program<a class="headerlink" href="#processing-program" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p><strong>tower_make_output.py</strong> is run with:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>usage: tower_make_output.py [-h] [-c CONFIG] [-u] [-v] stacode gas inst date
+
+Read tower .dat files and create separate analyzer output data text files.
+
+positional arguments:
+  stacode               3 letter station code
+  gas                   gas e.g. &#39;co2&#39;
+  inst                  instrument abbreviation e.g. &#39;lcr&#39;
+  date                  date to process
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Select non-default configuration file
+  -u, --update          Update the file with data.
+  -v, --verbose         Include additional output for some options
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>The default configuration file used is located at</p>
+<p>/ccg/<em>gas</em>/in-situ/<em>stacode</em>/<em>inst</em>/config.ini</p>
+<dl class="simple">
+<dt>where</dt><dd><ul class="simple">
+<li><p><em>gas</em> is the gas species, e.g. co2</p></li>
+<li><p><em>stacode</em> is the three letter station code, e.g. lef</p></li>
+<li><p><em>inst</em> is the instrument abbreviations, e.g. lcr</p></li>
+</ul>
+</dd>
+</dl>
+<p>for example, <em>/ccg/co2/in-situ/lef/lcr/config.ini</em></p>
+</div></blockquote>
+</section>
+<section id="file-format">
+<h2>File Format<a class="headerlink" href="#file-format" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="data.html" class="btn btn-neutral float-left" title="Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

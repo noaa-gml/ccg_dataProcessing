@@ -1,0 +1,323 @@
+.. highlight:: rest
+
+.. _hmsubs:
+
+hmsubs
+^^^^^^
+
+.. _checkdevice:
+
+CheckDevice or QueryDevice
+--------------------------
+
+        Send a command string to a device, and read back the one line answer.
+
+        Action line syntax:
+
+                ``0 QueryDevice device string``
+
+        where *string* is the query string to send to the device.
+
+        This action is intended to check that a device is on and responding to the computer.  
+        The answer to the query is logged.  If no anwer is returned from the device, an error will be logged.  
+
+        Example
+
+                ``0 CheckDevice hp34970 @query_34970``
+
+        Result:
+
+                A line in the hm log file is written on success.  hm exits on failure.
+
+DeviceClear
+--------------
+
+        Send the command to clear a device.  The command string is a hex 03 '\x03'. No options are used.
+
+        Example:
+
+                ``0 DeviceClear hp34970 None``
+
+        Result:
+                Sends reset string to device.
+
+        **TODO - Make reset string an option that can be put in config file.**
+
+LockInterface
+--------------
+
+        Lock the interface to a device for excluse use of the device.
+
+        This allows multiple actions to be run on a device without any
+        other process interfering.
+
+        To lock:
+                ``0 LockInterface devicename Lock``
+        To unlock
+                ``0 LockInterface devicename Unlock``
+
+        Example usage::
+
+                0 LockInterface hp34970 LOCK
+                0 ShowStatus sys.status Measuring channel 102
+                0 ReadValue hp34970 @channel_102
+                0 ScaleValue hp34970 @scale_102
+                0 LogDataGMT /data/qc/2012/ndir_temp/2012-11-07 Append
+                0 ShowStatus sys.status Measuring channel 103
+                0 ReadValue hp34970 @channel_103
+                0 ScaleValue hp34970 @scale_103
+                0 LogDataGMT /data/qc/2012/sample_flow/2012-11-07 Append
+                0 LockInterface hp34970 UNLOCK
+
+.. _log_data:
+
+LogData
+--------------
+
+        Write the value stored in the 'last_data' variable to a file.  
+        Data is either appended to or replaces the file, depending on
+        the value of option.  Default is to append.
+        Include the time stamp in local time when data was taken.
+        The filename is in the 'device' variable.
+
+        Action line syntax:
+
+                ``0 LogData filename Append | Replace``
+
+        Use the option value 'Append' to add a line of data to the file, and 'Replace' 
+        to write over the file and have just one line as a result.
+
+        The timestamp that is written is a Unix timestamp, i.e. time in seconds since
+        Jan 1, 1970.  To have a timestamp with a calendar date and time, use :ref:`log_datagmt`.
+
+.. _log_datagmt:
+
+LogDataGMT
+--------------
+
+        Write the value stored in the 'last_data' variable to a file.  
+        Data is either appended to or replaces the file, depending on
+        the value of option.  Default is to append.
+        Include the time stamp in GMT when data was taken.
+        The filename is in the 'device' variable.
+
+        Action line syntax:
+
+                ``0 LogDataGMT filename Append | Replace``
+
+        Use the option value 'Append' to add a line of data to the file, and 'Replace' 
+        to write over the file and have just one line as a result.
+
+        The timestamp that is written is a date and time consisting of year, month, day, hour, minute and second.
+        To have a timestamp with a single timestamp value, use :ref:`log_data`.
+
+LogEntry
+--------------
+
+        Add an entry to the log file at the INFO level.  The string to be written is in the 'option' field.  The 'device' field is 
+        not used.
+
+        Example:
+
+                ``0 LogEntry None This is a comment``
+
+MonitorOutput
+--------------
+
+        Read output from device, either with a prompt or from
+        a nonpolled instrument without a prompt.
+
+        Reads the output string from a device and writes to either stdout
+        or a file.
+
+        'option' contains the command to send to device if it needs a prompt before
+        sending output.  Use 'None' for a device that outputs data
+        without prompting.
+
+        Does not do any processing of the output string, such as averaging,
+        parsing the string etc.  To do those operations, use the
+        MonitorDevice action.
+
+        Filename and filemode are optional.  If not set, then print to stdout
+
+        Action line syntax:
+
+             ``0 MonitorOutput device None [Filename] [Append|Replace]``
+
+.. _monitor_device:
+
+MonitorDevice
+--------------
+
+        Read data from either a polled or non-polled instrument that outputs single or multiple
+        data streams as one digital output string.
+        It skips any leading character strings in the instrument output.
+        Sampling rate is set by the instrument for non-polled devices,
+        hard coded here to 1 second for polled devices.
+
+        Can either loop forever OR take a single reading (or single average reading).
+        Print each reading to stdout OR an average from a specified
+        time period to stdout.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm when looping forever.  Only way to stop hm is by
+        killing the process.
+
+        Option string can have up to 6 fields. Only the first is required:
+
+            ``command timeavg forever reg_time filename replace|append``
+
+        Action line syntax:
+
+            ``0 MonitorDevice device command time_avg? forever? reg_time_interval? filename? filemode?``
+
+        where
+
+            * **command** - string to prompt device for output.  Use 'None' for non-polled device.
+
+            * **time_avg** - length of time in seconds to average readings before printing out the values. A time_avg value of 0 will cause hm to print out every reading.
+
+            * **forever** - specifies wheather to loop forever (1) or to stop after one time_avg cycle (0). Default is 0.
+
+            * **reg_time_interval** - 0 or 1 specifies if the user wants the timestamps to be on a regular repeating pattern.  For example 10 second averages would be recorded with timestamps of 10, 20, 30, etc seconds after the minute.  Default is 0.
+
+            * **filename** - prints data lines to file "filename".  Default is to stdout
+
+            * **filemode** - one of 'append' or 'replace'.  If 'append' add new lines to filename, otherwise write over filename.  Default is 'replace'.
+
+
+        For example,
+
+        ``0  MonitorDevice device  None 10 1``
+
+            will read device and average the readings for 10 seconds
+            before printing out, and it will loop forever.
+
+        ``0  MonitorDevice device  None 10``
+
+            will read device and average the readings for 10 seconds
+            before printing out, and it will NOT loop forever so will exit
+            after the first 10 sec average is printed.
+
+        ``0  MonitorDevice device  None 0 1``
+
+            will read device but will NOT average, instead it will print out
+            all of the data points and it will continue forever.
+
+        ``0  MonitorDevice device Read? 10  1  1``
+
+            will read device and average the readings for 10 sec, loop forever,
+            and keep a regular pattern to the timestamps (ie every even 10 seconds of the minute).
+            Prompts the device with the 'Read?' string.
+
+        An action line of
+
+        ``0  MonitorDevice device  None 0 1 0 filename replace|append``
+
+        should be the same as the MonitorOutput action.
+
+
+
+Noop
+-----------
+
+        No operation, i.e. do nothing.  Useful for inserting delays
+        at the end of actions before quitting.
+
+        Action line syntax:
+
+             ``0 Noop None None``
+
+
+.. _print_data:
+
+PrintData
+---------
+        Print the *last_data* value to stdout using given format.  The device name that
+        acquired the data must also be used here.
+
+        Action line syntax:
+
+                ``0 Printdata device format``
+
+        where format is a two field format to handle time and a number, 
+        e.g. "%d %5.2f"
+
+PrintDataGMT
+--------------
+
+.. _print_reply:
+
+PrintReply
+-----------
+
+        Query a device, get an answer, then print the answer to stdout.
+
+        Action line syntax:
+
+                ``0 PrintReply device string``
+
+        where *string* is the query string to send to the device.
+
+QueryDevice
+--------------
+
+        Same as CheckDevice
+
+.. _read_device:
+
+ReadDevice
+-----------
+
+        Read one line from a device without prompting.  Currently the answer from the device is only written
+        to the log file.
+
+        Action line syntax:
+
+                ``0 ReadDevice device None``
+
+.. _scale_value:
+
+ScaleValue
+--------------
+
+        Do a linear scaling of the last_data value.  The device that acquired the last_data value
+        must also be included here.
+
+        Action line syntax:
+
+                ``0 ScaleValue device a b``
+
+        where y = a+b*x
+
+
+SendCommand
+--------------
+
+        Send a string to a device without trying to read an answer.
+
+        Action line syntax:
+
+                ``0 SendCommand device string``
+
+SendMultilineCommand
+--------------------
+
+ShowStatus
+-----------
+
+        Write a one line string to a file.  The file is always overwritten.
+
+        Action line syntax:
+
+                ``0 ShowStatus filename string``
+
+
+StartLog
+--------------
+
+StopLog
+--------------
+
+
+

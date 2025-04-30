@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_flask_data &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_flask_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_flask_data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">FlaskData - A class for getting flask data from the database</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">ccg_db_conn</span>
+<span class="kn">import</span> <span class="nn">ccg_dbutils</span>
+
+
+<div class="viewcode-block" id="FlaskData"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData">[docs]</a><span class="k">class</span> <span class="nc">FlaskData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parameter : parameter number or parameter formula</span>
+<span class="sd">        site : Site code or site number</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">        Usage of this class is a 3 step process</span>
+
+<span class="sd">        1. Create the class</span>
+<span class="sd">        2. Configure settings for filtering data</span>
+<span class="sd">        3. Run the query</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        parameter = &quot;CO2&quot;</span>
+<span class="sd">        site = &quot;MLO&quot;</span>
+<span class="sd">        t1 = datetime.datetime(2010, 1, 1)</span>
+<span class="sd">        t2 = datetime.datetime(2020, 1, 1)</span>
+<span class="sd">        f = FlaskData(parameter, site)</span>
+<span class="sd">        f.setRange(t1, t2)</span>
+<span class="sd">        result = f.run()</span>
+
+<span class="sd">    Additional methods are available to filter results.</span>
+
+<span class="sd">    Results:</span>
+
+<span class="sd">        Results are generated with the ``run()`` method. Default result</span>
+<span class="sd">        is a list of dicts, each dict representing a row of data for the flask.</span>
+<span class="sd">        Results can be changed to either a dict of numpy arrays or a pandas DataFrame</span>
+<span class="sd">        with arguments to the ``run()`` method.</span>
+<span class="sd">        Data fields included in the results are:</span>
+
+<span class="sd">        * event_number - flask event number</span>
+<span class="sd">        * site_num - site number</span>
+<span class="sd">        * code - three letter site code</span>
+<span class="sd">        * time_decimal - decimal value for the sample date</span>
+<span class="sd">        * date - datetime object for sample date and time</span>
+<span class="sd">        * flaskid - flask id</span>
+<span class="sd">        * method - flask sampling method</span>
+<span class="sd">        * strategy_num - flask sampling strategy number</span>
+<span class="sd">        * altitude - flask sampling altitude</span>
+<span class="sd">        * latitude - flask sampling latitude</span>
+<span class="sd">        * longitude - flask sampling longitude</span>
+<span class="sd">        * event_comment - flask event comment</span>
+<span class="sd">        * data_number - data analysis number</span>
+<span class="sd">        * gas - gas formula for given parameter</span>
+<span class="sd">        * value - analzyed mole fraction value</span>
+<span class="sd">        * qcflag - qc flag (renamed from &#39;flag&#39;)</span>
+<span class="sd">        * system - analysis system name</span>
+<span class="sd">        * inst - analysis analyzer id</span>
+<span class="sd">        * adate - datetime object for analysis date and time</span>
+<span class="sd">        * use_tags - use tags for flagging if 1</span>
+<span class="sd">        * comment - analysis comment</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        Not setting the &#39;site&#39; argument or not including any filter methods can</span>
+<span class="sd">        give a very large amount of results.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s2">&quot;ccgg&quot;</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_default</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_flagged</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">ccg_db_conn</span><span class="o">.</span><span class="n">RO</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">database</span><span class="p">)</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="n">ccg_dbutils</span><span class="o">.</span><span class="n">dbUtils</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">paramnum</span> <span class="o">=</span> <span class="n">parameter</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">paramnum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getGasNum</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">site</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">sitenum</span> <span class="o">=</span> <span class="n">site</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sitenum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getSiteNum</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;flask_event e&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;flask_data d on e.num=d.event_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.site s on e.site_num=s.num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.parameter p on d.parameter_num=p.num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.num as event_number&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.site_num as site_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;s.code as code&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.dd as time_decimal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.date as date&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.time as time&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.id as flaskid&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.me as method&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.strategy_num as strategy_num&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.alt as altitude&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.lat as latitude&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.lon as longitude&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.comment as event_comment&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.num as data_number&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;p.formula as gas&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.value as value&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.unc as unc&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.meas_unc as meas_unc&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.flag as qcflag&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.system as system&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.inst as inst&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.date as adate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.time as atime&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.update_flag_from_tags as use_tags &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;d.comment as comment &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;e.dd&quot;</span><span class="p">)</span>
+
+<span class="c1">#        self.sql.where(&quot;d.value &gt; -999&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.parameter_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">paramnum</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">site</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.site_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sitenum</span><span class="p">)</span>
+
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.run"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_arrays</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Run the query and return results</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            as_arrays : If True, convert the result to a single dict of</span>
+<span class="sd">                numpy arrays.  The key is the field name, and the value</span>
+<span class="sd">                is a numpy array of results for that field.</span>
+
+<span class="sd">            as_dataframe : If True, return results as a pandas DataFrame</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            By default the result is a list of dicts, each dict</span>
+<span class="sd">            representing a row of data for the flask. This can be changed by</span>
+<span class="sd">            setting the *as_arrays* or *as_dataframe* arguments.  Only one of the</span>
+<span class="sd">            arguments should be set.</span>
+
+<span class="sd">            Results are also stored in the class attribute &#39;results&#39;, that is</span>
+<span class="sd">            ``f.results``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_flagged</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;SUBSTRING(d.flag,1,1) != &#39;.&#39;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.flag like &#39;.__&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_flagged</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;SUBSTRING(d.flag,0,1) != &#39;.&#39;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.flag like &#39;_._&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_flagged</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;SUBSTRING(d.flag,0,1) != &#39;.&#39; OR SUBSTRING(d.flag,1,1) != &#39;.&#39;&quot;</span><span class="p">)</span>
+            <span class="c1"># else use everything</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.flag like &#39;.._&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.value &gt; -999&quot;</span><span class="p">)</span>
+
+
+<span class="c1">#        print(self.db.sql.cmd())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span>
+<span class="c1">#        print(result)</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+        <span class="c1"># convert separate date and time fields to single datetime</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># time = 0</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">t0</span><span class="p">)</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+            <span class="n">t2</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;adate&#39;</span><span class="p">],</span> <span class="n">t0</span><span class="p">)</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;atime&#39;</span><span class="p">]</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t1</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;adate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t2</span>
+            <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;atime&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">as_dataframe</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">as_arrays</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+            <span class="c1"># convert list of dicts to dict of lists</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<span class="c1">#            {d[key].append(row[key]) for row in result for key in row}</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">d2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.find"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">adate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find the result for the given event number and analysis date</span>
+
+<span class="sd">        This method can only be used after the ``run()`` method is run.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event (int) : event number</span>
+<span class="sd">            adate (datetime) : analysis date and time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;adate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">adate</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;event_number&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">event</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">row</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;event_number&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">event</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;adate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">adate</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">w</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">d</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;event_number&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">event</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;adate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">adate</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">df</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setEvents"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setEvents">[docs]</a>    <span class="k">def</span> <span class="nf">setEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Limit results to a single or list of event numbers &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;e.num in&quot;</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setDataNumber"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setDataNumber">[docs]</a>    <span class="k">def</span> <span class="nf">setDataNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datanum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Limit results to a single or list of data measurement numbers &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datanum</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.num in&quot;</span><span class="p">,</span> <span class="n">datanum</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">datanum</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setRange"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setRange">[docs]</a>    <span class="k">def</span> <span class="nf">setRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the date range for the results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start (datetime or str) : Start date of data</span>
+<span class="sd">            end (datetime or str) : End date of data</span>
+
+<span class="sd">        Data is up to but not including end date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date &gt;= </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">end</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date &lt; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setProject"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setProject">[docs]</a>    <span class="k">def</span> <span class="nf">setProject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the project number for results.</span>
+
+<span class="sd">        Default is to use all project numbers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_num : Project number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.project_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">project_num</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setPrograms"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setPrograms">[docs]</a>    <span class="k">def</span> <span class="nf">setPrograms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_nums</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set program numbers to use.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prog_nums : List of program numbers to include</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prog_nums</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.program_num=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">prog_nums</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prog_nums</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;d.program_num in&quot;</span><span class="p">,</span> <span class="n">prog_nums</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setMethods"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setMethods">[docs]</a>    <span class="k">def</span> <span class="nf">setMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the flask sample methods to include.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method_list : List of flask method codes to include</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">method_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s2">&quot;e.me in&quot;</span><span class="p">,</span> <span class="n">method_list</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setStrategy"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setStrategy">[docs]</a>    <span class="k">def</span> <span class="nf">setStrategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_flask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_pfp</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the strategy number to include in the database query.</span>
+<span class="sd">        Default is to include all strategies.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            use_flask : If true, include strategy number 1</span>
+<span class="sd">            use_pfp : If true, include strategy number 2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">use_flask</span> <span class="ow">and</span> <span class="n">use_pfp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;(e.strategy_num=1 OR e.strategy_num=2)&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">use_flask</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.strategy_num=1&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">use_pfp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.strategy_num=2&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setSystem"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setSystem">[docs]</a>    <span class="k">def</span> <span class="nf">setSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sysname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Restrict results to certain analysis systems</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sysname : An explicit name or string containing</span>
+<span class="sd">                mysql wildcard characters like &#39;%&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.system like </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sysname</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setBin"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setBin">[docs]</a>    <span class="k">def</span> <span class="nf">setBin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">binmin</span><span class="p">,</span> <span class="n">binmax</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set binning to include in results.</span>
+
+<span class="sd">        Data will be limited to where data from field &#39;method&#39; is between</span>
+<span class="sd">        &#39;binmin&#39; and &#39;binmax&#39;. For example, ``f.setBin(&quot;lat&quot;, 5, 15)``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method : Binning method, such as &#39;lat&#39;, &#39;lon&#39;.  This must</span>
+<span class="sd">                be a valid field name in the flask_event table</span>
+<span class="sd">            binmin : Minimum value to include</span>
+<span class="sd">            binmax : maximum value to include</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;e.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">method</span>  <span class="c1"># do it this way for python 2 compatibility</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot; &gt;= </span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="c1">#        s = f&quot;e.{method} &gt;= %s&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">binmin</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;e.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">method</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot; &lt;= </span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="c1">#        s = f&quot;e.{method} &lt;= %s&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">binmax</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setAnalysisDate"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setAnalysisDate">[docs]</a>    <span class="k">def</span> <span class="nf">setAnalysisDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">atime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Limit data to a specific analysis date &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.date=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">adate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">atime</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;d.time=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">atime</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.setFlaskPackage"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.setFlaskPackage">[docs]</a>    <span class="k">def</span> <span class="nf">setFlaskPackage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Limit data to specific flask package id</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            package_id (str): Package Id.  This is the part of the flask id before the &#39;-&#39; .</span>
+<span class="sd">                For example, a flask id of 3056-01 has a package_id of &#39;3056&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;substring_index(e.id,&#39;-&#39;,1)=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">package_id</span><span class="p">)</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.includeFlaggedData"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.includeFlaggedData">[docs]</a>    <span class="k">def</span> <span class="nf">includeFlaggedData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_flagged</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; include data where the second character of the flag is not &#39;.&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            only_flagged (bool) : If ``False``, flagged data is included with unflagged data,</span>
+<span class="sd">                If ``True``: ONLY flagged data is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_soft_flags</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_flagged</span> <span class="o">=</span> <span class="n">only_flagged</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.includeHardFlags"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.includeHardFlags">[docs]</a>    <span class="k">def</span> <span class="nf">includeHardFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; include data where the first character of the flag is not &#39;.&#39;</span>
+
+<span class="sd">        Data with 9&#39;d out values (-999.99) are not included.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_hard_flags</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.includeDefault"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.includeDefault">[docs]</a>    <span class="k">def</span> <span class="nf">includeDefault</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Include data that has default value (-999.99) &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_default</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="c1">#--------------------------------------------------------------</span>
+<div class="viewcode-block" id="FlaskData.showQuery"><a class="viewcode-back" href="../db_utils/flaskdb.html#ccg_flask_data.FlaskData.showQuery">[docs]</a>    <span class="k">def</span> <span class="nf">showQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Print out the query string &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">cmd</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">bind</span><span class="p">())</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">cmd</span><span class="p">()</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">bind</span><span class="p">())</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">FlaskData</span><span class="p">(</span><span class="s2">&quot;CO2&quot;</span><span class="p">,</span> <span class="s2">&quot;MLO&quot;</span><span class="p">)</span>
+<span class="c1">#    f = FlaskData(4, &quot;HPB&quot;)</span>
+<span class="c1">#    f = FlaskData(&quot;CO2&quot;, database=&#39;ccgg&#39;)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1">#    t3 = datetime.datetime(2020,3,11,14,28,18)</span>
+<span class="c1">#    f.setRange(start=t1, end=t2)</span>
+<span class="c1">#    f.includeFlaggedData()</span>
+<span class="c1">#    f.includeHardFlags()</span>
+<span class="c1">#    f.includeDefault()</span>
+<span class="c1">#    f.setDataNumber(10304125)</span>
+<span class="c1">#    f.setAnalysisDate(t3.date(), t3.time())</span>
+<span class="c1">#    f.setEvents([471400, 471401])</span>
+<span class="c1">#    f.setEvents(509863)</span>
+<span class="c1">#    f.setMethods([&#39;P&#39;, &#39;S&#39;])</span>
+<span class="c1">#    f.setStrategy(use_flask=True)</span>
+<span class="c1">#    f.setBin(&#39;lat&#39;, 20, 40)</span>
+<span class="c1">#    f.setBin(&#39;lon&#39;, -120, -110)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">showQuery</span><span class="p">()</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+<span class="c1">#    results = f.run(as_arrays=True)</span>
+
+<span class="c1">#    for row in results: print(row)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+<span class="c1">#    dt = datetime.datetime(2020, 3, 11, 14, 42, 39)</span>
+<span class="c1">#    row = f.find(471402, dt)</span>
+<span class="c1">#    print(row)</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="c1">#    results.plot(&#39;date&#39;, &#39;value&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

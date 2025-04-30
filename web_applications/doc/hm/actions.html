@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Actions &mdash; python hm 0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="hmsubs" href="hmsubs.html" />
+    <link rel="prev" title="Modules" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> python hm
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Starting hm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Actions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#actions-by-module">Actions by Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hmsubs.html">hmsubs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq.html">daq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hp35900.html">hp35900</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">scpi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valco.html">valco</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runaction.html">RunAction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obsolete.html">Obsolete Actions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Actions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/actions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="actions">
+<span id="id1"></span><h1>Actions<a class="headerlink" href="#actions" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><p><strong>hm</strong> uses a list of lines called ‘action lines’ to determine what it is supposed to do.
+Multiple lines can be stored in a file, and the file is passed into <strong>hm</strong> on <a class="reference internal" href="startup.html#startup"><span class="std std-ref">Starting hm</span></a>.
+Each action line consists of 4 parts, separated by spaces:</p>
+<ul class="simple">
+<li><p>time</p></li>
+<li><p>action name</p></li>
+<li><p>device</p></li>
+<li><p>options</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">time</span></code> value is a time in seconds after the start of <strong>hm</strong> at which to execute the desited <em>action</em>.
+The <code class="docutils literal notranslate"><span class="pre">action</span> <span class="pre">name</span></code> is one of the actions described on separate pages.
+The <code class="docutils literal notranslate"><span class="pre">device</span></code> is the device name specified in the hm <a class="reference internal" href="config.html#config"><span class="std std-ref">Configuration</span></a> file.
+The <code class="docutils literal notranslate"><span class="pre">options</span></code> can be a single word or multiple words specifying the option values that are needed by the
+<em>action name</em>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> field has in addition two special ways of specifying the option values.  If the field is a
+single word that has ‘&#64;’ as the first character, then the values from the <a class="reference internal" href="config.html#config"><span class="std std-ref">Configuration</span></a> file that
+correspond to that name are substituted.  Secondly, if the field is of the from $1, $2, $3 …, then the
+$n is replaced with its corresponding command line argument when hm is started. For example,  if <strong>hm</strong>
+is started like this:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">hm</span> <span class="pre">-c</span> <span class="pre">hm.conf</span> <span class="pre">101</span> <span class="pre">&lt;</span> <span class="pre">close_relay.act</span></code></p>
+</div></blockquote>
+<p>and the file ‘close_relay.act’ has this:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">CloseRelay</span> <span class="pre">HP34970</span> <span class="pre">$1</span></code></p>
+</div></blockquote>
+<p>then the value ‘101’ will be substituted as the option value for the CloseRelay action.  The argument ‘101’
+is the first argument passed to <strong>hm</strong>, so it is used instead of ‘$1’.  Similarly, if there was a
+second argument following ‘101’, then that would be used instead of ‘$2’ and so on.</p>
+</div></blockquote>
+<section id="actions-by-module">
+<h2>Actions by Module<a class="headerlink" href="#actions-by-module" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Here is a list of all actions (<em>in alphabetical order</em>) for each module.  There can be the same action name in a subclass
+of <strong>hmsubs</strong>, and that method will be used instead of the method in <strong>hmsubs</strong> if that module is used by the device.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference internal" href="hmsubs.html#hmsubs"><span class="std std-ref">hmsubs</span></a></dt><dd><ul>
+<li><p><a class="reference internal" href="hmsubs.html#checkdevice"><span class="std std-ref">CheckDevice</span></a></p></li>
+<li><p>DeviceClear</p></li>
+<li><p>LockInterface</p></li>
+<li><p>LogData</p></li>
+<li><p>LogDataGMT</p></li>
+<li><p>LogEntry</p></li>
+<li><p>MonitorOutput</p></li>
+<li><p>MonitorDevice</p></li>
+<li><p>Noop</p></li>
+<li><p>PrintData</p></li>
+<li><p>PrintDataGMT</p></li>
+<li><p>PrintReply</p></li>
+<li><p><a class="reference internal" href="hmsubs.html#checkdevice"><span class="std std-ref">QueryDevice</span></a></p></li>
+<li><p>ReadDevice</p></li>
+<li><p>ScaleValue</p></li>
+<li><p>SendCommand</p></li>
+<li><p>SendMultilineCommand</p></li>
+<li><p>ShowStatus</p></li>
+<li><p>StartLog</p></li>
+<li><p>StopLog</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="hp35900.html#hp35900"><span class="std std-ref">hp35900</span></a></dt><dd><ul>
+<li><p><a class="reference internal" href="hp35900.html#startrun"><span class="std std-ref">StartRun</span></a></p></li>
+<li><p><a class="reference internal" href="hp35900.html#stoprun"><span class="std std-ref">StopRun</span></a></p></li>
+<li><p><a class="reference internal" href="hp35900.html#storedata"><span class="std std-ref">StoreData</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>lgr <em>Under development</em></p></li>
+<li><dl class="simple">
+<dt>picarro <em>Under development</em></dt><dd><ul>
+<li><p>GetPicarroBuffer</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pp</dt><dd><ul>
+<li><p>PPRun</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="scpi.html#scpi"><span class="std std-ref">scpi</span></a></dt><dd><ul>
+<li><p>CloseRelay</p></li>
+<li><p>ConfigChannel</p></li>
+<li><p>DeviceClear</p></li>
+<li><p>MeasureChannel</p></li>
+<li><p>OpenRelay</p></li>
+<li><p>ReadChannel</p></li>
+<li><p>ReadData</p></li>
+<li><p>ReadNumber</p></li>
+<li><p>ReadValue</p></li>
+<li><p>SampleData</p></li>
+<li><p>ScaleChannel</p></li>
+<li><p>ScanData</p></li>
+<li><p>SingleScan</p></li>
+<li><p>StartScan</p></li>
+<li><p>StopScan</p></li>
+<li><p>SwitchValve</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="valco.html#valco"><span class="std std-ref">valco</span></a></dt><dd><ul>
+<li><p><a class="reference internal" href="valco.html#valco-turn-valve"><span class="std std-ref">TurnUniversalActuator</span></a></p></li>
+<li><p><a class="reference internal" href="valco.html#valco-turn-valve"><span class="std std-ref">TurnValve</span></a></p></li>
+<li><p><a class="reference internal" href="valco.html#valco-current-position"><span class="std std-ref">ValcoCurrentPosition</span></a></p></li>
+<li><p><a class="reference internal" href="valco.html#valco-find-stops"><span class="std std-ref">ValcoFindStops</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hmsubs.html" class="btn btn-neutral float-right" title="hmsubs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

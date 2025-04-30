@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>db_utils — Mysql database utility routines &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ccglib.python
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="conda.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">conda</span> <span class="pre">python</span></code> — Consistent python environment across gml servers</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">db_utils</span></code> — Mysql database utility routines</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/db_conn.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-db_utils.db_conn">
+<span id="db-utils-mysql-database-utility-routines"></span><h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">db_utils</span></code> — Mysql database utility routines<a class="headerlink" href="#module-db_utils.db_conn" title="Permalink to this headline"></a></h1>
+<p>This module provides classes and functions for various database needs, for example, connecting to the mysql database server, building &amp; running queries and returning result sets.</p>
+<section id="database-connection-and-query-class">
+<h2>Database connection and query class<a class="headerlink" href="#database-connection-and-query-class" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="db_utils.db_conn.RO">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">db_utils.db_conn.</span></span><span class="sig-name descname"><span class="pre">RO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ccgg'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#db_utils.db_conn.RO" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper class that can be instatiated to do multiple queries.
+Makes a readonly connection to specified db.</p>
+<p>Import and make readonly connection</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">db_utils.db_conn</span> <span class="k">as</span> <span class="nn">db_conn</span>
+<span class="n">db</span><span class="o">=</span><span class="n">db_conn</span><span class="o">.</span><span class="n">RO</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The default database is “ccgg”.  To specify another database, pass in the name to <a class="reference internal" href="#db_utils.db_conn.RO" title="db_utils.db_conn.RO"><code class="xref py py-func docutils literal notranslate"><span class="pre">RO()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">db_conn</span><span class="o">.</span><span class="n">RO</span><span class="p">(</span><span class="s2">&quot;reftank&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Connection closes automatically at end of script/variable scope.</p>
+<p>For database developer access, ProdDB() can be used for a read write connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Warning</dt>
+<dd class="field-odd"><p>ProdDB should only be used by authorized developers!</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="db_utils.db_conn.doquery">
+<span class="sig-prename descclassname"><span class="pre">db_utils.db_conn.</span></span><span class="sig-name descname"><span class="pre">doquery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">query</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">parameters=None</span></em>, <em class="sig-param"><span class="pre">numRows=-1</span></em>, <em class="sig-param"><span class="pre">form='dict'</span></em>, <em class="sig-param"><span class="pre">numpyFloat64=True</span></em>, <em class="sig-param"><span class="pre">outfile=None</span></em>, <em class="sig-param"><span class="pre">timerName=None</span></em>, <em class="sig-param"><span class="pre">commit=True</span></em>, <em class="sig-param"><span class="pre">multiInsert=False</span></em>, <em class="sig-param"><span class="pre">insert=False</span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#db_utils.db_conn.doquery" title="Permalink to this definition"></a></dt>
+<dd><p>This is used to issue a sql query or dml statement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query</dt>
+<dd class="field-odd"><p>SQL select or DML statement to be executed on database connection.</p>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p>Tuple or list of parameters matching in order query placeholders (see example). Bind parameters should be used in general for where clauses to prevent sql injection on unknown sourced params. If only 1 bind parameter, follow with , eg: (myvar,).  To pass insert/update to mysql null, use None in python bind value</p>
+</dd>
+<dt class="field-even">NumRows</dt>
+<dd class="field-even"><p>-1 (default) returns all rows or None if no results.  As a convienence, pass 0 to return the first value of the first row directly (no dataset wrappers, see form below).  See example.</p>
+</dd>
+<dt class="field-odd">Form</dt>
+<dd class="field-odd"><p>What form should result set be returned in.  None if no results and raises exception/exits on error.  All selects (except to csv) are limited by mem size or other python mysqldb constraints.</p>
+<p>Python native:</p>
+<ul class="simple">
+<li><p>‘dict’ (default) returns a list of row dictionaries with column names as keys.  None on no results.</p></li>
+<li><p>‘list’ (faster for large sets) returns a list of row lists.</p></li>
+</ul>
+<p>Numpy:</p>
+<ul class="simple">
+<li><p>‘numpy’ returns a dictionary of numpy arrays, 1 array for each column.  Column names are the keys to dictionary.</p></li>
+</ul>
+<p>if numpy and nympyFloat64 is true, number arrays that are automatically created as decimal.Decimal objects will be created as float64 types instead (default)</p>
+<ul class="simple">
+<li><p>‘text’ returns a nicely formatted list of strings</p></li>
+</ul>
+<p>File output: (requires outfile)</p>
+<ul class="simple">
+<li><p>‘csv’ sends to outfile in csv format.  all strings are quoted, embedded quotes are double quoted.  comma separator.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Output form csv is a scalable output as it fetches in chunks and can be used on any size dataset upto limits of mysql temporary table size (tested on 8 million rows).</p>
+</div>
+<ul class="simple">
+<li><p>‘tsv’ sends to outfile in tab separated format.  all strings are quoted, embedded quotes are double quoted.  comma separator</p></li>
+<li><p>‘dat’ sends formatted text lines to outfile</p></li>
+<li><p>‘txt’ sends formatted text lines to outfile</p></li>
+<li><p>‘excel’ sends excel compatible csv file to outfile</p></li>
+<li><p>‘npy’ creates a npy format result file that can be imported in other programs.(not programmed yet)</p></li>
+<li><p>‘csv-nq’ sends to outfile without any quoting</p></li>
+</ul>
+<p>Screen output:</p>
+<ul class="simple">
+<li><p>‘std’ formatted text output to standard out (using print)</p></li>
+</ul>
+</dd>
+<dt class="field-even">TimerName</dt>
+<dd class="field-even"><p>If timerName is passed, a the query is timed and results printed.</p>
+</dd>
+<dt class="field-odd">Commit</dt>
+<dd class="field-odd"><p>If True (default), then a commit is sent after the command.  This needs to be used on dml for inoodb tables because python turns off autocommit by default.  Pass False to use explicity transaction commands.</p>
+</dd>
+<dt class="field-even">MultiInsert</dt>
+<dd class="field-even"><p>Pass True for optimized bulk inserts.  Parameters should be a list of tuples.  See doMultiInsert() wrapper below for example.</p>
+</dd>
+<dt class="field-odd">Insert</dt>
+<dd class="field-odd"><p>Pass True to return lastinsertid (if appropriate)</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<p>Import and make readonly Connection, do select query using %s place holder for parameterized query to sanitize inputs</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">db_utils.db_conn</span> <span class="k">as</span> <span class="nn">db_conn</span>
+<span class="n">db</span><span class="o">=</span><span class="n">db_conn</span><span class="o">.</span><span class="n">RO</span><span class="p">()</span>
+<span class="n">a</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="s2">&quot;select num as data_num, v.* from flask_data v where date &gt; </span><span class="si">%s</span><span class="s2"> limit 10&quot;</span><span class="p">,(</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">,))</span>
+<span class="k">if</span> <span class="n">a</span><span class="p">:</span>
+ <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">a</span> <span class="p">:</span>
+  <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;num: </span><span class="si">%s</span><span class="s2"> date: </span><span class="si">%s</span><span class="s2"> time: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_num&#39;</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])))</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num</span><span class="p">:</span> <span class="mi">6343672</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6343929</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6344186</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6344443</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6344700</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6344957</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6345214</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6345471</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6345728</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">num</span><span class="p">:</span> <span class="mi">6345985</span> <span class="n">date</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span>
+</pre></div>
+</div>
+<p>Get single value directly by passing numRows=0</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="s2">&quot;select count(*) from flask_event&quot;</span><span class="p">,</span> <span class="n">numRows</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mi">494372</span>
+</pre></div>
+</div>
+<p>Select into a dict of numpy col arrays by using form=’numpy’</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="s2">&quot;select data_num,ev_datetime,site,lat,lon from flask_data_view where site=</span><span class="si">%s</span><span class="s2"> limit 10&quot;</span><span class="p">,(</span><span class="s1">&#39;MLO&#39;</span><span class="p">,),</span><span class="n">form</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span> <span class="c1">#this is a numpy.float64 array of lats</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>[19.53 19.53 19.53 19.53 19.53 19.53 19.53 19.53 19.53 19.53]
+&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div>
+</div>
+<p>You can use the BldSQL sql object to build a query (see it’s documentation), which is convient when building programmatically.
+As a convience, If you don’t pass query (or parameters), then the BldSQL object is used to generate the query (and parameters)
+You could also use sql.cmd() and sql.bind() to get them</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sql</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">sql</span> <span class="c1">#handle for the query builder. See bldsql.py for documentation.</span>
+
+<span class="n">showMet</span><span class="o">=</span><span class="kc">True</span>
+
+<span class="n">sql</span><span class="o">.</span><span class="n">initQuery</span><span class="p">()</span> <span class="c1">#Resets/initializes</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;flask_event e&quot;</span><span class="p">)</span> <span class="c1">#Set tables and columns separately</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;e.num as event_num&quot;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">innerJoin</span><span class="p">(</span><span class="s2">&quot;gmd.site s on e.site_num=s.num&quot;</span><span class="p">)</span> <span class="c1">#Can use join syntax or regular where = joins</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s1">&#39;s.code as site&#39;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">orderby</span><span class="p">(</span><span class="s2">&quot;s.code&quot;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date&gt;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,(</span><span class="s1">&#39;2015-01-01&#39;</span><span class="p">))</span> <span class="c1">#binds parameters instead of passing text</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;e.date&lt;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,(</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">))</span>
+
+<span class="c1">#conditional branching</span>
+<span class="k">if</span><span class="p">(</span><span class="n">showMet</span><span class="p">):</span>
+    <span class="n">sql</span><span class="o">.</span><span class="n">leftJoin</span><span class="p">(</span><span class="s2">&quot;flask_met met on e.num=met.event_num&quot;</span><span class="p">)</span> <span class="c1">#outer join</span>
+    <span class="n">sql</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;met.narr_spec_humidity&quot;</span><span class="p">)</span>
+
+<span class="c1">#bind multiple</span>
+<span class="n">sites</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;aao&#39;</span><span class="p">,</span><span class="s1">&#39;crv&#39;</span><span class="p">,</span><span class="s1">&#39;bld&#39;</span><span class="p">)</span>
+<span class="n">sql</span><span class="o">.</span><span class="n">wherein</span><span class="p">(</span><span class="s1">&#39;s.code in&#39;</span><span class="p">,</span> <span class="n">sites</span><span class="p">)</span>
+
+<span class="n">a</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">()</span> <span class="c1">#returns list of dicts by default</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event: </span><span class="si">%s</span><span class="s2"> site: </span><span class="si">%s</span><span class="s2"> shum: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;event_num&#39;</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;site&#39;</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;narr_spec_humidity&#39;</span><span class="p">]))</span>
+
+<span class="n">a</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;/tmp/out.csv&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;csv&#39;</span><span class="p">)</span> <span class="c1">#write csv file</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">:</span> <span class="mi">380113</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380114</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380115</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380116</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380117</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380118</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380119</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380120</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380121</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+<span class="n">Event</span><span class="p">:</span> <span class="mi">380122</span> <span class="n">site</span><span class="p">:</span> <span class="n">BLD</span> <span class="n">shum</span><span class="p">:</span> <span class="mf">0.003</span>
+</pre></div>
+</div>
+<p>See /ccg/src/db/db_utils/examples.py to run these examples</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="db_utils.db_conn.doMultiInsert">
+<span class="sig-prename descclassname"><span class="pre">db_utils.db_conn.</span></span><span class="sig-name descname"><span class="pre">doMultiInsert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxLen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#db_utils.db_conn.doMultiInsert" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function to do an optimized bulk insert of many rows.  Particularly convienent if doing inserts in a loop.  You must call with all=True after loop to send through any remaining.  Returns True when data was submitted and params[] should be cleared (see below), false if we haven’t hit the threshold yet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Sql</dt>
+<dd class="field-odd"><p>Insert statment with %s placeholders for bind variables</p>
+</dd>
+<dt class="field-even">Params</dt>
+<dd class="field-even"><p>List of bind variable lists (one list for each insert)</p>
+</dd>
+<dt class="field-odd">MaxLen</dt>
+<dd class="field-odd"><p>Max # of inserts to accumulate before sending in.</p>
+</dd>
+<dt class="field-even">All</dt>
+<dd class="field-even"><p>True to send through any remaining inserts even if we haven’t yet hit maxLen.  False to accumulate.</p>
+</dd>
+</dl>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">i</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">sql</span><span class="o">=</span><span class="s2">&quot;insert mund_dev.t_brmAerodyneData (dt,c2h6,ch4) values (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">)&quot;</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fh</span><span class="o">.</span><span class="n">readf</span><span class="p">(</span><span class="n">delim</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="n">skip_lines</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+   <span class="n">c2h6</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="n">ch4</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+   <span class="n">dt</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+   <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">dt</span><span class="p">,</span><span class="n">c2h6</span><span class="p">,</span><span class="n">ch4</span><span class="p">])</span>
+   <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doMultiInsert</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span><span class="n">params</span><span class="p">):</span><span class="n">params</span><span class="o">=</span><span class="p">[]</span><span class="c1">#When returns true, params list should be reset</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">doMultiInsert</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="c1">#Send any remaining through.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

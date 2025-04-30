@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hmsubs &mdash; python hm 0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="daq" href="daq.html" />
+    <link rel="prev" title="Actions" href="actions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> python hm
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Starting hm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">hmsubs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#checkdevice-or-querydevice">CheckDevice or QueryDevice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deviceclear">DeviceClear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lockinterface">LockInterface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logdata">LogData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logdatagmt">LogDataGMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logentry">LogEntry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitoroutput">MonitorOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitordevice">MonitorDevice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#noop">Noop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#printdata">PrintData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#printdatagmt">PrintDataGMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#printreply">PrintReply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#querydevice">QueryDevice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#readdevice">ReadDevice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scalevalue">ScaleValue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sendcommand">SendCommand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sendmultilinecommand">SendMultilineCommand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#showstatus">ShowStatus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#startlog">StartLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stoplog">StopLog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="daq.html">daq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hp35900.html">hp35900</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">scpi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valco.html">valco</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runaction.html">RunAction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obsolete.html">Obsolete Actions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>hmsubs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/hmsubs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hmsubs">
+<span id="id1"></span><h1>hmsubs<a class="headerlink" href="#hmsubs" title="Permalink to this heading"></a></h1>
+<section id="checkdevice-or-querydevice">
+<span id="checkdevice"></span><h2>CheckDevice or QueryDevice<a class="headerlink" href="#checkdevice-or-querydevice" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Send a command string to a device, and read back the one line answer.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">QueryDevice</span> <span class="pre">device</span> <span class="pre">string</span></code></p>
+</div></blockquote>
+<p>where <em>string</em> is the query string to send to the device.</p>
+<p>This action is intended to check that a device is on and responding to the computer.
+The answer to the query is logged.  If no anwer is returned from the device, an error will be logged.</p>
+<p>Example</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">CheckDevice</span> <span class="pre">hp34970</span> <span class="pre">&#64;query_34970</span></code></p>
+</div></blockquote>
+<p>Result:</p>
+<blockquote>
+<div><p>A line in the hm log file is written on success.  hm exits on failure.</p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="deviceclear">
+<h2>DeviceClear<a class="headerlink" href="#deviceclear" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Send the command to clear a device.  The command string is a hex 03 ‘x03’. No options are used.</p>
+<p>Example:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">DeviceClear</span> <span class="pre">hp34970</span> <span class="pre">None</span></code></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Result:</dt><dd><p>Sends reset string to device.</p>
+</dd>
+</dl>
+<p><strong>TODO - Make reset string an option that can be put in config file.</strong></p>
+</div></blockquote>
+</section>
+<section id="lockinterface">
+<h2>LockInterface<a class="headerlink" href="#lockinterface" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Lock the interface to a device for excluse use of the device.</p>
+<p>This allows multiple actions to be run on a device without any
+other process interfering.</p>
+<dl class="simple">
+<dt>To lock:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">LockInterface</span> <span class="pre">devicename</span> <span class="pre">Lock</span></code></p>
+</dd>
+<dt>To unlock</dt><dd><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">LockInterface</span> <span class="pre">devicename</span> <span class="pre">Unlock</span></code></p>
+</dd>
+</dl>
+<p>Example usage:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>0 LockInterface hp34970 LOCK
+0 ShowStatus sys.status Measuring channel 102
+0 ReadValue hp34970 @channel_102
+0 ScaleValue hp34970 @scale_102
+0 LogDataGMT /data/qc/2012/ndir_temp/2012-11-07 Append
+0 ShowStatus sys.status Measuring channel 103
+0 ReadValue hp34970 @channel_103
+0 ScaleValue hp34970 @scale_103
+0 LogDataGMT /data/qc/2012/sample_flow/2012-11-07 Append
+0 LockInterface hp34970 UNLOCK
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="logdata">
+<span id="log-data"></span><h2>LogData<a class="headerlink" href="#logdata" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Write the value stored in the ‘last_data’ variable to a file.
+Data is either appended to or replaces the file, depending on
+the value of option.  Default is to append.
+Include the time stamp in local time when data was taken.
+The filename is in the ‘device’ variable.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">LogData</span> <span class="pre">filename</span> <span class="pre">Append</span> <span class="pre">|</span> <span class="pre">Replace</span></code></p>
+</div></blockquote>
+<p>Use the option value ‘Append’ to add a line of data to the file, and ‘Replace’
+to write over the file and have just one line as a result.</p>
+<p>The timestamp that is written is a Unix timestamp, i.e. time in seconds since
+Jan 1, 1970.  To have a timestamp with a calendar date and time, use <a class="reference internal" href="#log-datagmt"><span class="std std-ref">LogDataGMT</span></a>.</p>
+</div></blockquote>
+</section>
+<section id="logdatagmt">
+<span id="log-datagmt"></span><h2>LogDataGMT<a class="headerlink" href="#logdatagmt" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Write the value stored in the ‘last_data’ variable to a file.
+Data is either appended to or replaces the file, depending on
+the value of option.  Default is to append.
+Include the time stamp in GMT when data was taken.
+The filename is in the ‘device’ variable.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">LogDataGMT</span> <span class="pre">filename</span> <span class="pre">Append</span> <span class="pre">|</span> <span class="pre">Replace</span></code></p>
+</div></blockquote>
+<p>Use the option value ‘Append’ to add a line of data to the file, and ‘Replace’
+to write over the file and have just one line as a result.</p>
+<p>The timestamp that is written is a date and time consisting of year, month, day, hour, minute and second.
+To have a timestamp with a single timestamp value, use <a class="reference internal" href="#log-data"><span class="std std-ref">LogData</span></a>.</p>
+</div></blockquote>
+</section>
+<section id="logentry">
+<h2>LogEntry<a class="headerlink" href="#logentry" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Add an entry to the log file at the INFO level.  The string to be written is in the ‘option’ field.  The ‘device’ field is
+not used.</p>
+<p>Example:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">LogEntry</span> <span class="pre">None</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">comment</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="monitoroutput">
+<h2>MonitorOutput<a class="headerlink" href="#monitoroutput" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Read output from device, either with a prompt or from
+a nonpolled instrument without a prompt.</p>
+<p>Reads the output string from a device and writes to either stdout
+or a file.</p>
+<p>‘option’ contains the command to send to device if it needs a prompt before
+sending output.  Use ‘None’ for a device that outputs data
+without prompting.</p>
+<p>Does not do any processing of the output string, such as averaging,
+parsing the string etc.  To do those operations, use the
+MonitorDevice action.</p>
+<p>Filename and filemode are optional.  If not set, then print to stdout</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MonitorOutput</span> <span class="pre">device</span> <span class="pre">None</span> <span class="pre">[Filename]</span> <span class="pre">[Append|Replace]</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="monitordevice">
+<span id="monitor-device"></span><h2>MonitorDevice<a class="headerlink" href="#monitordevice" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Read data from either a polled or non-polled instrument that outputs single or multiple
+data streams as one digital output string.
+It skips any leading character strings in the instrument output.
+Sampling rate is set by the instrument for non-polled devices,
+hard coded here to 1 second for polled devices.</p>
+<p>Can either loop forever OR take a single reading (or single average reading).
+Print each reading to stdout OR an average from a specified
+time period to stdout.</p>
+<p>Be warned that this routine does NOT return to the main
+loop in hm when looping forever.  Only way to stop hm is by
+killing the process.</p>
+<p>Option string can have up to 6 fields. Only the first is required:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">timeavg</span> <span class="pre">forever</span> <span class="pre">reg_time</span> <span class="pre">filename</span> <span class="pre">replace|append</span></code></p>
+</div></blockquote>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MonitorDevice</span> <span class="pre">device</span> <span class="pre">command</span> <span class="pre">time_avg?</span> <span class="pre">forever?</span> <span class="pre">reg_time_interval?</span> <span class="pre">filename?</span> <span class="pre">filemode?</span></code></p>
+</div></blockquote>
+<p>where</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>command</strong> - string to prompt device for output.  Use ‘None’ for non-polled device.</p></li>
+<li><p><strong>time_avg</strong> - length of time in seconds to average readings before printing out the values. A time_avg value of 0 will cause hm to print out every reading.</p></li>
+<li><p><strong>forever</strong> - specifies wheather to loop forever (1) or to stop after one time_avg cycle (0). Default is 0.</p></li>
+<li><p><strong>reg_time_interval</strong> - 0 or 1 specifies if the user wants the timestamps to be on a regular repeating pattern.  For example 10 second averages would be recorded with timestamps of 10, 20, 30, etc seconds after the minute.  Default is 0.</p></li>
+<li><p><strong>filename</strong> - prints data lines to file “filename”.  Default is to stdout</p></li>
+<li><p><strong>filemode</strong> - one of ‘append’ or ‘replace’.  If ‘append’ add new lines to filename, otherwise write over filename.  Default is ‘replace’.</p></li>
+</ul>
+</div></blockquote>
+<p>For example,</p>
+<p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorDevice</span> <span class="pre">device</span>&#160; <span class="pre">None</span> <span class="pre">10</span> <span class="pre">1</span></code></p>
+<blockquote>
+<div><p>will read device and average the readings for 10 seconds
+before printing out, and it will loop forever.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorDevice</span> <span class="pre">device</span>&#160; <span class="pre">None</span> <span class="pre">10</span></code></p>
+<blockquote>
+<div><p>will read device and average the readings for 10 seconds
+before printing out, and it will NOT loop forever so will exit
+after the first 10 sec average is printed.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorDevice</span> <span class="pre">device</span>&#160; <span class="pre">None</span> <span class="pre">0</span> <span class="pre">1</span></code></p>
+<blockquote>
+<div><p>will read device but will NOT average, instead it will print out
+all of the data points and it will continue forever.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorDevice</span> <span class="pre">device</span> <span class="pre">Read?</span> <span class="pre">10</span>&#160; <span class="pre">1</span>&#160; <span class="pre">1</span></code></p>
+<blockquote>
+<div><p>will read device and average the readings for 10 sec, loop forever,
+and keep a regular pattern to the timestamps (ie every even 10 seconds of the minute).
+Prompts the device with the ‘Read?’ string.</p>
+</div></blockquote>
+<p>An action line of</p>
+<p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorDevice</span> <span class="pre">device</span>&#160; <span class="pre">None</span> <span class="pre">0</span> <span class="pre">1</span> <span class="pre">0</span> <span class="pre">filename</span> <span class="pre">replace|append</span></code></p>
+<p>should be the same as the MonitorOutput action.</p>
+</div></blockquote>
+</section>
+<section id="noop">
+<h2>Noop<a class="headerlink" href="#noop" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>No operation, i.e. do nothing.  Useful for inserting delays
+at the end of actions before quitting.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">Noop</span> <span class="pre">None</span> <span class="pre">None</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="printdata">
+<span id="print-data"></span><h2>PrintData<a class="headerlink" href="#printdata" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Print the <em>last_data</em> value to stdout using given format.  The device name that
+acquired the data must also be used here.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">Printdata</span> <span class="pre">device</span> <span class="pre">format</span></code></p>
+</div></blockquote>
+<p>where format is a two field format to handle time and a number,
+e.g. “%d %5.2f”</p>
+</div></blockquote>
+</section>
+<section id="printdatagmt">
+<h2>PrintDataGMT<a class="headerlink" href="#printdatagmt" title="Permalink to this heading"></a></h2>
+</section>
+<section id="printreply">
+<span id="print-reply"></span><h2>PrintReply<a class="headerlink" href="#printreply" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Query a device, get an answer, then print the answer to stdout.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">PrintReply</span> <span class="pre">device</span> <span class="pre">string</span></code></p>
+</div></blockquote>
+<p>where <em>string</em> is the query string to send to the device.</p>
+</div></blockquote>
+</section>
+<section id="querydevice">
+<h2>QueryDevice<a class="headerlink" href="#querydevice" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Same as CheckDevice</p>
+</div></blockquote>
+</section>
+<section id="readdevice">
+<span id="read-device"></span><h2>ReadDevice<a class="headerlink" href="#readdevice" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Read one line from a device without prompting.  Currently the answer from the device is only written
+to the log file.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ReadDevice</span> <span class="pre">device</span> <span class="pre">None</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="scalevalue">
+<span id="scale-value"></span><h2>ScaleValue<a class="headerlink" href="#scalevalue" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Do a linear scaling of the last_data value.  The device that acquired the last_data value
+must also be included here.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ScaleValue</span> <span class="pre">device</span> <span class="pre">a</span> <span class="pre">b</span></code></p>
+</div></blockquote>
+<p>where y = a+b*x</p>
+</div></blockquote>
+</section>
+<section id="sendcommand">
+<h2>SendCommand<a class="headerlink" href="#sendcommand" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Send a string to a device without trying to read an answer.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">SendCommand</span> <span class="pre">device</span> <span class="pre">string</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="sendmultilinecommand">
+<h2>SendMultilineCommand<a class="headerlink" href="#sendmultilinecommand" title="Permalink to this heading"></a></h2>
+</section>
+<section id="showstatus">
+<h2>ShowStatus<a class="headerlink" href="#showstatus" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Write a one line string to a file.  The file is always overwritten.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ShowStatus</span> <span class="pre">filename</span> <span class="pre">string</span></code></p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="startlog">
+<h2>StartLog<a class="headerlink" href="#startlog" title="Permalink to this heading"></a></h2>
+</section>
+<section id="stoplog">
+<h2>StopLog<a class="headerlink" href="#stoplog" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="actions.html" class="btn btn-neutral float-left" title="Actions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="daq.html" class="btn btn-neutral float-right" title="daq" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

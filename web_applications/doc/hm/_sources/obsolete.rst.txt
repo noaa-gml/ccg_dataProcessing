@@ -1,0 +1,237 @@
+.. highlight:: rest
+
+.. _obsolete:
+
+Obsolete Actions
+================
+
+        These actions were used in earlier versions of hm.  They have been remove in version 3.0.
+
+.. _monitor_data:
+
+MonitorData
+-----------
+
+        .. note::
+           Use ``MonitorDevice`` instead.
+
+        Read data from a device at a specified sample rate
+        forever, print each reading to stdout.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm.py.  Only way to stop hm is by killing the process.
+
+        Action line syntax:
+
+                ``0 MonitorData device interval time_avg [channel type]``
+
+        where *interval* is time between readings in milliseconds,
+        *time_avg* is length of time to average readings before printing 
+        out the values, in seconds. A *time_avg* value of 0 will cause
+        **hm** to print out every reading.
+
+        For example,
+
+                ``0 MonitorData device 500 10``
+
+        which will cause *device* to take a reading every 500 milliseconds
+        and averages these readings for 10 seconds before printing out.
+
+        The device must already be configured to take readings of the desired type.
+
+.. _monitor_nonpolled_data:
+
+MonitorNonPolledData
+---------------------
+
+        .. note::
+           Use ``MonitorDevice`` instead.
+
+        Read data from an non-polled instrument that outputs single or multiple 
+        data streams as one digital output string. That is, read from a device that
+        continuously sends out data without being prompted.
+
+        It skips any leading character strings in the instrument output.  
+        Sampling rate is set by the instrument.
+
+        Can either loop forever OR take a single reading (or single average reading).
+        Print either each reading to stdout OR an average from a specified 
+        time period to stdout.
+
+        Be warned that this routine does NOT return to the main
+        loop in hm.c when looping forever.  Only way to stop hm is by 
+        killing the process.
+
+        Action line syntax:
+
+                ``0 MonitorNonPolledData device  time_avg  forever?  gmt?  reg_time_interval?``
+
+        where options with ? are optional, and
+
+             *time_avg* is length of time in seconds to average readings before 
+             printing out the values. A time_avg value of 0 will cause
+             hm to print out every reading.
+
+             *forever?* specifies wheather to loop forever or to stop after one
+             time_avg cycle.
+             Default is to stop after one time_avg cycle.
+
+             *gmt?*  specifies use of GMT timestamps for data.  Set to 1 for GMT, 
+             0 or undefined for local time
+             Default is false.
+             
+             *reg_time_interval?*  specifies if the user wants the timestamps to be 
+             on a regular repeating pattern.  For example 10 second averages would
+             be recorded with timestamps of 10, 20, 30, etc seconds after the minute.
+             Default is false.
+
+
+        For example,
+
+            ``0  MonitorNonPolledData device  10 1``
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will loop forever.
+
+            ``0  MonitorNonPolledData device  10`` 
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will NOT loop forever so will exit 
+        after the first 10 sec average is printed.
+
+            ``0  MonitorNonPolledData device  0  1  1``
+
+        will read device but will NOT average, instead it will print out
+        all of the data points and it will continue forever.  The last option
+        causes the timestamps to be in GMT
+
+            ``0  MonitorNonPolledData device 10  1  0  1``
+
+        will read device and average the readings for 10 sec, loop forever, use local time
+        for the timestamp, and keep a regular pattern to the timestamps (ie
+        every even 10 seconds of the minutes)
+
+.. _monitor_polled_data:
+
+MonitorPolledData
+------------------
+
+        .. note::
+           Use ``MonitorDevice`` instead.
+
+        Read data from an polled instrument that outputs single or multiple 
+        data streams as one digital output string.  That is, read output from a device that 
+        requires a prompt before sending it's output.
+
+        Assumes channels already configured. 
+        !!!! NOT SURE THIS IS TRUE ----- It skips any leading character strings in the instrument output.  
+        !!!! SHOULD DO IF POSSIBLE !!!!
+
+        Sampling rate is set to 1 Hz.  
+
+        Can either loop forever OR take a single reading (or single average reading).
+        Print either each reading to stdout OR an average from a specified time period to stdout.
+
+        Be warned that this routine does NOT return to the main loop in hm.c when looping forever.  
+        Only way to stop hm is by killing the process.
+
+        Action line syntax, parameters with ? are optional:
+
+            ``0 MonitorPolledData device  command  time_avg  forever?  gmt?  reg_time_interval?``
+
+        where,
+
+             * *command* is the device command to retrieve data. Assume already configured.
+
+             * *time_avg* is length of time in seconds to average readings before printing out the values. A time_avg value of 0 will cause hm to print out every reading.
+
+             * *forever?*  specifies wheather to loop forever or to stop after one time_avg cycle.
+
+             * *gmt?*  specifies use of GMT timestamps for data.  Set to 1 for GMT, 0 or undefined for local time
+             
+             * *reg_time_interval?*  specifies if the user wants the timestamps to be on a regular repeating pattern.  For example 10 second averages would be recorded with timestamps of 10, 20, 30, etc seconds after the minute.
+
+
+        For example,
+
+            ``0  MonitorPolledData hp34970 READ?  10 1``
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will loop forever.
+
+            ``0  MonitorPolledData hp34970 READ?  10`` 
+
+        will read device and average the readings for 10 seconds
+        before printing out, and it will NOT loop forever so will exit 
+        after the first 10 sec average is printed.
+
+            ``0  MonitorPolledData hp34970 READ?  0  1  1``
+
+        will read device but will NOT average, instead it will print out
+        all of the data points and it will continue forever.  The last option
+        causes the timestamps to be in GMT
+
+            ``0  MonitorPolledData hp34970 READ? 10  1  0  1``
+
+        will read device and average the readings for 10 sec, loop forever, use local time
+        for the timestamp, and keep a regular pattern to the timestamps (ie
+        every even 10 seconds of the minute)
+
+        Example action file for hp34970::
+
+                0       SendCommand       hp34970 ROUTE:SCAN (@101,102,103)
+                0       SendCommand       hp34970 TRIG:SOURCE TIMER
+                0       SendCommand       hp34970 TRIG:TIMER 0
+                0       SendCommand       hp34970 TRIG:COUNT 1
+                0       MonitorPolledData hp34970 READ? 10 1 0 1
+
+MoveValve
+-----------
+
+        .. note::
+           This action was for older valco valves using a digital i/o actuator interface.  We no longer use these actuators.
+
+        Turn a multiport **Valco** valve to a specified position 
+        using random position lines on the valve.
+
+        Option string should contain:
+
+        * the name of the valve as given in the :ref:`config` file,
+
+        * the desired position of the valve
+
+        Action line syntax:
+
+             ``0       MoveValve       valve_name      position``
+
+        e.g.
+
+             ``0 MoveValve co2_select 5``
+
+        There must be an entry in the :ref:`config` file for each valve called,
+        of the form:
+
+          valve_name  digital_io_device n_positions  outport  inport
+
+        where
+
+          * *digital_io_device* is the name of the device with digital i/o lines
+          * *n_positions* is the maximum number of positions of the valve (e.g. 4, 8 or 16)
+          * *outport* is the address of the digital output port
+          * *inport* is the address of the LSB input of the valve position 
+
+        If inport < 0 then no readback of valve position is done.
+
+        Makes assumptions about how the valve is wired to the digital i/o board. 
+        The write lines are at the 5 bits starting at the inport address.
+        Bit values are:
+
+             | 0       1s
+             | 1       2s
+             | 2       4s
+             | 3       8s
+             | 4       10s
+             | 5       input enable
+             | 6       Home
+             | 7       Step
+

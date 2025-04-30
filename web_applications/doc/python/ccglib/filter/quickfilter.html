@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_quickfilter — Flag outliers of data using ccg_filter curve fit &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tank Calibrations and History" href="../tankcals/index.html" />
+    <link rel="prev" title="ccg_filter_params — Dataclass for ccg_filter parameters" href="filt_params.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Curve Fitting and Smoothing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ccgfilt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_filter</span></code> — Curve fitting and filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filt_params.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_filter_params</span></code> — Dataclass for ccg_filter parameters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_quickfilter</span></code> — Flag outliers of data using ccg_filter curve fit</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Curve Fitting and Smoothing</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_quickfilter</span></code> — Flag outliers of data using ccg_filter curve fit</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/filter/quickfilter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ccg-quickfilter-flag-outliers-of-data-using-ccg-filter-curve-fit">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_quickfilter</span></code> — Flag outliers of data using ccg_filter curve fit<a class="headerlink" href="#ccg-quickfilter-flag-outliers-of-data-using-ccg-filter-curve-fit" title="Permalink to this headline"></a></h1>
+<p>Perform an outlier rejection of data using ccg_filter curve fit to data</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_quickfilter.</span></span><span class="sig-name descname"><span class="pre">quickFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Perform filtering of data based on outliers from a smooth curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Date values.  Can be a list/array of decimal date values or datetime objects</p></li>
+<li><p><strong>y</strong> – Mole Fraction values.  Can be either a list or numpy array</p></li>
+<li><p><strong>flags</strong> – An integer value associated with the data point flag.
+0 = unflagged, include in fit, 1 = auto flagged.
+Any other value is not used and is not changed.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">summaryText</span></span></dt>
+<dd><p>Text summarizing changes to flags that were made</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">flags</span></span></dt>
+<dd><p>Array of new flags values for each data point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">xFiltered</span></span></dt>
+<dd><p>Array of new x points excluding flagged data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">yFiltered</span></span></dt>
+<dd><p>Array of new y points excluding flagged data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">filt</span></span></dt>
+<dd><p>ccgFilter object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ccgfilt.html#ccg_filter.ccgFilter" title="ccg_filter.ccgFilter">ccgFilter</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">params</span></span></dt>
+<dd><p>filterParameters object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>filterParameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setEnvelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigmaminus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmaplus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter.setEnvelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set envelope in terms of multiples of the residual standard deviation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setFilterParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">params...</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter.setFilterParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set filter and function parameters</p>
+</dd></dl>
+
+<dl class="simple">
+<dt>Results:</dt><dd><p>Creates three members with filtered results:</p>
+<ul class="simple">
+<li><p>xFiltered: array of x values for unflagged data</p></li>
+<li><p>yFiltered: array of y values for unflagged data</p></li>
+<li><p>flags: array of integer flag values. A value of 1 indicates automatically flagged data point</p></li>
+</ul>
+</dd>
+</dl>
+<p>The parameters for the filter can be set either through the convenience
+functions setEnvelope() and setFilterParameters(), or set directy with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">filterParameters</span><span class="p">()</span>
+<span class="n">qf</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qf</span> <span class="o">=</span> <span class="n">quickFilter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">qf</span><span class="o">.</span><span class="n">setEnvelope</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
+<span class="n">qf</span><span class="o">.</span><span class="n">setFilterParameters</span><span class="p">(</span><span class="n">short_cutoff</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">qf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">newx</span> <span class="o">=</span> <span class="n">qf</span><span class="o">.</span><span class="n">xFiltered</span>
+<span class="n">newy</span> <span class="o">=</span> <span class="n">qf</span><span class="o">.</span><span class="n">yFiltered</span>
+<span class="n">flags</span> <span class="o">=</span> <span class="n">qf</span><span class="o">.</span><span class="n">flags</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Perform an outlier rejection of data using ccg_filter curve fit to data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setEnvelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigmaminus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmaplus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter.setEnvelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set width of envelope for flagging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigmaminus</strong> (<em>float</em>) – Number of residual standard deviations below the curve</p></li>
+<li><p><strong>sigmaplus</strong> (<em>float</em>) – Number of residual standard deviations above the curve</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setFilterParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">short_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpoly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numharm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tzero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter.setFilterParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set parameter for the filter and curve fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>short_cutoff</strong> – Short term cutoff.</p></li>
+<li><p><strong>long_cutoff</strong> – Long term cutoff</p></li>
+<li><p><strong>interval</strong> – Sampling interval</p></li>
+<li><p><strong>numpoly</strong> – Number of polynomial terms to use in function fit</p></li>
+<li><p><strong>numharm</strong> – Number of harmonic terms to use in function fit</p></li>
+<li><p><strong>tzero</strong> – Value where x=0 in function coefficients</p></li>
+<li><p><strong>gain</strong> – Use amplitude gain factor if True</p></li>
+</ul>
+</dd>
+</dl>
+<p>All arguments are optional.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setFlagYears</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">years</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_quickfilter.html#quickFilter.setFlagYears"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set the years that can be flagged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>years</strong> (<em>list</em>) – list of years to be flagged, e.g. [2020,2021,2022]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="filt_params.html" class="btn btn-neutral float-left" title="ccg_filter_params — Dataclass for ccg_filter parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tankcals/index.html" class="btn btn-neutral float-right" title="Tank Calibrations and History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ccg_csv_utils &mdash; ccglib.python 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+          
+
+          
+            
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>ccg_csv_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ccg_csv_utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;CCG Utilities for CSV files</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#import pandas as pd</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span><span class="p">,</span><span class="n">concat</span><span class="p">,</span><span class="n">read_csv</span> 
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">pd_version</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span> 
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">nan</span>
+
+<span class="c1"># Read and concatenate CSV files that may have differing</span>
+<span class="c1"># number of colums.  Reads each csv file to get the header</span>
+<span class="c1"># and then uses pd.read_csv to read the columns for that </span>
+<span class="c1"># file.  Concatenates the data frames, filling with np.nan</span>
+<div class="viewcode-block" id="readcsv_bycol"><a class="viewcode-back" href="../ccg_csv_utils.html#ccg_csv_utils.readcsv_bycol">[docs]</a><span class="k">def</span> <span class="nf">readcsv_bycol</span><span class="p">(</span><span class="n">file_glob</span><span class="p">,</span><span class="n">usemod_ifexist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">prtmsgs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">num_skip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">delim</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Read and concatenate a list of CSV files specified by a file glob </span>
+<span class="sd">       that may have differing numbers of columns.  Reads each CSV file </span>
+<span class="sd">       to get the header and then uses pandas read_csv to read the columns </span>
+<span class="sd">       for that file. Concatenates the dataframes and fills any missing </span>
+<span class="sd">       column with np.nan.  You may specifiy the delimeter and a number</span>
+<span class="sd">       of lines to skip at the top of each file that contain meta data</span>
+<span class="sd">       (before the header line).</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        file_glob     (str): file glob of files to load (e.g. glob.glob(&quot;*.dat&quot;)</span>
+<span class="sd">        usemod_ifexist (bool): If True, read .mod file if it exists instad of the normal (e.g. .dat) file.  (Default = False)</span>
+<span class="sd">        prtmsgs        (bool): If True, print messages while reading files (Default = True)</span>
+<span class="sd">        num_skip       (int): number of rows of meta data to skip at top of file before the CSV header (Default = 0)</span>
+<span class="sd">        delim          (str): column delimeter (Default=&#39;,&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas.core.frame.DataFrame: dataframe containing all data/all columns for all files matching the file_glob</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        # Suppose data0.csv, data1.csv, data1.csv.mod, data2.csv exist</span>
+<span class="sd">        # in the current directory.  From ipython:</span>
+
+<span class="sd">        In [01]: import ccg_csv_utils as ccu</span>
+<span class="sd">        In [02]: import glob</span>
+<span class="sd">        In [03]: fl=glob.glob(&#39;*.csv&#39;)</span>
+<span class="sd">        In [04]: df=ccu.readcsv_bycol(fl,usemod_ifexist=True,prtmsgs=True,num_skip=1)</span>
+
+<span class="sd">        # Creates a single dataframe (df) that contains the data from </span>
+<span class="sd">        # all files ending in csv in the current directory. The files in</span>
+<span class="sd">        # this case would each have 1 meta data line before the csv header</span>
+<span class="sd">        # (therefore num_skip=1).</span>
+<span class="sd">        # Also since data1.csv.mod exists, and the usemod_ifexist</span>
+<span class="sd">        # parameter was set to True, data1.csv.mod is read instead of </span>
+<span class="sd">        # data1.csv</span>
+<span class="sd">       </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Create empty data (primary) data frame to put concatenated</span>
+    <span class="c1"># data frames into</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="n">list_</span><span class="o">=</span><span class="p">[]</span>
+
+    <span class="c1"># Loop through all files in the file_glob</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_glob</span><span class="p">:</span>
+        <span class="c1"># Let the user know what file is processing</span>
+        <span class="k">if</span> <span class="n">prtmsgs</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reading: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+
+        <span class="c1"># Create temp data frame for the current file being read</span>
+        <span class="n">dfs</span><span class="o">=</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="c1">#### towers_read.py already takes care of this step.</span>
+        <span class="c1"># Read .mod file over .dat file if .mod file exists</span>
+        <span class="k">if</span> <span class="n">usemod_ifexist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="o">+</span><span class="s1">&#39;.mod&#39;</span><span class="p">):</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="o">+</span><span class="s1">&#39;.mod&#39;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{}</span><span class="s2"> has .mod file, reading .mod file&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+                <span class="c1">#prYellow(&quot;\t{} has .mod file, reading .mod file&quot;.format(file))</span>
+
+        <span class="c1"># Open each file and read the header</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">num_skip</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_skip</span><span class="p">):</span>
+                    <span class="c1"># read but don&#39;t parse rows to be skipped.</span>
+                    <span class="n">x</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="c1"># The line after the skipped rows should contain a csv</span>
+            <span class="c1"># list of variables</span>
+            <span class="n">hdr</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+            <span class="n">hdr</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">]</span>
+            <span class="n">hdr</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">]</span>
+            <span class="n">hdr</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">]</span>
+            <span class="n">hdr</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">]</span>
+            <span class="n">hdr</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">]</span>
+ 
+            <span class="c1"># basic check for headers... </span>
+            <span class="c1"># All column headers should start with a letter(aka alpha) </span>
+            <span class="n">valid_header</span><span class="o">=</span><span class="kc">True</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">():</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">prtmsgs</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: metadata line not found for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: </span><span class="si">{}</span><span class="s2"> not loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+                    <span class="n">valid_header</span><span class="o">=</span><span class="kc">False</span>
+
+            <span class="c1"># skip loading file if headers aren&#39;t valid </span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_header</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># else grab the first line of data for length comparison</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+
+            <span class="c1"># Check if number of header and data columns match, else skip file</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">hdr</span><span class="p">):</span>
+                <span class="c1"># sort the header for good measure</span>
+                <span class="n">current_header</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">hdr</span><span class="p">)</span>
+            
+                <span class="c1"># Read the current file in to temporary dataframe</span>
+                <span class="n">dfs</span><span class="o">=</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="n">current_header</span><span class="p">,</span><span class="n">skiprows</span><span class="o">=</span><span class="n">num_skip</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prtmsgs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: number of header and data columns don&#39;t match&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: </span><span class="si">{}</span><span class="s2"> not loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+                <span class="k">continue</span> 
+        
+        <span class="c1"># Concatenate the primary df with the temporary df and</span>
+        <span class="c1"># fill any empty column(s) with nan.</span>
+        <span class="c1">#pandas_ver=int(pd.__version__.split(&#39;.&#39;)[1])</span>
+        <span class="n">pandas_ver</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">pd_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># 9/2021 PLH appending to list and concatenating in</span>
+        <span class="c1"># single step provide performance enhancement vs </span>
+        <span class="c1"># concatenating each time</span>
+        <span class="n">list_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span>
+        <span class="c1">#if pandas_ver &lt; 23:</span>
+        <span class="c1">#    df=concat([df,dfs]).fillna(nan)</span>
+        <span class="c1">#else:</span>
+        <span class="c1">#    #df=concat([df,dfs],sort=False).fillna(nan)</span>
+        <span class="c1">#    list_.append(dfs)</span>
+
+    
+    <span class="c1"># index from each dfs above ranges from 0-119(30sec intevals over 1 hr)</span>
+    <span class="c1"># for towers hourly files.</span>
+    <span class="c1"># keep this index as &#39;orig_index&#39;, and create a new index from 0</span>
+    <span class="c1"># to the number of records-1</span>
+    <span class="k">if</span> <span class="n">pandas_ver</span> <span class="o">&lt;</span> <span class="mi">23</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">concat</span><span class="p">(</span><span class="n">list_</span><span class="p">,</span><span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span><span class="n">dfs</span><span class="p">],</span><span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;orig_index&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Return the (primary) concatenated dataframe</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+
+
+.. highlight:: rest
+
+.. _startup:
+
+Starting hm
+=============
+
+        The syntax for starting the hm program is
+
+        [python] hm [-c config_file] [-l filename] [-d] [-t] [-a] [-q] 
+
+        Options:
+                **-c config_file**  Use *config_file* for hm configuration.  If not specified, **hm** will use *hm.conf*.
+
+                **-l filename** Use 'filename' for logging instead of the default 'sys.log'
+
+                **-d** Switch logging to DEBUG level
+
+                **-t** Test mode.  Read in configuration and resource list, perform appropriate
+                substitutions, and print out results.  Do not execute any actions.
+
+                **-a** Print action lines. Similar to -t, but print only action lines with
+                appropriate substitutions.
+
+                **-q** Some actions will log detailed information.  **-q** will turn these off.
+
+        **hm** also requires a list of :ref:`actions` to execute.  **hm** reads these from stdin,
+        so you can either pipe a file of actions into **hm**, or redirect stdin. If we have a list of
+        actions in a file called 'start.act', hm can be started with
+
+                ``cat start.act | hm -c myconfig.conf``
+
+                or
+
+                ``hm -c myconfig.conf < start.act``
+
+        You can also use shell 'here' documents to pass in action lines to **hm**
+
+        .. code-block:: bash
+
+                #!/bin/bash
+                port=3
+                gas="n2o"
+                file="data.n2o"
+                port_off=4
+
+                hm -c magicc.conf <<-EOF
+                0       MoveValve       SysSelect       @$gas
+                0       SendCommand     hp34970.2       @FlowStd
+                0       MoveValve       SampleSelect    $port
+                2       CloseRelay      hp34970.2       @MFC_valve      
+                15      SampleData      hp34970.1       @FlowControl
+                32      ScaleValue      None            @FlowScale
+                32      LogData         $file           Replace
+                32      SendCommand     hp34970.2       @Flow_n2o
+                47      MoveValve       SampleSelect    $port_off
+                52      OpenRelay       hp34970.2       @MFC_valve
+                EOF
+
+Using runaction
+----------------
+
+        An alternative way to use hm when programming in python is to use the *runaction* class.  :ref:`Read more on its usage here <runaction>`.
+
+Handling Output from hm
+-----------------------
+
+        Some :ref:`actions` will take a reading from a device and store this value in **hm's** internal *last_data* variable.
+        This value can then be written to a file using the :ref:`log_data` action, which will write a single line to a file,
+        the line consisting of a timestamp, the value, and the standard deviation of the value.
+
+        For example, running this action
+
+        .. code-block:: bash
+
+                hm <<-EOF
+                0 ReadNumber hp34970 None
+                0 LogData hp34970 data.txt Replace
+                EOF
+
+        will overwrite the file 'data.txt' with a single line like
+
+                ``1398268403 199.372833 0.001022``
+
+        If you want to have a timestamp using an actual date and time, use the :ref:`log_datagmt` action.
+
+                ``2012  6 12 15 28 30 202.185286 0.001493``
+
+        which has fields year, month, day, hour, minute, second, value, standard deviation
+        
+
+        Some :ref:`actions` send results to stdout, so it is up to the programmer to capture the output
+        and handle that in some way.  For example, one of the actions, :ref:`monitor_data`, will run forever
+        and print a line of results at regular intervals.  To run **hm** with this action and to catch the output
+        using a python script, you could use 
+
+        .. code-block:: python
+
+                config_file = "hm.conf"
+                action_dir = "actions"
+                action_file = "monitor_co2.act"
+                command = "hm.py -c %s -q < %s/%s" % (config_file, action_dir, action_file)
+                monitor = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                while True:
+                        line = monitor.stdout.readline()
+                        print line
+
+Actions that write to stdout
+----------------------------
+        Some :ref:`actions` will write their results to stdout, and the program calling **hm** is responsible for
+        handling the output.  These actions are:
+
+                * :ref:`monitor_data`
+                * :ref:`monitor_polled_data`
+                * :ref:`monitor_nonpolled_data`
+                * :ref:`print_reply`
+                * :ref:`scan_data`
+
+Actions that store data in last_data
+-------------------------------------
+
+        Some :ref:`actions` will store data in **hm's** internal *last_data* variable, which can be modified if needed
+        or written to file.  
+        The following list are those actions that store their result in the *last_data* variable:
+
+                * :ref:`read_number`
+                * :ref:`read_value`
+                * :ref:`sample_data`
+
+        There are some additional actions that operate and modify the *last_data*.  They are:
+
+                * :ref:`scale_value`
+
+        The value in the *last_data* variable will be overwritten by another action, so the data must 
+        be handled before another action is run.  This is done using the actions:
+
+                * :ref:`log_data` 
+                * :ref:`log_datagmt` 
+                * :ref:`print_data` 
+
+Logging
+-------
+
+        **hm** uses the python `logging system <http://docs.python.org/2/library/logging>`_ to record
+        the actions it performs.  The file it logs information to is called 'sys.log', unless changed with
+        the '-l' option.  The default loglevel is INFO.  **hm** also will log ERROR level messages to stderr.
+        The logging level can be changed with the -d switch, which will change the level to DEBUG for both 
+        file and stderr.
+
+        Log Output Example::
+
+                INFO    : 2012-11-16 11:27:35,857 ShowStatus sys.status Measuring channel 103
+                DEBUG   : 2012-11-16 11:27:35,858 ConfigChannel command = CONF:VOLT:DC AUTO,MAX, (@103)
+                DEBUG   : 2012-11-16 11:27:35,860 DeviceSend: CONF:VOLT:DC AUTO,MAX, (@103)
+                INFO    : 2012-11-16 11:27:35,871 ConfigChannel hp34970 103 DCVOLT MAX
+                DEBUG   : 2012-11-16 11:27:35,871 ReadNumber command = READ?
+                DEBUG   : 2012-11-16 11:27:35,873 DeviceSendRead write: READ?
+                DEBUG   : 2012-11-16 11:27:35,967 DeviceSendRead read: '+2.36120000E+00'
+                DEBUG   : 2012-11-16 11:27:35,968 ReadNumber answer = +2.36120000E+00
+                INFO    : 2012-11-16 11:27:35,969 ReadNumber hp34970 103 DCVOLT MAX 2.361200
+                DEBUG   : 2012-11-16 11:27:35,969 ScaleValue: y = 0.000000 + 40.000000 * 2.361200
+                INFO    : 2012-11-16 11:27:35,970 ScaleValue hp34970 0 40 94.448000
+                INFO    : 2012-11-16 11:27:35,970 LogData /data/qc/2012/sample_flow/2012-11-07 Append 1353090455 94.448000 0.000000
+                INFO    : 2012-11-16 11:27:35,971 ShowStatus sys.status Measuring channel 104
+                DEBUG   : 2012-11-16 11:27:35,972 ConfigChannel command = CONF:VOLT:DC AUTO,MAX, (@104)
+                DEBUG   : 2012-11-16 11:27:35,973 DeviceSend: CONF:VOLT:DC AUTO,MAX, (@104)
+                INFO    : 2012-11-16 11:27:35,984 ConfigChannel hp34970 104 DCVOLT MAX
+                DEBUG   : 2012-11-16 11:27:35,985 ReadNumber command = READ?
+                DEBUG   : 2012-11-16 11:27:35,986 DeviceSendRead write: READ?
+                DEBUG   : 2012-11-16 11:27:36,090 DeviceSendRead read: '+8.62590000E-02'
+                DEBUG   : 2012-11-16 11:27:36,091 ReadNumber answer = +8.62590000E-02
+                INFO    : 2012-11-16 11:27:36,092 ReadNumber hp34970 104 DCVOLT MAX 0.086259
+                DEBUG   : 2012-11-16 11:27:36,092 ScaleValue: y = 0.000000 + 4.000000 * 0.086259
+                INFO    : 2012-11-16 11:27:36,093 ScaleValue hp34970 0 4 0.345036
+                INFO    : 2012-11-16 11:27:36,093 LogData /data/qc/2012/zero_flow/2012-11-07 Append 1353090456 0.345036 0.000000

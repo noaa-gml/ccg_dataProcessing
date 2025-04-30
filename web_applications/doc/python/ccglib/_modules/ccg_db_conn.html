@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_db_conn &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_db_conn</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_db_conn</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="c1"># db_conn.py</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. package:: db.ccg_db</span>
+<span class="sd">.. author:: John Mund</span>
+
+<span class="sd">Revision History:</span>
+<span class="sd">File created on 11/1/2016.</span>
+
+<span class="sd">Use db-int2 as the database server - May 17, 2023</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">decimal</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="k">try</span><span class="p">:</span>
+        <span class="c1"># for python MySQLdb</span>
+        <span class="kn">import</span> <span class="nn">MySQLdb</span>
+        <span class="kn">from</span> <span class="nn">MySQLdb.converters</span> <span class="kn">import</span> <span class="n">conversions</span>
+        <span class="kn">from</span> <span class="nn">MySQLdb.constants</span> <span class="kn">import</span> <span class="n">FIELD_TYPE</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="c1"># for python PyMySQL</span>
+        <span class="kn">import</span> <span class="nn">pymysql</span> <span class="k">as</span> <span class="nn">MySQLdb</span>
+        <span class="kn">from</span> <span class="nn">pymysql.converters</span> <span class="kn">import</span> <span class="n">conversions</span>
+        <span class="kn">from</span> <span class="nn">pymysql.constants</span> <span class="kn">import</span> <span class="n">FIELD_TYPE</span>
+
+<span class="c1">#import MySQLdb #Note; python3 installations must install mysqlclient, which is a 3 compliant fork.  We may want to look into</span>
+<span class="c1">#other client libs like native mysql connector.</span>
+
+<span class="kn">import</span> <span class="nn">ccg_bldsql</span> <span class="k">as</span> <span class="nn">bldsql</span>
+
+
+<span class="k">class</span> <span class="nc">DatabaseConn</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;db abstraction utility class</span>
+
+<span class="sd">    There is a convience class to log you in:</span>
+<span class="sd">    RO() which logs into ccgg (readonly)</span>
+<span class="sd">    or for !!db developer only!! - ProdDB() -&gt;ccgg(readwrite)</span>
+
+<span class="sd">    Most callers/users should use RO()</span>
+<span class="sd">       which logs you into the production ccgg database with read only</span>
+<span class="sd">       rights and temp table/exec/insert rights on the tmp database</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    Import and make readonly Connection</span>
+
+<span class="sd">    import db_utils.db_conn as db_conn</span>
+<span class="sd">    db=db_conn.RO()</span>
+
+<span class="sd">    Pass select query using %s as place holder for parameterized query to sanitize inputs</span>
+
+<span class="sd">    a=db.doquery(&quot;select num as data_num, v.* from flask_data v where date &gt; %s limit 10&quot;,(&#39;2016-01-01&#39;,))</span>
+<span class="sd">    if a :</span>
+<span class="sd">        for row in a :</span>
+<span class="sd">            print((&quot;num: %s date: %s time: %s&quot; % (row[&#39;data_num&#39;],row[&#39;date&#39;],row[&#39;time&#39;])))</span>
+
+
+<span class="sd">    See example.py for further examples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;readonly&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;pFR4&amp;MePOv1jr&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s1">&#39;ccgg&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;db-int2&#39;</span><span class="p">,</span> <span class="n">convertDecToFloat</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="c1">#Class instance variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">=</span> <span class="n">bldsql</span><span class="o">.</span><span class="n">BldSQL</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Mapping mysql dec to python native floats (instead of dec obj) results in ~3x speed up on large selects</span>
+            <span class="k">if</span> <span class="n">convertDecToFloat</span><span class="p">:</span>
+                <span class="c1"># I don&#39;t think it causes any issues, but making fully optional just in case.</span>
+<span class="c1">#                from MySQLdb.converters import conversions</span>
+<span class="c1">#                from MySQLdb.constants import FIELD_TYPE</span>
+                <span class="n">conversions</span><span class="p">[</span><span class="n">FIELD_TYPE</span><span class="o">.</span><span class="n">DECIMAL</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span>
+                <span class="n">conversions</span><span class="p">[</span><span class="n">FIELD_TYPE</span><span class="o">.</span><span class="n">NEWDECIMAL</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span> <span class="p">,</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">,</span> <span class="n">conv</span><span class="o">=</span><span class="n">conversions</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span> <span class="p">,</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">doquery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">numRows</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">form</span><span class="o">=</span><span class="s1">&#39;dict&#39;</span><span class="p">,</span>
+        <span class="n">numpyFloat64</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">timerName</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">multiInsert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">insert</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This is used to issue a sql query.</span>
+
+<span class="sd">        #  Returns, by default, a list of row dictionaries with col name as key, None if no results and raises exception/exits on error.</span>
+<span class="sd">        #  All selects (except to csv) are limited by mem size or other python mysqldb constraints.</span>
+<span class="sd">        #  -form is the output format</span>
+<span class="sd">        #       python native:</span>
+<span class="sd">        #       -&#39;dict&#39; (default) returns a list of row dictionaries with col names as keys.</span>
+<span class="sd">        #       -&#39;list&#39; (faster for large sets) it returns a list of row lists</span>
+<span class="sd">        #       -&#39;numpy&#39; results are a dictionary of numpy arrays, 1 array for each column.  Col names are keys into the dictionary.</span>
+<span class="sd">        #           if numpy and nympyFloat64 is true, number arrays that are automatically created as decimal.Decimal objects will be created as float64 types instead (default)</span>
+<span class="sd">        #       -&#39;text&#39; it returns a nicely formatted list of strings</span>
+
+<span class="sd">        #       file output: (requires outfile)</span>
+<span class="sd">        #       -&#39;csv&#39; sends to outfile in csv format.  all strings are quoted, embedded quotes are double quoted.  comma separator.</span>
+<span class="sd">        #           Note; this operation is scalable (tested on 8 mil rows) as it fetches in chunks.</span>
+<span class="sd">        #       -&#39;tsv&#39; sends to outfile in tab separated format.  all strings are quoted, embedded quotes are double quoted.  comma separator</span>
+<span class="sd">        #       -&#39;dat&#39; sends formatted text lines to outfile</span>
+<span class="sd">        #       -&#39;txt&#39; sends formatted text lines to outfile</span>
+<span class="sd">        #       -&#39;excel&#39; sends excel compatible csv file to outfile</span>
+<span class="sd">        #       -&#39;npy&#39; creates a npy format result file that can be imported in other programs.(not programmed yet)</span>
+<span class="sd">        #           You can call availableFileFormats() to get a list of available formats</span>
+<span class="sd">        #       -&#39;csv-nq&#39; sends to outfile without any quoting</span>
+
+<span class="sd">        #       screen output:</span>
+<span class="sd">        #       -&#39;std&#39; formatted text output to standard out (using print)</span>
+<span class="sd">        #       -&#39;scr&#39; formatted text output to screen (less viewer)</span>
+
+<span class="sd">        #  -If numRows=0, this returns the first value of the first row (convienence), None on no results</span>
+<span class="sd">        #       -1 (default) for all results, or dml statement (like drop table.)</span>
+<span class="sd">        #</span>
+<span class="sd">        #  -parameters is a tuple of bind parameters in same order as %s place holders in the query.</span>
+<span class="sd">        #   Bind parameters should be used in general for where clauses to prevent sql injection on unknown sourced params. If only 1 bind parameter, follow with , eg: (myvar,)</span>
+<span class="sd">        #   To pass insert/update to mysql null, use None in python bind value</span>
+
+<span class="sd">        #  -If timerName is passed, a the query is timed results printed.</span>
+
+<span class="sd">        #  You can use the BldSQL sql object to build a query (see it&#39;s documentation), which is convient when building programmatically.</span>
+<span class="sd">        #  As a convience, If you don&#39;t pass query (or parameters), then the BldSQL object is used to generate the query (and parameters)</span>
+<span class="sd">        #       You could also use sql.cmd() and sql.bind() to get them</span>
+
+<span class="sd">        # If commit=True, then a commit is sent after the command.  This needs to be used on dml on innodb tables because python turns autocommit off by default.</span>
+<span class="sd">        # If multiInsert=True then we do a executeMany instead of execute.  Parameters should be a list of tuples</span>
+<span class="sd">        # If insert=True, this returns lastinsertid (if appropriate)</span>
+<span class="sd">        #   syntax looks like:</span>
+<span class="sd">        #   c.executemany(&quot;insert into T (F1,F2) values (%s, %s)&quot;,[(&#39;a&#39;,&#39;b&#39;),(&#39;c&#39;,&#39;d&#39;)])</span>
+<span class="sd">        #   See doMultiInsert() below for example and wrapper</span>
+<span class="sd">        #</span>
+
+<span class="sd">        #See /ccg/src/db/db_utils/examples.py for working examples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="c1">#For timing purposes</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#If no query (or params) passed, load them from the BldSQL object.</span>
+        <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">cmd</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">bind</span><span class="p">()</span> <span class="c1">#Only check this if query is using query builder too.</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">_defer_warnings</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1">#Not entirely clear on effect this has, but put it in on rec from the internets to suppress annoying warning messages on things like drop table if exists</span>
+
+            <span class="c1">#For file output we&#39;ll iterate over the results so we don&#39;t need to bring the whole set into memory.</span>
+            <span class="n">outToFile</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">form</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">availableFileFormats</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">multiInsert</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span>
+            <span class="k">elif</span> <span class="n">insert</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">lastrowid</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="nb">id</span>
+            <span class="k">elif</span> <span class="n">outToFile</span><span class="p">:</span>
+                <span class="c1">#Select results into a temp table to iterate over.</span>
+                <span class="c1">#This adds time (particularly on large datasets), but is safetest way to chunk</span>
+                <span class="c1">#through the results without trying to load here or altering query.</span>
+                <span class="c1">#See comments below in outputToFile</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;drop temporary table if exists tmp.t__db_conn_work_tbl&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;create temporary table tmp.t__db_conn_work_tbl as &quot;</span> <span class="o">+</span> <span class="n">query</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="c1">#Skips post processing</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">form</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;npy&#39;</span><span class="p">,</span> <span class="s1">&#39;dataframe&#39;</span><span class="p">]:</span>
+                <span class="c1">#Only load conditionally as not all environments will have this available. Note we&#39;ll let this fail ungracefully</span>
+                <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+            <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;dataframe&#39;</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+            <span class="c1">#on error for now.</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">numRows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">a</span><span class="p">:</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">numRows</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">outToFile</span><span class="p">:</span>
+                        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputToFile</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">timerName</span><span class="p">)</span>
+
+                    <span class="c1">#The rest of the output formats all return the data in a list or massage the list first and return, so fetch all results (inefficient on large sets!)</span>
+                    <span class="c1">#and process as needed.</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">a</span><span class="p">:</span> <span class="c1">#if we have a result set, package up per request and return it.</span>
+                            <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span> <span class="c1">#list of column names</span>
+
+                            <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;dict&#39;</span><span class="p">:</span><span class="c1">#a list of row dictionaries with col names as keys</span>
+                                <span class="n">b</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+                                    <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">row</span><span class="p">)))</span>
+                                <span class="n">ret</span> <span class="o">=</span> <span class="n">b</span>
+
+                            <span class="k">elif</span> <span class="n">form</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;dataframe&#39;</span><span class="p">):</span> <span class="c1">#dict of numpy arrays, 1 per col.  dict keys are column names</span>
+                                <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+                                <span class="n">cols</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="c1">#convert to column lists</span>
+                                <span class="n">b</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+                                    <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#default to auto detect type</span>
+
+                                    <span class="k">if</span> <span class="n">numpyFloat64</span> <span class="p">:</span> <span class="c1">#Check to see if number is a &#39;decimal&#39; type and force to be float64 (for compatibility with downstream uses)</span>
+                                        <span class="c1">#jwm - 1/19 - added logic to find first non-none value</span>
+                                        <span class="n">first</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">col</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+                                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,))</span> <span class="p">:</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+
+                                    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+                                    <span class="n">b</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">arr</span> <span class="c1">#Set results into dictionary</span>
+
+                                <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;dataframe&#39;</span><span class="p">:</span>
+                                    <span class="n">ret</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">ret</span> <span class="o">=</span> <span class="n">b</span>
+
+                            <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="c1">#formatted text output</span>
+                                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listToTextCols</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+
+                            <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;scr&#39;</span><span class="p">:</span> <span class="c1">#formatted text to less editor (if available)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">outputToScreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listToTextCols</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">header</span><span class="p">))</span>
+
+                            <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="c1">#formatted text to standard out</span>
+                                <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listToTextCols</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                            <span class="k">else</span><span class="p">:</span> <span class="c1">#list of lists</span>
+                                <span class="n">ret</span> <span class="o">=</span> <span class="n">a</span>
+
+                        <span class="k">else</span> <span class="p">:</span>
+                            <span class="k">if</span> <span class="n">commit</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> <span class="c1">#Send through commit if requested</span>
+                            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span> <span class="c1">#DML statement, return number of rows affected (if any)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">SQL that cause error:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">query</span><span class="p">,))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Bind parameters: &quot;</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="n">timerName</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (s):</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">timerName</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">doMultiInsert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">maxLen</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        #wrapper to do a multi insert.. mostly just to handle when to send through if appending in a loop.</span>
+<span class="sd">        #Call with all=True after loop to send through any remaining</span>
+<span class="sd">        #Returns true when data was submitted (and params[] should be cleared), false if we haven&#39;t hit the threshold yet.</span>
+<span class="sd">        #   example block:</span>
+<span class="sd">        #     params=[]</span>
+<span class="sd">        #     i=1</span>
+<span class="sd">        #     sql=&quot;insert mund_dev.t_brmAerodyneData (dt,c2h6,ch4) values (%s,%s,%s)&quot;</span>
+<span class="sd">        #     for row in fh.readf(delim=&#39;,&#39;,skip_lines=1):</span>
+<span class="sd">        #         c2h6=row[0]</span>
+<span class="sd">        #         ch4=row[1]</span>
+<span class="sd">        #         dt=row[2]</span>
+<span class="sd">        #         params.append([dt,c2h6,ch4])</span>
+<span class="sd">        #         if self.db.doMultiInsert(sql,params):params=[]</span>
+<span class="sd">        #</span>
+<span class="sd">        #    self.db.doMultiInsert(sql,params,all=True)#Send any remaining through.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">&gt;</span><span class="n">maxLen</span> <span class="ow">or</span> <span class="nb">all</span><span class="p">:</span><span class="c1">#send thru</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">multiInsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">availableFileFormats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; #returns a list of currently available file output formats &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;csv&#39;</span><span class="p">,</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span><span class="s1">&#39;dat&#39;</span><span class="p">,</span><span class="s1">&#39;txt&#39;</span><span class="p">,</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span><span class="s1">&#39;csv-nq&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">outputToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">timerName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        #Output current result set to file.  See comments above for available form (file formats)</span>
+<span class="sd">        #We don&#39;t pass results because we don&#39;t want to load the full set into memory if we don&#39;t have to.. we&#39;ll just read/write a chunk at time.</span>
+<span class="sd">        #Note, the mysqldb lib apparently reads the whole rs into memory even when using fetch many, so we&#39;ll implement our own,</span>
+<span class="sd">        #Also note, we use a temp table intermediate because altering the query directly (adding limit) could have weird effects</span>
+<span class="sd">        #depending on the query (like a group by).  Using a tmp table seems pretty safe, although slower.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;outfile is required for file output&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;select * from tmp.t__db_conn_work_tbl&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="s1">&#39;wt&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#If we&#39;re writing a text formatted (space delim) file, read whole results into a list, format and write out.  Hopefully not too big</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">form</span><span class="o">==</span><span class="s1">&#39;dat&#39;</span> <span class="ow">or</span> <span class="n">form</span><span class="o">==</span><span class="s1">&#39;txt&#39;</span><span class="p">)</span> <span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span> <span class="c1">#list of column names</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listToTextCols</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="p">),</span> <span class="n">header</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">row</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span> <span class="c1">#use the csv writer to format output as requested.</span>
+                <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;excel&#39;</span><span class="p">:</span>
+                    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">delim</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;tsv&#39;</span> <span class="k">else</span> <span class="s1">&#39;,&#39;</span>
+                    <span class="n">quoting</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONNUMERIC</span> <span class="k">if</span> <span class="n">form</span> <span class="o">!=</span> <span class="s1">&#39;csv-nq&#39;</span> <span class="k">else</span> <span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONE</span>
+                    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">,</span> <span class="n">quoting</span><span class="o">=</span><span class="n">quoting</span><span class="p">)</span>
+
+                <span class="n">chunk</span> <span class="o">=</span> <span class="mi">100000</span> <span class="c1">#arbitrary</span>
+                <span class="n">limitFrom</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="c1">#fetch the first chunk and extract header info</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> limit </span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">limitFrom</span><span class="p">,</span> <span class="n">chunk</span><span class="p">))</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span> <span class="c1">#list of column names</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+                <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span>
+
+                <span class="c1">#Write out and fetch any remaining.</span>
+                <span class="k">while</span> <span class="n">n</span> <span class="p">:</span>
+                    <span class="k">if</span> <span class="n">timerName</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Timer:</span><span class="si">%s</span><span class="s2"> writing rows </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">timerName</span><span class="p">,</span> <span class="n">limitFrom</span><span class="p">,</span> <span class="n">limitFrom</span><span class="o">+</span><span class="n">chunk</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span> <span class="p">:</span>
+                        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                    <span class="n">limitFrom</span> <span class="o">+=</span> <span class="n">chunk</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> limit </span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">limitFrom</span><span class="p">,</span> <span class="n">chunk</span><span class="p">))</span>
+                    <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">rowcount</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">outputToFileOld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        #Output current result set to file.  See comments above for available form (file formats)</span>
+<span class="sd">        #We don&#39;t pass results because we don&#39;t want to load the full set into memory if we don&#39;t have to.. we&#39;ll just read/write a line at time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;outfile is required for file output&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="s1">&#39;wt&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="o">.</span><span class="n">description</span><span class="p">]</span> <span class="c1">#list of column names</span>
+
+            <span class="c1">#If we&#39;re writing a text formatted (space delim) file, read whole results into a list, format and write out.</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">==</span><span class="s1">&#39;dat&#39;</span> <span class="ow">or</span> <span class="n">form</span><span class="o">==</span><span class="s1">&#39;txt&#39;</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listToTextCols</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="p">),</span> <span class="n">header</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">row</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span> <span class="c1">#use the csv writer to format output as requested.</span>
+                <span class="k">if</span> <span class="n">form</span><span class="o">==</span><span class="s1">&#39;excel&#39;</span><span class="p">:</span>
+                    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">delim</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;tsv&#39;</span> <span class="k">else</span> <span class="s1">&#39;,&#39;</span>
+                    <span class="n">quoting</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONNUMERIC</span> <span class="k">if</span> <span class="n">form</span> <span class="o">!=</span> <span class="s1">&#39;csv-nq&#39;</span> <span class="k">else</span> <span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONE</span>
+                    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">,</span> <span class="n">quoting</span><span class="o">=</span><span class="n">quoting</span><span class="p">)</span>
+
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span> <span class="p">:</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">outputToScreen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; #Outputs lines to less viewer &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#editor=os.getenv(&#39;EDITOR&#39;,&#39;vi&#39;) less worked better...</span>
+            <span class="n">pager</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;less&#39;</span><span class="p">,</span> <span class="s1">&#39;-F&#39;</span><span class="p">,</span> <span class="s1">&#39;-R&#39;</span><span class="p">,</span> <span class="s1">&#39;-S&#39;</span><span class="p">,</span> <span class="s1">&#39;-X&#39;</span><span class="p">,</span> <span class="s1">&#39;-K&#39;</span><span class="p">],</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">pager</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+            <span class="c1">#pager.communicate()</span>
+            <span class="n">pager</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">pager</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1">#less not available, print to stderr</span>
+                <span class="c1">#print &gt;&gt; sys.stderr,&quot;\n&quot;.join(lines) #not working in py3 (syntax)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span><span class="c1">#couldn&#39;t figure the py3 stderr syntax</span>
+            <span class="k">else</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1">#quitting less causes a broken pipe exception.  I&#39;m probably not using Popen properly...</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">errno</span><span class="o">.</span><span class="n">EPIPE</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">listToTextCols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        #Returns a formatted list of passed list of output lines</span>
+<span class="sd">        #These will be space delimited with min 3 space gap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="c1">#We need the headers in with the lines to figure out the widths, but don&#39;t want to insert (inefficient) so we&#39;ll add temporarily to the end</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">column</span><span class="p">)</span> <span class="o">+</span> <span class="n">spacing</span>
+              <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">lines</span><span class="p">)]</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c1">#pull off the header</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1">#Insert the column headers</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-*s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">header</span><span class="p">)))</span>
+        <span class="c1">#and all the data</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-*s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">line</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span> <span class="nf">getSelectedDB</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return name of database being used &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doquery</span><span class="p">(</span><span class="s2">&quot;select database()&quot;</span><span class="p">,</span> <span class="n">numRows</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="c1">#Convience subclasses to log in to user/dbs</span>
+<span class="k">class</span> <span class="nc">DevDB</span><span class="p">(</span><span class="n">DatabaseConn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s2">&quot;mund_dev&quot;</span><span class="p">):</span>
+        <span class="n">pw</span> <span class="o">=</span> <span class="s2">&quot;0</span><span class="si">%c</span><span class="s2">&amp;eS*wrwl1O&quot;</span> <span class="c1">#so doesn&#39;t show up in error messages</span>
+        <span class="n">DatabaseConn</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;gmduser&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pw</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Using database:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSelectedDB</span><span class="p">()))</span> <span class="c1">#During dev, doquery sometimes returns weird values</span>
+
+<span class="k">class</span> <span class="nc">ReadOnlyDB</span><span class="p">(</span><span class="n">DatabaseConn</span><span class="p">):</span><span class="c1">#can make temp tables in ccgg (and inserts!)  USE RO below instead</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s1">&#39;ccgg&#39;</span><span class="p">):</span>
+        <span class="n">pw</span><span class="o">=</span><span class="s2">&quot;P7$&amp;%nTbS14R%*&quot;</span>
+        <span class="n">DatabaseConn</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;ro_app&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pw</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ProdDB</span><span class="p">(</span><span class="n">DatabaseConn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s1">&#39;ccgg&#39;</span><span class="p">):</span>
+        <span class="n">pw</span><span class="o">=</span><span class="s2">&quot;0</span><span class="si">%c</span><span class="s2">&amp;eS*wrwl1O&quot;</span>
+        <span class="n">DatabaseConn</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;gmduser&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pw</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ICPDB</span><span class="p">(</span><span class="n">DatabaseConn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s1">&#39;icp&#39;</span><span class="p">):</span><span class="c1">#note /ccg/src/db/py_utils/icos_dl_notify.py uses this and writes into obspack db.  That should be updated if this user is restricted to icp db.</span>
+        <span class="n">pw</span><span class="o">=</span><span class="s2">&quot;0</span><span class="si">%c</span><span class="s2">&amp;eS*wrwl1O&quot;</span>
+        <span class="n">DatabaseConn</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;gmduser&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pw</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RO"><a class="viewcode-back" href="../db_utils/db_conn.html#ccg_db_conn.RO">[docs]</a><span class="k">class</span> <span class="nc">RO</span><span class="p">(</span><span class="n">DatabaseConn</span><span class="p">):</span><span class="c1">#Has write permissions in tmp db</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s2">&quot;ccgg&quot;</span><span class="p">):</span>
+        <span class="n">pw</span><span class="o">=</span><span class="s2">&quot;pFR4&amp;MePOv1jr&quot;</span>
+        <span class="n">DatabaseConn</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;readonly&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pw</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span></div>
+
+<span class="c1">#class HATS_ng(DatabaseConn):</span>
+<span class="c1">#    def __init__(self, db=&#39;hats&#39;):</span>
+<span class="c1">#        pw=&quot;LVMHSACktn2EY8aL&quot;</span>
+<span class="c1">#        DatabaseConn.__init__(self, user=&#39;hats_ng&#39;, password=pw,db=db)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

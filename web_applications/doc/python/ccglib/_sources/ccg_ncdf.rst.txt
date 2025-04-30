@@ -1,0 +1,7 @@
+ccg_ncdf - NetCDF file utilities
+================================
+
+.. automodule:: ccg_ncdf
+   :members:
+   :undoc-members:
+   :show-inheritance:

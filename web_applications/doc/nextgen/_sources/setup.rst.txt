@@ -1,0 +1,54 @@
+
+
+.. highlight:: rest
+
+.. _setup:
+
+Setup
+=============
+
+Steps to setup the laptop that will be used at the site for data acquisition and control
+of the in-situ measurement system.
+
+User
+----
+
+Create a user on the laptop called 'ccg'.  You can use the system-config-users program to do this.  It requires root privileges.
+Set the home directory as /home/ccg.
+
+Installing Gragana
+------------------
+
+
+Installing lighttpd
+-------------------
+
+in /etc/lighttpd/lighttpd.conf change
+        var.server_root to /home/ccg/web
+        server.use-ipv6 = "disable"
+        server.username = "ccg"
+        server.groupname = "ccg"
+        server.document-root = server_root
+
+In /etc/lighttpd/modules.conf
+        uncomment in server.modules
+                "mod_setenv"
+        uncomment
+                include "conf.d/fastcgi.conf"
+        add line
+                include "conf.d/setenv.conf"
+
+In /etc/lighttpd/conf.d
+        Create file 'setenv.conf' with one line
+                setenv.add-response-header = ("X-Frame-Options" => "SAMEORIGIN")
+
+Installing software
+-------------------
+
+This step also creates the sqlite database.
+
+
+Configure Firewall
+------------------
+
+Open ports 22, 80 and 3000.

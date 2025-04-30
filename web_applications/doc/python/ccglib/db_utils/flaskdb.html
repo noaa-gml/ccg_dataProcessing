@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_flask_data — Get flask data from database &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccg_insitu_data2 — Get observatory in-situ data from database" href="insitudb.html" />
+    <link rel="prev" title="ccg_dbutils — Database Convenience Routines" href="dbutils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Database routines</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="db_conn.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_db_conn</span></code> — Database connection and query class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bldsql.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_bldsql</span></code> — SQL Query builder class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbutils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_dbutils</span></code> — Database Convenience Routines</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_flask_data</span></code> — Get flask data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="insitudb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_insitu_data2</span></code> — Get observatory in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="towerdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_tower_data</span></code> — Get tower in-situ data from database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_instrument</span></code> — Get instrument history from database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_elevation.html">ccg_elevation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Database routines</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_flask_data</span></code> — Get flask data from database</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/db_utils/flaskdb.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_flask_data">
+<span id="ccg-flask-data-get-flask-data-from-database"></span><h1><a class="reference internal" href="#module-ccg_flask_data" title="ccg_flask_data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_flask_data</span></code></a> — Get flask data from database<a class="headerlink" href="#module-ccg_flask_data" title="Permalink to this headline"></a></h1>
+<p>FlaskData - A class for getting flask data from the database</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_flask_data.</span></span><span class="sig-name descname"><span class="pre">FlaskData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ccgg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter</strong> – parameter number or parameter formula</p></li>
+<li><p><strong>site</strong> – Site code or site number</p></li>
+</ul>
+</dd>
+</dl>
+<p>Usage:</p>
+<blockquote>
+<div><p>Usage of this class is a 3 step process</p>
+<ol class="arabic simple">
+<li><p>Create the class</p></li>
+<li><p>Configure settings for filtering data</p></li>
+<li><p>Run the query</p></li>
+</ol>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parameter</span> <span class="o">=</span> <span class="s2">&quot;CO2&quot;</span>
+<span class="n">site</span> <span class="o">=</span> <span class="s2">&quot;MLO&quot;</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">FlaskData</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Additional methods are available to filter results.</p>
+<p>Results:</p>
+<blockquote>
+<div><p>Results are generated with the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method. Default result
+is a list of dicts, each dict representing a row of data for the flask.
+Results can be changed to either a dict of numpy arrays or a pandas DataFrame
+with arguments to the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method.
+Data fields included in the results are:</p>
+<ul class="simple">
+<li><p>event_number - flask event number</p></li>
+<li><p>site_num - site number</p></li>
+<li><p>code - three letter site code</p></li>
+<li><p>time_decimal - decimal value for the sample date</p></li>
+<li><p>date - datetime object for sample date and time</p></li>
+<li><p>flaskid - flask id</p></li>
+<li><p>method - flask sampling method</p></li>
+<li><p>strategy_num - flask sampling strategy number</p></li>
+<li><p>altitude - flask sampling altitude</p></li>
+<li><p>latitude - flask sampling latitude</p></li>
+<li><p>longitude - flask sampling longitude</p></li>
+<li><p>event_comment - flask event comment</p></li>
+<li><p>data_number - data analysis number</p></li>
+<li><p>gas - gas formula for given parameter</p></li>
+<li><p>value - analzyed mole fraction value</p></li>
+<li><p>qcflag - qc flag (renamed from ‘flag’)</p></li>
+<li><p>system - analysis system name</p></li>
+<li><p>inst - analysis analyzer id</p></li>
+<li><p>adate - datetime object for analysis date and time</p></li>
+<li><p>use_tags - use tags for flagging if 1</p></li>
+<li><p>comment - analysis comment</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Not setting the ‘site’ argument or not including any filter methods can
+give a very large amount of results.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.find" title="Permalink to this definition"></a></dt>
+<dd><p>Find the result for the given event number and analysis date</p>
+<p>This method can only be used after the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method is run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> (<em>int</em>) – event number</p></li>
+<li><p><strong>adate</strong> (<em>datetime</em>) – analysis date and time</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.includeDefault">
+<span class="sig-name descname"><span class="pre">includeDefault</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.includeDefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.includeDefault" title="Permalink to this definition"></a></dt>
+<dd><p>Include data that has default value (-999.99)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.includeFlaggedData">
+<span class="sig-name descname"><span class="pre">includeFlaggedData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_flagged</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.includeFlaggedData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.includeFlaggedData" title="Permalink to this definition"></a></dt>
+<dd><p>include data where the second character of the flag is not ‘.’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>only_flagged</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, flagged data is included with unflagged data,
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>: ONLY flagged data is returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.includeHardFlags">
+<span class="sig-name descname"><span class="pre">includeHardFlags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.includeHardFlags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.includeHardFlags" title="Permalink to this definition"></a></dt>
+<dd><p>include data where the first character of the flag is not ‘.’</p>
+<p>Data with 9’d out values (-999.99) are not included.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_arrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_dataframe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.run" title="Permalink to this definition"></a></dt>
+<dd><p>Run the query and return results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>as_arrays</strong> – If True, convert the result to a single dict of
+numpy arrays.  The key is the field name, and the value
+is a numpy array of results for that field.</p></li>
+<li><p><strong>as_dataframe</strong> – If True, return results as a pandas DataFrame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>By default the result is a list of dicts, each dict
+representing a row of data for the flask. This can be changed by
+setting the <em>as_arrays</em> or <em>as_dataframe</em> arguments.  Only one of the
+arguments should be set.</p>
+<p>Results are also stored in the class attribute ‘results’, that is
+<code class="docutils literal notranslate"><span class="pre">f.results</span></code></p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setAnalysisDate">
+<span class="sig-name descname"><span class="pre">setAnalysisDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setAnalysisDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setAnalysisDate" title="Permalink to this definition"></a></dt>
+<dd><p>Limit data to a specific analysis date</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setBin">
+<span class="sig-name descname"><span class="pre">setBin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setBin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setBin" title="Permalink to this definition"></a></dt>
+<dd><p>Set binning to include in results.</p>
+<p>Data will be limited to where data from field ‘method’ is between
+‘binmin’ and ‘binmax’. For example, <code class="docutils literal notranslate"><span class="pre">f.setBin(&quot;lat&quot;,</span> <span class="pre">5,</span> <span class="pre">15)</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – Binning method, such as ‘lat’, ‘lon’.  This must
+be a valid field name in the flask_event table</p></li>
+<li><p><strong>binmin</strong> – Minimum value to include</p></li>
+<li><p><strong>binmax</strong> – maximum value to include</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setDataNumber">
+<span class="sig-name descname"><span class="pre">setDataNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datanum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setDataNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setDataNumber" title="Permalink to this definition"></a></dt>
+<dd><p>Limit results to a single or list of data measurement numbers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setEvents">
+<span class="sig-name descname"><span class="pre">setEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setEvents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setEvents" title="Permalink to this definition"></a></dt>
+<dd><p>Limit results to a single or list of event numbers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setFlaskPackage">
+<span class="sig-name descname"><span class="pre">setFlaskPackage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setFlaskPackage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setFlaskPackage" title="Permalink to this definition"></a></dt>
+<dd><p>Limit data to specific flask package id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>package_id</strong> (<em>str</em>) – Package Id.  This is the part of the flask id before the ‘-’ .
+For example, a flask id of 3056-01 has a package_id of ‘3056’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setMethods">
+<span class="sig-name descname"><span class="pre">setMethods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setMethods" title="Permalink to this definition"></a></dt>
+<dd><p>Set the flask sample methods to include.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>method_list</strong> – List of flask method codes to include</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setPrograms">
+<span class="sig-name descname"><span class="pre">setPrograms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prog_nums</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setPrograms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setPrograms" title="Permalink to this definition"></a></dt>
+<dd><p>Set program numbers to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prog_nums</strong> – List of program numbers to include</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setProject">
+<span class="sig-name descname"><span class="pre">setProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setProject" title="Permalink to this definition"></a></dt>
+<dd><p>Set the project number for results.</p>
+<p>Default is to use all project numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>project_num</strong> – Project number</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setRange">
+<span class="sig-name descname"><span class="pre">setRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setRange" title="Permalink to this definition"></a></dt>
+<dd><p>Set the date range for the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>datetime</em><em> or </em><em>str</em>) – Start date of data</p></li>
+<li><p><strong>end</strong> (<em>datetime</em><em> or </em><em>str</em>) – End date of data</p></li>
+</ul>
+</dd>
+</dl>
+<p>Data is up to but not including end date.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setStrategy">
+<span class="sig-name descname"><span class="pre">setStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_flask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pfp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setStrategy" title="Permalink to this definition"></a></dt>
+<dd><p>Set the strategy number to include in the database query.
+Default is to include all strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_flask</strong> – If true, include strategy number 1</p></li>
+<li><p><strong>use_pfp</strong> – If true, include strategy number 2</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.setSystem">
+<span class="sig-name descname"><span class="pre">setSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sysname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.setSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.setSystem" title="Permalink to this definition"></a></dt>
+<dd><p>Restrict results to certain analysis systems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sysname</strong> – An explicit name or string containing
+mysql wildcard characters like ‘%’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_flask_data.FlaskData.showQuery">
+<span class="sig-name descname"><span class="pre">showQuery</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_flask_data.html#FlaskData.showQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_flask_data.FlaskData.showQuery" title="Permalink to this definition"></a></dt>
+<dd><p>Print out the query string</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dbutils.html" class="btn btn-neutral float-left" title="ccg_dbutils — Database Convenience Routines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="insitudb.html" class="btn btn-neutral float-right" title="ccg_insitu_data2 — Get observatory in-situ data from database" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

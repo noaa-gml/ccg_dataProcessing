@@ -1,0 +1,16 @@
+
+.. highlight:: rest
+
+.. _intro:
+
+Introduction
+=======================
+
+        **hm** (hardware manager) is a python program for controlling instruments and reading data back from them.
+
+        **hm** uses a :ref:`config` file to define the devices or instruments that are being used.
+        The instructions for controlling an instrument or reading data are defined in :ref:`action files <actions>`.
+
+        **hm** is intended to be called multiple times from a higher level script or program, which calls **hm** 
+        at the appropriate time with the appropriate action file, and processes the results that are output from **hm**.
+        In this way, an analysis session can be built from smaller parts and can be as simple or as complex as needed.

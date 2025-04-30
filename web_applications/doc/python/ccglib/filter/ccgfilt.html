@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_filter — Curve fitting and filtering &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ccgcrv — Driver program for ccg_filter curve fit" href="ccgcrv.html" />
+    <link rel="prev" title="Curve Fitting and Smoothing" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Curve Fitting and Smoothing</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_filter</span></code> — Curve fitting and filtering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ccg-filter-objects"><code class="xref py py-class docutils literal notranslate"><span class="pre">ccg_filter</span></code> Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-attributes">Class attributes:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#input-data">Input Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#for-the-function-fit">For the function fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#for-the-filter">For the filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#misc">Misc.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ccgcrv.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccgcrv</span></code> — Driver program for ccg_filter curve fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filt_params.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_filter_params</span></code> — Dataclass for ccg_filter parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickfilter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_quickfilter</span></code> — Flag outliers of data using ccg_filter curve fit</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Curve Fitting and Smoothing</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_filter</span></code> — Curve fitting and filtering</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/filter/ccgfilt.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccg_filter">
+<span id="ccg-filter-curve-fitting-and-filtering"></span><h1><a class="reference internal" href="#module-ccg_filter" title="ccg_filter: Curve fitting and filtering"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ccg_filter</span></code></a> — Curve fitting and filtering<a class="headerlink" href="#module-ccg_filter" title="Permalink to this headline"></a></h1>
+<p>Class for computing the curve fitting/smoothing technique used by <em>Thoning et al 1989</em> and at
+<a class="reference external" href="https://gml.noaa.gov/ccgg/mbl/crvfit/">https://gml.noaa.gov/ccgg/mbl/crvfit/</a></p>
+<p>This technique uses the following steps:</p>
+<ol class="arabic simple">
+<li><p>Fit a function consisting of a polynomial and harmonics to the data</p></li>
+<li><p>Smooth the residuals from the function fit with a low-pass filter using fft and user defined cutoff value.</p></li>
+<li><p>Calculate the inverse fft of the low-pass filter to get smoothed data in time domain.</p></li>
+<li><p>Determine the smoothed curve of interest by combining the function with the filtered data.</p></li>
+</ol>
+<p>The class is available by using the ‘import’ statement to include it in your python code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ccg_filter</span>
+</pre></div>
+</div>
+<p>The function to be fit to the data is specified in the routines ‘fitFunc’ and ‘harmonics’.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ccg_filter.fitFunc">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">fitFunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpoly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numharm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_filter.html#fitFunc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_filter.fitFunc" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the function at time x with coefficients given in params.
+This is a combination of a polynomial with numpoly coefficients, and
+a sin/cosine harmonic with numharm coefficients.  e.g., with numpoly=3 and numharm=2:</p>
+<div class="math" id="equation-function">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-function" title="Permalink to this equation"></a></span><img src="../_images/math/477a181d2dc9b38da39e441b1dbaa1c979993337.png" alt="y = a + b*x + c*x^2 + d*sin(2*\pi*x) + e*cos(2*\pi*x) + f*sin(4*\pi*x) + g*cos(4*\pi*x)"/></p>
+</div><p>where a = params[0], b = params[1], c = params[2], d = params[3] …</p>
+</dd></dl>
+
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">harmonics</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">numpoly</span><span class="p">,</span> <span class="n">numharm</span><span class="p">)</span>
+
+<span class="n">calculate</span> <span class="n">the</span> <span class="n">harmonic</span> <span class="n">part</span> <span class="n">of</span> <span class="n">the</span> <span class="n">function</span> <span class="n">at</span> <span class="n">time</span> <span class="n">x</span>
+</pre></div>
+</div>
+<section id="ccg-filter-objects">
+<h2><a class="reference internal" href="#module-ccg_filter" title="ccg_filter: Curve fitting and filtering"><code class="xref py py-class docutils literal notranslate"><span class="pre">ccg_filter</span></code></a> Objects<a class="headerlink" href="#ccg-filter-objects" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccg_filter.ccgFilter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">ccgFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">xp</span></em>, <em class="sig-param"><span class="pre">yp</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">shortterm=80</span></em>, <em class="sig-param"><span class="pre">longterm=667</span></em>, <em class="sig-param"><span class="pre">sampleinterval=0</span></em>, <em class="sig-param"><span class="pre">numpolyterms=3</span></em>, <em class="sig-param"><span class="pre">numharmonics=4</span></em>, <em class="sig-param"><span class="pre">timezero</span> <span class="pre">=</span> <span class="pre">-1</span></em>, <em class="sig-param"><span class="pre">gap=0</span></em>, <em class="sig-param"><span class="pre">use_gain_factor=False</span></em>, <em class="sig-param"><span class="pre">debug=False</span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ccg_filter.html#ccgFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ccg_filter.ccgFilter" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xp</strong> (<em>list</em><em> or </em><em>numpy array</em>) – Time values for input data.  These must be decimal dates, such as produced by <code class="xref py py-func docutils literal notranslate"><span class="pre">dates.decimalDate()</span></code>.</p></li>
+<li><p><strong>yp</strong> (<em>list</em><em> or </em><em>numpy array</em>) – Dependent values for input data.</p></li>
+<li><p><strong>shortterm</strong> (<em>int</em>) – Short term cutoff value in days for smoothing of data.</p></li>
+<li><p><strong>longterm</strong> (<em>int</em>) – Long term cutoff value in days for extracting trend from data</p></li>
+<li><p><strong>sampleinterval</strong> (<em>int</em>) – Interval in days between samples, calculate equally spaced values at this interval. Default is calculated from xp</p></li>
+<li><p><strong>numpoly</strong> (<em>int</em>) – Number of polynomial terms used in function fit - e.g. 3 = quadratic</p></li>
+<li><p><strong>numharm</strong> (<em>int</em>) – Number of harmonics used in function fit</p></li>
+<li><p><strong>timezero</strong> (<em>float</em>) – Value where x = 0 in the function coefficients. If timezero = -1, it will be reset to the year of the first data point.</p></li>
+<li><p><strong>gap</strong> (<em>float</em>) – When determining equally spaced values for the fft,
+if gap != 0, then gap is the number of days between samples that should
+be filled in with values from the function, rather than linear interpolated.</p></li>
+<li><p><strong>use_gain_factor</strong> (<em>boolean</em>) – Set to True if you want to include a gain factor to the harmonic amplitude.
+This means the harmonics part of the function will have a linearly increasing
+or decreasing amplitude with time.</p></li>
+<li><p><strong>debug</strong> (<em>boolean</em>) – If true, print out extra information during calculations.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Only xp and yp are required, all others are optional.</p>
+</dd></dl>
+
+</section>
+<section id="class-attributes">
+<h2>Class attributes:<a class="headerlink" href="#class-attributes" title="Permalink to this headline"></a></h2>
+<section id="input-data">
+<h3>Input Data<a class="headerlink" href="#input-data" title="Permalink to this headline"></a></h3>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.xp">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">xp</span></span><a class="headerlink" href="#ccg_filter.xp" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>list or numpy array</em>) Time value for input data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.yp">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">yp</span></span><a class="headerlink" href="#ccg_filter.yp" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>list or numpy array</em>) Dependent values for input data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.np">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">np</span></span><a class="headerlink" href="#ccg_filter.np" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Number of points in xp, yp</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.xinterp">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">xinterp</span></span><a class="headerlink" href="#ccg_filter.xinterp" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) Equally spaced interpolated values from input data</p>
+</dd></dl>
+
+</section>
+<section id="for-the-function-fit">
+<h3>For the function fit<a class="headerlink" href="#for-the-function-fit" title="Permalink to this headline"></a></h3>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.numpoly">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">numpoly</span></span><a class="headerlink" href="#ccg_filter.numpoly" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Number of polynomial terms used in function fit - e.g. 3 = quadratic</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.numharm">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">numharm</span></span><a class="headerlink" href="#ccg_filter.numharm" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Number of harmonics used in function fit</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.timezero">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">timezero</span></span><a class="headerlink" href="#ccg_filter.timezero" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>float</em>) Value where x = 0 in the function coefficients</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.params">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#ccg_filter.params" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) Parameters (coefficients) for the function fit</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.covar">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">covar</span></span><a class="headerlink" href="#ccg_filter.covar" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) Covariance values of the parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.numpm">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">numpm</span></span><a class="headerlink" href="#ccg_filter.numpm" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Total number of parameters in the function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.resid">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">resid</span></span><a class="headerlink" href="#ccg_filter.resid" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) Residuals from function fit for times specified in input array xp</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.yinterp">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">yinterp</span></span><a class="headerlink" href="#ccg_filter.yinterp" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) Equally spaced interpolated values of the residuals from the functions fit for times specified in array xinterp</p>
+</dd></dl>
+
+</section>
+<section id="for-the-filter">
+<h3>For the filter<a class="headerlink" href="#for-the-filter" title="Permalink to this headline"></a></h3>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.sampleinterval">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">sampleinterval</span></span><a class="headerlink" href="#ccg_filter.sampleinterval" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Interval in days between equally spaced points used in the fft</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.dinterval">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">dinterval</span></span><a class="headerlink" href="#ccg_filter.dinterval" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>float</em>) Sample interval in decimal years</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.shortterm">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">shortterm</span></span><a class="headerlink" href="#ccg_filter.shortterm" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Short term cutoff value in days for smoothing of data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.longterm">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">longterm</span></span><a class="headerlink" href="#ccg_filter.longterm" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) Long term cutoff value in days for extracting trend from data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.smooth">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">smooth</span></span><a class="headerlink" href="#ccg_filter.smooth" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) smoothed results from applying short term cutoff filter to residuals of data from the function.  Equally spaced at xinterp</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.trend">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">trend</span></span><a class="headerlink" href="#ccg_filter.trend" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) trend results from applying long term cutoff filter to residuals of data from the function.  Equally spaced at xinterp</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.deriv">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">deriv</span></span><a class="headerlink" href="#ccg_filter.deriv" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>numpy array</em>) derivative of function + trend.  Equally spaced at xinterp</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.ninterp">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">ninterp</span></span><a class="headerlink" href="#ccg_filter.ninterp" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>int</em>) number of points in each of xinterp, smooth, trend</p>
+</dd></dl>
+
+</section>
+<section id="misc">
+<h3>Misc.<a class="headerlink" href="#misc" title="Permalink to this headline"></a></h3>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.rsd1">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">rsd1</span></span><a class="headerlink" href="#ccg_filter.rsd1" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>float</em>) Standard deviation of residuals about function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.rsd2">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">rsd2</span></span><a class="headerlink" href="#ccg_filter.rsd2" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>float</em>) Standard deviation of residuals about smooth curve</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccg_filter.debug">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">debug</span></span><a class="headerlink" href="#ccg_filter.debug" title="Permalink to this definition"></a></dt>
+<dd><p>(<em>boolean</em>) Flag for showing additional information during computation</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline"></a></h2>
+<p>For each of the methods below, the input value x can be a single point, a list, or a numpy array</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getFunctionValue">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getFunctionValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getFunctionValue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the value of the function part of the filter at time x.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getSmoothValue">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getSmoothValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getSmoothValue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the ‘smoothed’ data at time x.  This is function + self.smooth</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getTrendValue">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getTrendValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getTrendValue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the ‘trend’ of the data at time x.  This is polynomial part of function + self.trend</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getHarmonicValue">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getHarmonicValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getHarmonicValue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the value of the harmonic part of the function at time x.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getPolyValue">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getPolyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getPolyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the value of the polynomial part of the function at time x</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getAmplitudes">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getAmplitudes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getAmplitudes" title="Permalink to this definition"></a></dt>
+<dd><p>Get seasonal cycle amplitudes. Returns a list of tuples, each tuple has 6 values <code class="docutils literal notranslate"><span class="pre">(year,</span> <span class="pre">total_amplitude,</span> <span class="pre">max_date,</span> <span class="pre">max_value,</span> <span class="pre">min_date,</span> <span class="pre">min_value)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getFilterResponse">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getFilterResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getFilterResponse" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the value of the filter for frequencies 0 - 10 cycles/year at given cutoff</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getMonthlyMeans">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getMonthlyMeans</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getMonthlyMeans" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of tuples containing monthy means from the smoothed curve.
+The value of the curve is computed at every sample interval, then summed up for each
+month and the average computed.  Each tuple contains 5 values, <code class="docutils literal notranslate"><span class="pre">(year,</span> <span class="pre">month,</span> <span class="pre">average,</span> <span class="pre">std.dev.,</span> <span class="pre">n)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccg_filter.getTrendCrossingDates">
+<span class="sig-prename descclassname"><span class="pre">ccg_filter.</span></span><span class="sig-name descname"><span class="pre">getTrendCrossingDates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccg_filter.getTrendCrossingDates" title="Permalink to this definition"></a></dt>
+<dd><p>Get the decimal dates when the smoothed curve crosses the trend curve.
+That is, when the detrended smooth seasonal cycle crosses 0. Use the <code class="xref py py-func docutils literal notranslate"><span class="pre">dates.calendarDate()</span></code> function to convert
+from decimal date to calendar date.</p>
+</dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Example of creating the ccgfilter class</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ccg_filter</span>
+
+<span class="c1"># create the ccgfilt object</span>
+<span class="n">filt</span> <span class="o">=</span> <span class="n">ccg_filter</span><span class="o">.</span><span class="n">ccgFilter</span><span class="p">(</span><span class="n">xp</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">shortterm</span><span class="p">,</span> <span class="n">longterm</span><span class="p">,</span> <span class="n">sampleinterval</span><span class="p">,</span>
+                            <span class="n">numpolyterms</span><span class="p">,</span> <span class="n">numharmonics</span><span class="p">,</span> <span class="n">timezero</span><span class="p">,</span> <span class="n">gap</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getMonthlyMeans</span><span class="p">()</span>
+<span class="n">amps</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getAmplitudes</span><span class="p">()</span>
+<span class="n">tcup</span><span class="p">,</span> <span class="n">tcdown</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getTrendCrossingDates</span><span class="p">()</span>
+
+<span class="c1"># get x,y data for plotting</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">xinterp</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getFunctionValue</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getPolyValue</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">y3</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getSmoothValue</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">y4</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getTrendValue</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+
+<span class="c1"># Seasonal Cycle</span>
+<span class="c1"># x and y are original data points</span>
+<span class="n">trend</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getTrendValue</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">detrend</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">trend</span>
+<span class="n">harmonics</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">getHarmonicValue</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">smooth_cycle</span> <span class="o">=</span> <span class="n">harmonics</span> <span class="o">+</span> <span class="n">filt</span><span class="o">.</span><span class="n">smooth</span> <span class="o">-</span> <span class="n">filt</span><span class="o">.</span><span class="n">trend</span>
+
+<span class="c1"># residuals from the function</span>
+<span class="n">resid_from_func</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">resid</span>
+
+<span class="c1"># smoothed residuals</span>
+<span class="n">resid_smooth</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">smooth</span>
+
+<span class="c1"># trend of residuals</span>
+<span class="n">resid_trend</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">trend</span>
+
+<span class="c1"># residuals about the smoothed line</span>
+<span class="n">resid_from_smooth</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">yp</span> <span class="o">-</span> <span class="n">filt</span><span class="o">.</span><span class="n">getSmoothValue</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># equally spaced interpolated data with function removed</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">xinterp</span>
+<span class="n">y9</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">yinterp</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Curve Fitting and Smoothing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ccgcrv.html" class="btn btn-neutral float-right" title="ccgcrv — Driver program for ccg_filter curve fit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

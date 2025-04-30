@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ccg_ncdf &mdash; ccglib.python 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>ccg_ncdf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ccg_ncdf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Function: read_ncdf()</span>
+<span class="sd">    Load root and group variables and attributes from a NetCDF file as a python dictionary.</span>
+<span class="sd">    NetCDF paths and variable/attribute names are retained as dictionary keys.</span>
+
+<span class="sd">History</span>
+<span class="sd">    Created Oct 2021, M. Trudeau (development version)</span>
+
+<span class="sd">Example(s)::</span>
+
+<span class="sd">    from ccg_ncdf import read_ncdf</span>
+
+<span class="sd">    # read all NetCDF variables and attributes</span>
+<span class="sd">    dat = read_ncdf(&quot;/nfs/footprints/stilt/ctl-na-v1.1/OCO2/2015/03/stilt-pkg2015x03x10x21x38x14.2577Nx124.0107W.nc&quot;)</span>
+<span class="sd">    print(dat[&quot;.Title&quot;])</span>
+
+<span class="sd">    # read and subset NetCDF file content with a text search</span>
+<span class="sd">    dat = read_ncdf(&quot;/nfs/footprints/stilt/ctl-na-v1.1/OCO2/2015/03/stilt-pkg2015x03x10x21x38x14.2577Nx124.0107W.nc&quot;, search=&quot;units&quot;)</span>
+<span class="sd">    for k in dat.keys(): print(k)</span>
+
+
+<span class="sd">Update</span>
+<span class="sd">    version 1.1 - 15 Dec 2021 Kirk Thoning</span>
+<span class="sd">        - If variable has a &#39;units&#39; attribute that contains the word &#39;since&#39;,</span>
+<span class="sd">          assume timestamp and create another variable &#39;date&#39; with datetime object</span>
+<span class="sd">          converted from timestamp.</span>
+<span class="sd">        - Remove leading &#39;.&#39; in global attribute name</span>
+<span class="sd">        - Add &#39;variables&#39; key in dict that contains list of variable names</span>
+<span class="sd">        - Rename module to ccg_ncdf.py</span>
+<span class="sd">        - Removed .keys() when traversing through dict in search</span>
+<span class="sd">        - minor formatting and doc changes</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+
+<div class="viewcode-block" id="walktree"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.walktree">[docs]</a><span class="k">def</span> <span class="nf">walktree</span><span class="p">(</span><span class="n">top</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; walk the group tree using a Python generator &quot;&quot;&quot;</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="n">top</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">yield</span> <span class="n">values</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">top</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">children</span> <span class="ow">in</span> <span class="n">walktree</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">children</span></div>
+
+<div class="viewcode-block" id="format_ncvar"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.format_ncvar">[docs]</a><span class="k">def</span> <span class="nf">format_ncvar</span><span class="p">(</span><span class="n">variable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; called by read_ncdf to return formatted values &quot;&quot;&quot;</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">variable</span><span class="p">[:]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>  <span class="c1"># this doesn&#39;t work for netcdf string variables</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">chartostring</span><span class="p">(</span><span class="n">value</span><span class="p">[:])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># to-do: if variable.units contains datetime information,</span>
+    <span class="c1"># convert to datetime object w/ ccg_date_utils.date_conversions()</span>
+    <span class="c1"># handled below with check for &#39;since&#39; in &#39;units&#39; attribute. kt</span>
+
+    <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="read_ncdf"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.read_ncdf">[docs]</a><span class="k">def</span> <span class="nf">read_ncdf</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">set_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">datename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Read a netcdf file and return data and attributes as a dict.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname : netcdf filename</span>
+<span class="sd">        search : Include only variables where name matches search string</span>
+<span class="sd">        set_mask : Set to True to convert variables to masked arrays</span>
+<span class="sd">        datename : Name of variable converted to datetime objects from</span>
+<span class="sd">                   &#39;time since&#39; variable. Default is to append &#39;_date&#39; to original variable name</span>
+<span class="sd">        verbose : Set to True to print out extra messages</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mydict : dict of data from netcdf file.  Keys are for both</span>
+<span class="sd">                 attributes and variables.  See mydict[&#39;variables&#39;] for</span>
+<span class="sd">                 list of variable names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mydict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">mydict</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">root</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Opened for reading: </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">root</span><span class="o">.</span><span class="n">set_auto_mask</span><span class="p">(</span><span class="n">set_mask</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ncattr</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending global attribute: </span><span class="si">{</span><span class="n">ncattr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mydict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ncattr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">ncattr</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ncvar</span><span class="p">,</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending variable: </span><span class="si">{</span><span class="n">ncvar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mydict</span><span class="p">[</span><span class="n">ncvar</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_ncvar</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+        <span class="n">mydict</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ncvar</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ncattr</span> <span class="ow">in</span> <span class="n">variable</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending variable attribute: </span><span class="si">{</span><span class="n">ncattr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">ncattr</span><span class="p">)</span>
+            <span class="n">mydict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ncvar</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">ncattr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">ncattr</span> <span class="o">==</span> <span class="s2">&quot;units&quot;</span> <span class="ow">and</span> <span class="s2">&quot;since&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">datename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">varname</span> <span class="o">=</span> <span class="n">ncvar</span> <span class="o">+</span> <span class="s1">&#39;_date&#39;</span>  <span class="c1"># append _date to original var name</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">varname</span> <span class="o">=</span> <span class="n">datename</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending variable: </span><span class="si">{</span><span class="n">varname</span><span class="si">}</span><span class="s2"> converted from </span><span class="si">{</span><span class="n">ncvar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">mydict</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">mydict</span><span class="p">[</span><span class="n">ncvar</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">mydict</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+
+
+    <span class="k">for</span> <span class="n">groups</span> <span class="ow">in</span> <span class="n">walktree</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">ncattr</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending group attribute: </span><span class="si">{</span><span class="n">ncattr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">mydict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">ncattr</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">ncattr</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ncvar</span><span class="p">,</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending variable: </span><span class="si">{</span><span class="n">ncvar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">mydict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">ncvar</span><span class="p">)]</span> <span class="o">=</span> <span class="n">format_ncvar</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">ncattr</span> <span class="ow">in</span> <span class="n">variable</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending variable attribute: </span><span class="si">{</span><span class="n">ncattr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">mydict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">ncvar</span><span class="p">,</span> <span class="n">ncattr</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">ncattr</span><span class="p">)</span>
+
+    <span class="n">root</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+    <span class="k">if</span> <span class="n">search</span><span class="p">:</span> <span class="c1"># allow for simple searches to subset dictionary</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">mydict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mydict</span> <span class="k">if</span> <span class="n">search</span> <span class="ow">in</span> <span class="n">key</span><span class="p">}</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">mydict</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">search</span> <span class="ow">in</span> <span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">return</span> <span class="n">mydict</span></div>
+
+<div class="viewcode-block" id="DataFrame"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.DataFrame">[docs]</a><span class="k">def</span> <span class="nf">DataFrame</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return the variables in the dataset as a pandas DataFrame &quot;&quot;&quot;</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">dataset</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="get_nc_attr"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.get_nc_attr">[docs]</a><span class="k">def</span> <span class="nf">get_nc_attr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Get an attribute from a netcdf file &quot;&quot;&quot;</span>
+
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">attr_value</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">getncattr</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">attr_value</span></div>
+
+<div class="viewcode-block" id="get_nc_variable"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.get_nc_variable">[docs]</a><span class="k">def</span> <span class="nf">get_nc_variable</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Get a netcdf variable</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename : netcdf filename</span>
+<span class="sd">        varname: name of netcdf variable</span>
+<span class="sd">        unique : If True, return only unique values of the variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">vardata</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">][:]</span>
+    <span class="k">if</span> <span class="n">unique</span><span class="p">:</span>
+        <span class="n">vardata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vardata</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">vardata</span></div>
+
+
+<div class="viewcode-block" id="update_ncdf_var"><a class="viewcode-back" href="../ccg_ncdf.html#ccg_ncdf.update_ncdf_var">[docs]</a><span class="k">def</span> <span class="nf">update_ncdf_var</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">vardata</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update variable &#39;varname&#39; with data from &#39;vardata&#39; in netcdf file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename : netcdf filename</span>
+<span class="sd">        varname : netcdf variable name</span>
+<span class="sd">        vardata : numpy array of data</span>
+
+<span class="sd">    Lots of assumptions made, such as data type is same, data length is same ...</span>
+<span class="sd">    Should only be used when values of a netcdf variable are changed,</span>
+<span class="sd">    but nothing else, and you want to write back the changed values to file.</span>
+
+<span class="sd">    vardata must be a numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># open netcdf file for updates</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r+&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># get dataset variable</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+
+    <span class="c1"># if variable is a character array, then convert strings to char</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">bytes_</span> <span class="ow">and</span> <span class="n">vardata</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">:</span>
+        <span class="n">strlen</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">stringtoarr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">strlen</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">vardata</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vardata</span>
+
+    <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;/ccg/src/dv/v7.0/flsel/ARH_ch4_surface_event_NIWA.nc&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;/ccg/src/dv/v7.0/flsel/tst.nc&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">read_ncdf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#    print(d)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%30s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+
+<span class="c1">#    update_ncdf_var(filename, &#39;qcflag&#39;, d[&#39;qcflag&#39;])</span>
+<span class="c1">#    update_ncdf_var(filename, &#39;time&#39;, d[&#39;time&#39;])</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

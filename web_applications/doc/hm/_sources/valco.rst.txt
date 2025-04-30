@@ -1,0 +1,112 @@
+
+.. highlight:: rest
+
+.. _valco:
+
+valco
+========================
+
+        These actions are for use with Valco stream selection valves using the Universal Actuator.
+
+.. _valco_turn_valve:
+
+TurnValve or TurnUniversalActuator
+----------------------------------
+
+        Turn a Valco valve with Universal Acutator.  Either multiposition or two
+        position valve.
+
+        Option string syntax is:
+
+          ``time    TurnValve      valve_name    position  (direction)``
+
+        Example:
+
+          ``0    TurnValve    SampleSelect    2     (up or down)``
+
+        The direction is an optional argument for multiposition valves, and can be:
+
+                * up = CW (clockwise)
+                * down = CC (counter clockwise)
+                * default if no direction given is shortest
+
+        or for two position valves:
+
+          ``0    TurnUniversalAcuator    CH4inject    Load``
+
+        Valve name can be either the device name set in the configuration file,
+        or a 'virtual' name defined in the configuration file with an associated device
+        For example
+
+        .. code-block:: bash
+
+            #device definition (can have one or many valves on same serial port)
+            device  ValcoValves      serial /dev/ttyS1 0 9600
+
+            # Information on multi-position valves
+            # type = multiposition
+            #name           device       type           id  max_positions
+            SampleSelect    ValcoValves  multiposition  0   16
+
+            #Use '*' for id if valve is not set with an id number
+
+            # Information of 2-position valves
+            # type = two_position
+            # name          device    type  id  load_position  Inject_position
+            CH4inject    ValcoValves  two_position  1  A  B
+
+        Then use either
+
+            ``0 TurnValve ValcoValves 4``
+
+            or
+
+            ``0 TurnValve SampleSelect 4``
+
+        The 'virtual' name method is required if multiple valves are connected to the same
+        interface, using different ID numbers for each valve.
+
+        .. note::
+           The 'TurnUniversalActuator' name was used in previous versions of hm.  The name
+           'TurnValve' should be used from now on.
+
+.. _valco_current_position:
+
+ValcoCurrentPosition
+--------------------
+
+        Get the curent position from a valco universal actuator.
+
+        Action line syntax is:
+
+                ``time    ValcoCurrentPosition     valve_name    none``
+
+        Example:
+
+               ``0 ValcoCurrentPosition SystemSelect None``
+
+        Result:
+                The current position number is printed to stdout.
+
+.. _valco_find_stops:
+
+ValcoFindStops
+--------------
+
+        Find stops on Valco two position valve.
+
+        Action line syntax:
+
+                ``time    ValcoFindStops          valve_name    none``
+
+        Example:
+
+                ``0 ValcoFindStops CH4inject none``
+
+        Result:
+                The command 'LRN' for finding the stops on the valve is sent to the valve.
+
+        .. warning::
+           This action is for two position valves only.  If used on a multiposition valve, and
+           error message is written to the log file.
+

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obsolete Actions &mdash; python hm 0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="RunAction" href="runaction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> python hm
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Starting hm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hmsubs.html">hmsubs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq.html">daq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hp35900.html">hp35900</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">scpi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valco.html">valco</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runaction.html">RunAction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Obsolete Actions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#monitordata">MonitorData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitornonpolleddata">MonitorNonPolledData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitorpolleddata">MonitorPolledData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#movevalve">MoveValve</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Obsolete Actions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/obsolete.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="obsolete-actions">
+<span id="obsolete"></span><h1>Obsolete Actions<a class="headerlink" href="#obsolete-actions" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><p>These actions were used in earlier versions of hm.  They have been remove in version 3.0.</p>
+</div></blockquote>
+<section id="monitordata">
+<span id="monitor-data"></span><h2>MonitorData<a class="headerlink" href="#monitordata" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">MonitorDevice</span></code> instead.</p>
+</div>
+<p>Read data from a device at a specified sample rate
+forever, print each reading to stdout.</p>
+<p>Be warned that this routine does NOT return to the main
+loop in hm.py.  Only way to stop hm is by killing the process.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MonitorData</span> <span class="pre">device</span> <span class="pre">interval</span> <span class="pre">time_avg</span> <span class="pre">[channel</span> <span class="pre">type]</span></code></p>
+</div></blockquote>
+<p>where <em>interval</em> is time between readings in milliseconds,
+<em>time_avg</em> is length of time to average readings before printing
+out the values, in seconds. A <em>time_avg</em> value of 0 will cause
+<strong>hm</strong> to print out every reading.</p>
+<p>For example,</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MonitorData</span> <span class="pre">device</span> <span class="pre">500</span> <span class="pre">10</span></code></p>
+</div></blockquote>
+<p>which will cause <em>device</em> to take a reading every 500 milliseconds
+and averages these readings for 10 seconds before printing out.</p>
+<p>The device must already be configured to take readings of the desired type.</p>
+</div></blockquote>
+</section>
+<section id="monitornonpolleddata">
+<span id="monitor-nonpolled-data"></span><h2>MonitorNonPolledData<a class="headerlink" href="#monitornonpolleddata" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">MonitorDevice</span></code> instead.</p>
+</div>
+<p>Read data from an non-polled instrument that outputs single or multiple
+data streams as one digital output string. That is, read from a device that
+continuously sends out data without being prompted.</p>
+<p>It skips any leading character strings in the instrument output.
+Sampling rate is set by the instrument.</p>
+<p>Can either loop forever OR take a single reading (or single average reading).
+Print either each reading to stdout OR an average from a specified
+time period to stdout.</p>
+<p>Be warned that this routine does NOT return to the main
+loop in hm.c when looping forever.  Only way to stop hm is by
+killing the process.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MonitorNonPolledData</span> <span class="pre">device</span>&#160; <span class="pre">time_avg</span>&#160; <span class="pre">forever?</span>&#160; <span class="pre">gmt?</span>&#160; <span class="pre">reg_time_interval?</span></code></p>
+</div></blockquote>
+<p>where options with ? are optional, and</p>
+<blockquote>
+<div><p><em>time_avg</em> is length of time in seconds to average readings before
+printing out the values. A time_avg value of 0 will cause
+hm to print out every reading.</p>
+<p><em>forever?</em> specifies wheather to loop forever or to stop after one
+time_avg cycle.
+Default is to stop after one time_avg cycle.</p>
+<p><em>gmt?</em>  specifies use of GMT timestamps for data.  Set to 1 for GMT,
+0 or undefined for local time
+Default is false.</p>
+<p><em>reg_time_interval?</em>  specifies if the user wants the timestamps to be
+on a regular repeating pattern.  For example 10 second averages would
+be recorded with timestamps of 10, 20, 30, etc seconds after the minute.
+Default is false.</p>
+</div></blockquote>
+<p>For example,</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorNonPolledData</span> <span class="pre">device</span>&#160; <span class="pre">10</span> <span class="pre">1</span></code></p>
+</div></blockquote>
+<p>will read device and average the readings for 10 seconds
+before printing out, and it will loop forever.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorNonPolledData</span> <span class="pre">device</span>&#160; <span class="pre">10</span></code></p>
+</div></blockquote>
+<p>will read device and average the readings for 10 seconds
+before printing out, and it will NOT loop forever so will exit
+after the first 10 sec average is printed.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorNonPolledData</span> <span class="pre">device</span>&#160; <span class="pre">0</span>&#160; <span class="pre">1</span>&#160; <span class="pre">1</span></code></p>
+</div></blockquote>
+<p>will read device but will NOT average, instead it will print out
+all of the data points and it will continue forever.  The last option
+causes the timestamps to be in GMT</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorNonPolledData</span> <span class="pre">device</span> <span class="pre">10</span>&#160; <span class="pre">1</span>&#160; <span class="pre">0</span>&#160; <span class="pre">1</span></code></p>
+</div></blockquote>
+<p>will read device and average the readings for 10 sec, loop forever, use local time
+for the timestamp, and keep a regular pattern to the timestamps (ie
+every even 10 seconds of the minutes)</p>
+</div></blockquote>
+</section>
+<section id="monitorpolleddata">
+<span id="monitor-polled-data"></span><h2>MonitorPolledData<a class="headerlink" href="#monitorpolleddata" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">MonitorDevice</span></code> instead.</p>
+</div>
+<p>Read data from an polled instrument that outputs single or multiple
+data streams as one digital output string.  That is, read output from a device that
+requires a prompt before sending it’s output.</p>
+<p>Assumes channels already configured.
+!!!! NOT SURE THIS IS TRUE —– It skips any leading character strings in the instrument output.
+!!!! SHOULD DO IF POSSIBLE !!!!</p>
+<p>Sampling rate is set to 1 Hz.</p>
+<p>Can either loop forever OR take a single reading (or single average reading).
+Print either each reading to stdout OR an average from a specified time period to stdout.</p>
+<p>Be warned that this routine does NOT return to the main loop in hm.c when looping forever.
+Only way to stop hm is by killing the process.</p>
+<p>Action line syntax, parameters with ? are optional:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MonitorPolledData</span> <span class="pre">device</span>&#160; <span class="pre">command</span>&#160; <span class="pre">time_avg</span>&#160; <span class="pre">forever?</span>&#160; <span class="pre">gmt?</span>&#160; <span class="pre">reg_time_interval?</span></code></p>
+</div></blockquote>
+<p>where,</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>command</em> is the device command to retrieve data. Assume already configured.</p></li>
+<li><p><em>time_avg</em> is length of time in seconds to average readings before printing out the values. A time_avg value of 0 will cause hm to print out every reading.</p></li>
+<li><p><em>forever?</em>  specifies wheather to loop forever or to stop after one time_avg cycle.</p></li>
+<li><p><em>gmt?</em>  specifies use of GMT timestamps for data.  Set to 1 for GMT, 0 or undefined for local time</p></li>
+<li><p><em>reg_time_interval?</em>  specifies if the user wants the timestamps to be on a regular repeating pattern.  For example 10 second averages would be recorded with timestamps of 10, 20, 30, etc seconds after the minute.</p></li>
+</ul>
+</div></blockquote>
+<p>For example,</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorPolledData</span> <span class="pre">hp34970</span> <span class="pre">READ?</span>&#160; <span class="pre">10</span> <span class="pre">1</span></code></p>
+</div></blockquote>
+<p>will read device and average the readings for 10 seconds
+before printing out, and it will loop forever.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorPolledData</span> <span class="pre">hp34970</span> <span class="pre">READ?</span>&#160; <span class="pre">10</span></code></p>
+</div></blockquote>
+<p>will read device and average the readings for 10 seconds
+before printing out, and it will NOT loop forever so will exit
+after the first 10 sec average is printed.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorPolledData</span> <span class="pre">hp34970</span> <span class="pre">READ?</span>&#160; <span class="pre">0</span>&#160; <span class="pre">1</span>&#160; <span class="pre">1</span></code></p>
+</div></blockquote>
+<p>will read device but will NOT average, instead it will print out
+all of the data points and it will continue forever.  The last option
+causes the timestamps to be in GMT</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160; <span class="pre">MonitorPolledData</span> <span class="pre">hp34970</span> <span class="pre">READ?</span> <span class="pre">10</span>&#160; <span class="pre">1</span>&#160; <span class="pre">0</span>&#160; <span class="pre">1</span></code></p>
+</div></blockquote>
+<p>will read device and average the readings for 10 sec, loop forever, use local time
+for the timestamp, and keep a regular pattern to the timestamps (ie
+every even 10 seconds of the minute)</p>
+<p>Example action file for hp34970:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>0       SendCommand       hp34970 ROUTE:SCAN (@101,102,103)
+0       SendCommand       hp34970 TRIG:SOURCE TIMER
+0       SendCommand       hp34970 TRIG:TIMER 0
+0       SendCommand       hp34970 TRIG:COUNT 1
+0       MonitorPolledData hp34970 READ? 10 1 0 1
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="movevalve">
+<h2>MoveValve<a class="headerlink" href="#movevalve" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This action was for older valco valves using a digital i/o actuator interface.  We no longer use these actuators.</p>
+</div>
+<p>Turn a multiport <strong>Valco</strong> valve to a specified position
+using random position lines on the valve.</p>
+<p>Option string should contain:</p>
+<ul class="simple">
+<li><p>the name of the valve as given in the <a class="reference internal" href="config.html#config"><span class="std std-ref">Configuration</span></a> file,</p></li>
+<li><p>the desired position of the valve</p></li>
+</ul>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MoveValve</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">valve_name</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">position</span></code></p>
+</div></blockquote>
+<p>e.g.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">MoveValve</span> <span class="pre">co2_select</span> <span class="pre">5</span></code></p>
+</div></blockquote>
+<p>There must be an entry in the <a class="reference internal" href="config.html#config"><span class="std std-ref">Configuration</span></a> file for each valve called,
+of the form:</p>
+<blockquote>
+<div><p>valve_name  digital_io_device n_positions  outport  inport</p>
+</div></blockquote>
+<p>where</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>digital_io_device</em> is the name of the device with digital i/o lines</p></li>
+<li><p><em>n_positions</em> is the maximum number of positions of the valve (e.g. 4, 8 or 16)</p></li>
+<li><p><em>outport</em> is the address of the digital output port</p></li>
+<li><p><em>inport</em> is the address of the LSB input of the valve position</p></li>
+</ul>
+</div></blockquote>
+<p>If inport &lt; 0 then no readback of valve position is done.</p>
+<p>Makes assumptions about how the valve is wired to the digital i/o board.
+The write lines are at the 5 bits starting at the inport address.
+Bit values are:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">0       1s</div>
+<div class="line">1       2s</div>
+<div class="line">2       4s</div>
+<div class="line">3       8s</div>
+<div class="line">4       10s</div>
+<div class="line">5       input enable</div>
+<div class="line">6       Home</div>
+<div class="line">7       Step</div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="runaction.html" class="btn btn-neutral float-left" title="RunAction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

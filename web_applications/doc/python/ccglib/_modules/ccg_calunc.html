@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ccg_calunc &mdash; ccglib.python 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ccglib.python
+          
+
+          
+            
+            <img src="../_static/NOAA.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conda.html">conda python — Consistent python environment across gml servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../db_utils/index.html">Database routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter/index.html">Curve Fitting and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tankcals/index.html">Tank Calibrations and History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../insitu/index.html">In-Situ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_date_utils.html">ccg_date_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_dates.html">ccg_dates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_csv_utils.html">ccg_csv_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ccg_ncdf.html">ccg_ncdf - NetCDF file utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ccglib.python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>ccg_calunc</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ccg_calunc</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A class for detrmining the reproducibility (scale transfer uncertainty)</span>
+<span class="sd">in tank calibrations</span>
+
+<span class="sd">Given a gas, the calibration system, instrument and calibrations date,</span>
+<span class="sd">it reads a file with uncertainty values and returns the </span>
+<span class="sd">reproducibility value for that calibration.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">dateutil.parser</span> <span class="kn">import</span> <span class="n">parse</span>
+
+<span class="kn">import</span> <span class="nn">ccg_utils</span>
+
+
+<span class="c1">#########################################################################################</span>
+<div class="viewcode-block" id="CalUnc"><a class="viewcode-back" href="../tankcals/calunc.html#ccg_calunc.CalUnc">[docs]</a><span class="k">class</span> <span class="nc">CalUnc</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        rulefile (str) : Name of file with flagging rules.  None means use default file.</span>
+<span class="sd">        debug (bool) : If True, print extra debugging messages.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        calunc = ccg_calunc.CalUnc(rulefile=None, debug=False)</span>
+<span class="sd">        unc = calunc.getUnc(gas, system, instrument, adate, mf)</span>
+
+<span class="sd">    Default rulefile is &quot;/ccg/cals/cal_unc.dat&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rulefile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+
+        <span class="k">if</span> <span class="n">rulefile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rulefile</span> <span class="o">=</span> <span class="n">rulefile</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rulefile</span> <span class="o">=</span> <span class="s2">&quot;/ccg/cals/cal_unc.dat&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rule file is&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rulefile</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_rules</span><span class="p">()</span>
+
+    <span class="c1">#------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_read_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read uncertainty data rules from the rule file.</span>
+<span class="sd">        Store data as a list of namedtuples.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gas&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;inst&#39;</span><span class="p">,</span> <span class="s1">&#39;sdate&#39;</span><span class="p">,</span> <span class="s1">&#39;edate&#39;</span><span class="p">,</span> <span class="s1">&#39;basis&#39;</span><span class="p">,</span> <span class="s1">&#39;minval&#39;</span><span class="p">,</span> <span class="s1">&#39;maxval&#39;</span><span class="p">,</span> <span class="s1">&#39;unc&#39;</span><span class="p">]</span>
+        <span class="n">CalRules</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;rule&#39;</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal_rules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">ccg_utils</span><span class="o">.</span><span class="n">cleanFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rulefile</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">gas</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">instid</span><span class="p">,</span> <span class="n">sdate</span><span class="p">,</span> <span class="n">edate</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">unc</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">sdate</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                <span class="n">sdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sdate</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">sdate</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">edate</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                <span class="n">edate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">max</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edate</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">edate</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">minval</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                <span class="n">minval</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e+34</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">minval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">minval</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">maxval</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                <span class="n">maxval</span> <span class="o">=</span> <span class="mf">1e+34</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">maxval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span>
+
+            <span class="n">gas</span> <span class="o">=</span> <span class="n">gas</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">system</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">instid</span> <span class="o">=</span> <span class="n">instid</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">unc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">unc</span><span class="p">)</span>
+
+            <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">instid</span><span class="p">,</span> <span class="n">sdate</span><span class="p">,</span> <span class="n">edate</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">unc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cal_rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CalRules</span><span class="o">.</span><span class="n">_make</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+
+    <span class="c1">#------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">_find_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gas</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">adate</span><span class="p">,</span> <span class="n">mf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find the rules that apply to this data.</span>
+<span class="sd">        All checks of the rules must be True for the rule to be applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cal_rules</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_rule</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">gas</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_rule</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">system</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_rule</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">inst</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">adate</span> <span class="o">&lt;</span> <span class="n">rule</span><span class="o">.</span><span class="n">sdate</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">adate</span> <span class="o">&gt;</span> <span class="n">rule</span><span class="o">.</span><span class="n">edate</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rule</span><span class="o">.</span><span class="n">minval</span> <span class="o">&lt;=</span> <span class="n">mf</span> <span class="o">&lt;</span> <span class="n">rule</span><span class="o">.</span><span class="n">maxval</span><span class="p">:</span> <span class="k">continue</span>
+
+            <span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rules</span>
+
+    <span class="c1">#------------------------------------------------------------------</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_rule</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Check if given string matches the given pattern &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;|&quot;</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">:</span>
+                <span class="c1"># if string doesn&#39;t match any elements in pattern, return True</span>
+                <span class="k">return</span> <span class="kc">True</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">string</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)]</span>
+
+            <span class="k">return</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">string</span><span class="p">),</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;|&quot;</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">:</span>
+            <span class="c1"># if string matches any elements in pattern, return True</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="ow">in</span> <span class="p">[</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">string</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">pattern</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">string</span><span class="p">),</span> <span class="n">pattern</span><span class="p">)</span>
+
+    <span class="c1">#------------------------------------------------------------------</span>
+<div class="viewcode-block" id="CalUnc.getUnc"><a class="viewcode-back" href="../tankcals/calunc.html#ccg_calunc.CalUnc.getUnc">[docs]</a>    <span class="k">def</span> <span class="nf">getUnc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gas</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">inst_id</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">mf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find the uncertainty for the given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gas (str) : gas species</span>
+<span class="sd">            system (str) : system name</span>
+<span class="sd">            inst_id (str) : instrument id</span>
+<span class="sd">            date (date or datetime) : date of uncertainty</span>
+<span class="sd">            mf (float) : mole fraction value. Uncertainties can be mole fraction dependent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># date must be a datetime object</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">date</span>
+
+<span class="c1">#        print(gas, system, inst_id, dt, mf)</span>
+        <span class="c1"># find the rules that apply</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_rules</span><span class="p">(</span><span class="n">gas</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">system</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">inst_id</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">dt</span><span class="p">,</span> <span class="n">mf</span><span class="p">)</span>
+
+        <span class="c1"># if no matches, return default value</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mf">99.9</span>
+
+        <span class="c1"># return value from first rule (should usually be only 1)</span>
+        <span class="k">return</span> <span class="n">rules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unc</span></div></div>
+
+
+<span class="c1">###########################################################################3</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">calunc</span> <span class="o">=</span> <span class="n">CalUnc</span><span class="p">()</span>
+
+<span class="c1">#    for t in calunc.cal_rules:</span>
+<span class="c1">#        print(t)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">unc</span> <span class="o">=</span> <span class="n">calunc</span><span class="o">.</span><span class="n">getUnc</span><span class="p">(</span><span class="s2">&quot;co2&quot;</span><span class="p">,</span> <span class="s2">&quot;co2cal-1&quot;</span><span class="p">,</span> <span class="s2">&quot;S4&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="mi">420</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">unc</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

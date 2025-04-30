@@ -1,0 +1,187 @@
+
+.. highlight:: rest
+
+.. data
+
+Data
+============================================================
+
+Data acquired from the measurement system, as well as configuration settings, are stored in a `sqlite <https://www.sqlite.org/index.html>`_
+database. Database tables for measured data, qc signal data, sensor configuration, reference gas information, and operator log entries are
+used.
+
+Data is extracted from the database tables once an hour into text files, and these files are transferred to GML in Boulder, as well as used for
+long-term backup of the data.  Only the last ``35 days`` of data are stored in the database.
+
+Data Transfer
+-------------
+
+Once an hour, a cron job runs a script that finds newly modified text data files since the last data transfer, and creates a tar package file with these files.
+Transfer of the tar files is initiated from Boulder.  The tar files are stored in the ``$HOME/data/tmp/`` directory.  Once a transfer of data
+back to Boulder is successful, the tar files are removed from the directory.  A hidden file in the directory, named ``.lasttransfer`` is used to determine
+when the last successful data transfer was done.  The timestamp on this file is changed after the data transfer from Boulder.
+
+Scripts used:
+
+* bin/transfer - Bash shell script to find modified files and create tar files
+* src/fetch.sh - Bash shell script to extract data from database and create text files.
+
+Sqlite database
+---------------
+
+Several tables are used.  The tables can be created using the ``src/schema.py`` script.
+
+qc
+    data from qc system
+data 
+    data from analyzer output
+sensors 
+    sensor configuration
+tanks 
+    history of reference tanks used on the system
+operator_log 
+    operator log entries
+sample 
+    times when a new sample is measured
+response 
+    response coefficients of analyzer from mode 2 measurements.
+
+.. note::
+   The sensor configuration file is the primary source of data for the sensors database table. Any changes to sensors must be made in the file, and the database table updated from that.
+
+
+Database schema:
+
+.. code-block:: sql
+
+        CREATE TABLE qc (
+                time integer,
+                value real,
+                sensor_num integer,
+                primary key (time, sensor_num)
+        );
+        CREATE TABLE data (
+                time integer,
+                gas text,
+                value real,
+                stdv real,
+                mode integer,
+                sample text,
+                primary key (time, gas)
+        );
+        CREATE TABLE sensors (
+                num integer primary key autoincrement not null,
+                device text,
+                channel integer,
+                name text,
+                units text,
+                field_name text,
+                source text,
+                location text,
+                interval integer,
+                min_limit real,
+                max_limit real 
+        );
+        CREATE TABLE sqlite_sequence(name,seq);
+        CREATE TABLE tanks (
+                serial_number text,
+                gas text,
+                type text,
+                label text,
+                value real,
+                online_date text,
+                mod_date text
+        );
+        CREATE TABLE operator_log (
+                date text,
+                subject text,
+                comment text
+        );
+        CREATE TABLE sample (
+                time integer primary key not null,
+                sample text,
+                label text,
+                mode integer
+        );
+        CREATE TABLE response (
+                time integer,
+                gas text,
+                c0 real,
+                c1 real,
+                c2 real,
+                rsd real,
+                n int,
+                primary key (time, gas)
+        );
+
+
+Text Files
+---------------
+
+Once an hour, a cron job runs that extracts recent data from the database and
+stores the data in text files. The script that is run for this cron job is
+``/home/ccg/src/fetch.sh``.  Files are placed in the ``/home/ccg/data`` directory tree,
+with separate directories for the analyzer data and the qc data.
+
+Analyzer data file format. Fields are 
+
+* date 
+* time
+* 10 second analyzer value
+* standard deviation of analyzer value
+* mode number
+* sample
+
+.. code-block:: text
+
+        2022-04-15 00:00:00  4.12084e+02  6.08355e-01 1 Line2
+        2022-04-15 00:00:10  4.11954e+02  7.38100e-01 1 Line2
+        2022-04-15 00:00:20  4.12244e+02  9.61171e-01 1 Line2
+        2022-04-15 00:00:30  4.11947e+02  6.51103e-01 1 Line2
+        2022-04-15 00:00:40  4.12099e+02  7.87062e-01 1 Line2
+        2022-04-15 00:00:50  4.12622e+02  4.28305e-01 1 Line2
+        2022-04-15 00:01:00  4.12045e+02  8.49197e-01 1 Line2
+        2022-04-15 00:01:10  4.12033e+02  6.99224e-01 1 Line2
+        2022-04-15 00:01:20  4.11708e+02  6.94431e-01 1 Line2
+        2022-04-15 00:01:30  4.11994e+02  8.12480e-01 1 Line2
+        2022-04-15 00:01:40  4.11542e+02  8.51008e-01 1 Line2
+        2022-04-15 00:01:50  4.11937e+02  8.70063e-01 1 Line2
+        2022-04-15 00:02:00  4.11625e+02  5.39065e-01 1 Line2
+        2022-04-15 00:02:10  4.12224e+02  4.82123e-01 1 Line2
+        2022-04-15 00:02:20  4.12184e+02  5.34709e-01 1 Line2
+        2022-04-15 00:02:30  4.12306e+02  7.88240e-01 1 Line2
+        2022-04-15 00:02:40  4.11877e+02  4.88756e-01 1 Line2
+        2022-04-15 00:02:50  4.11853e+02  6.86201e-01 1 Line2
+        2022-04-15 00:03:00  4.11995e+02  6.29614e-01 1 Line2
+
+QC data file format. Fields are
+
+* date
+* time
+* value
+* sensor number
+
+.. code-block:: text
+
+        2022-05-18 00:00:16  3.28385e+00 2
+        2022-05-18 00:00:46  4.20067e+00 2
+        2022-05-18 00:01:16  4.25223e+00 2
+        2022-05-18 00:01:46  5.68042e+00 2
+        2022-05-18 00:02:16  4.20376e+00 2
+        2022-05-18 00:02:46  4.43549e+00 2
+        2022-05-18 00:03:16  4.58956e+00 2
+        2022-05-18 00:03:46  4.58103e+00 2
+        2022-05-18 00:04:16  4.80742e+00 2
+        2022-05-18 00:04:46  5.25690e+00 2
+        2022-05-18 00:05:16  4.12008e+00 2
+        2022-05-18 00:05:46  4.91966e+00 2
+        2022-05-18 00:06:16  5.93791e+00 2
+        2022-05-18 00:06:46  4.46158e+00 2
+        2022-05-18 00:07:16  6.05938e+00 2
+        2022-05-18 00:07:46  3.47135e+00 2
+        2022-05-18 00:08:16  4.68332e+00 2
+        2022-05-18 00:08:46  4.18964e+00 2
+        2022-05-18 00:09:16  2.45844e+00 2
+        2022-05-18 00:09:46  4.15412e+00 2
+        2022-05-18 00:10:16  4.36686e+00 2
+        2022-05-18 00:10:46  6.24088e+00 2

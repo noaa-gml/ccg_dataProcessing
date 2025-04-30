@@ -1,0 +1,37 @@
+
+/* change background of main section to pure white */
+.wy-nav-content {
+    background: #ffffff;
+}
+
+/* changed visited links to same color as unvisited links */
+.wy-nav-content a:visited {
+    color: #2980b9;
+}
+/* add underline when hovering over link */
+.wy-nav-content a:hover {
+text-decoration: underline;
+}
+
+/* change highlight box background to light yellow instead of light gray */
+.highlight {
+    background: #fffff0;
+}
+
+.rst-content div[class^="highlight"], .rst-content pre.literal-block {
+    border: 1px solid #ddddcc;
+}
+
+/* make red a little darker */
+.rst-content code.literal, .rst-content tt.literal {
+    color: #ce1b08;
+}
+
+/* change h1 heading color from black */
+h1 {
+    color: #004dc6;
+}
+
+.rst-content code, .rst-content tt, code {
+background-color: #fafafa;
+}

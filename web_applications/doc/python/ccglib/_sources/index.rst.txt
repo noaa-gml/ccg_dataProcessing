@@ -1,0 +1,37 @@
+.. ccglib.python documentation master file, created by
+   sphinx-quickstart on Thu Sep 23 14:46:58 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+
+ccglib.python documentation
+===========================
+These pages contain documentation for the ccglib.python implementation of various utilities.
+They are included by default in the conda python installation (/ccg/python/README).
+Master src code lives in /ccg/python/ccglib.
+
+.. toctree::
+   :caption: Contents
+   :maxdepth: 1
+
+   conda
+   db_utils/index
+   filter/index
+   tankcals/index
+   insitu/index
+   ccg_date_utils
+   ccg_dates
+   ccg_csv_utils
+   ccg_ncdf
+   ccg_elevation
+
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

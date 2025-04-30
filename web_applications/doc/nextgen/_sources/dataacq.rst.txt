@@ -1,0 +1,41 @@
+.. GGGRN In-SItu Measurement System documentation master file, created by
+   sphinx-quickstart on Tue Apr 19 17:18:26 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+GGGRN In-Situ Data Acquisition
+============================================================
+
+
+Topics
+---------
+
+.. toctree::
+   :maxdepth: 2
+
+   hardware
+   software
+   data
+
+Hardware
+        * diagram
+        * wiring
+        * individual boxes
+
+Software
+        * overview
+        * ccg.py
+        * configuration files
+        * hm
+        * list of programs
+
+Data
+        * database
+        * data transfer to GML Boulder
+
+Operations
+        * manual response curve
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

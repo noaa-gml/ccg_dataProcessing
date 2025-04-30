@@ -1,0 +1,160 @@
+.. _bldsql:
+
+:mod:`ccg_bldsql` --- SQL Query builder class
+====================================================
+
+.. module:: ccg_db.bldsql
+       :synopsis: A set of functions to programmatically build sql query and insert statements
+
+
+This module provides functions for programmatically building sql query and dml statements.  It handles paramatarized queries and variables and is most useful when building a query based on dynamic input.
+
+
+SQL Query builder class
+------------------------
+
+.. class:: BldSQL()
+
+    Class to generate sql statements programmatically using a query builder
+
+.. function:: initQuery()
+
+    Initialize/reset the query builder
+
+.. function:: table(tableName)
+
+    Add a table to the from clause.  Can be table name or table name with alias.  Join to other tables using where()
+
+.. function:: innerJoin(tableClause)
+
+    Join syntax is also supported.
+    Add an inner join table with join conditions to existing table (previously added with from or innerjoin)
+
+    .. code-block:: python
+
+        innerJoin("table2 t2 on baseTable.num=t2.num")
+
+    results in ".. inner join table2 t2 on baseTable.num=t2.num..."
+
+.. function:: leftJoin(tableClause)
+
+    Add a left join to the from clause to join to existing table (previously added with from or innerjoin)
+
+
+.. function:: col(column)
+
+    Add a column to the select.  I can be just the column name or with an alias.  It can contain arbitrarily complex functions/case statements
+
+.. function:: where(whereClause, bindParameter=None, replace=False)
+
+    Add clause to the where conditions.  All clauses are and'd together.  If passing a bind parameter, use a %s place holder in the where clause like this:
+
+
+    .. code-block:: python
+
+
+        where('num=%s',event_num)
+
+
+    % can be escaped by doubling:
+
+
+    .. code-block:: python
+
+
+        where("name like 'joh%%'")
+
+
+    If bind parameter is passed, you can also use replace=True to change the value (if you are using in a for loop for instance and useing the statment several times with a list of values)
+
+.. function:: wherein(whereClause,bindParameters)
+
+    This creates a 'x in (list)' clause.  Pass the whereClause as 'x in' and this will append the paren'd list "(%s,%s..)" for each bindParameter and then add them as parameters.
+
+    .. code-block:: python
+
+        wherein('id_num in',[23,33,45,66])
+
+    will result in "... id_num in (%s,%s,%s,%s)" with each num in list bound to placeholders
+
+.. function:: distinct()
+
+    Sets distinct in the select 
+
+.. function:: orderby(column)
+
+    Adds a column to the order by clause (in order)
+
+.. function:: groupby(column)
+
+    Adds a column to the group by clause (in order)
+
+.. function:: limit(num)
+
+    Sets a row limit for result set
+
+.. function:: cmd()
+
+    Returns a formatted sql string that can be passed to doquery or printed for debugging
+
+.. function:: bind()
+
+    Returns bindParameters in a tuple.  These can be passed to doquery
+
+
+    Example:
+
+        .. code-block:: python
+
+            #Use directly
+            import ccg_db.bldsql as bldsql
+            sql = bldsql.BldSQL()
+      
+            #Or as a convience, an instance is created as part of the db_conn/doquery utilities
+            import ccg_db.db_conn as db_conn
+            db = db_conn.RO()
+            sql = db.sql #handle for the query builder included in db_conn
+
+            showMet=True
+
+            sql.initQuery() #Resets/initializes
+            sql.table("flask_event e") #Set tables and columns separately
+            sql.col("e.num as event_num")
+            sql.innerJoin("gmd.site s on e.site_num=s.num") #Can use join syntax or regular where = joins
+            sql.col('s.code as site')
+            sql.orderby("s.code")
+            sql.limit(10)
+
+            sql.where("e.date>%s",('2015-01-01')) #binds parameters instead of passing text
+            sql.where("e.date<%s",('2016-01-01'))
+
+            #conditional branching
+            if(showMet):
+                sql.leftJoin("flask_met met on e.num=met.event_num") #outer join
+                sql.col("met.narr_spec_humidity")
+
+            #bind multiple
+            sites = ('aao','crv','bld')
+            sql.wherein('s.code in', sites)
+
+            a = db.doquery() #returns list of dicts by default.  When no query is passed to doquery(), it's bldsql is used by default
+            for row in a:
+                print("Event: %s site: %s shum: %s " % (row['event_num'],row['site'],row['narr_spec_humidity']))
+
+            a = db.doquery(outfile='/tmp/out.csv', form='csv') #write csv file
+
+        .. code-block:: python
+      
+            Event: 380113 site: BLD shum: 0.003
+            Event: 380114 site: BLD shum: 0.003
+            Event: 380115 site: BLD shum: 0.003
+            Event: 380116 site: BLD shum: 0.003
+            Event: 380117 site: BLD shum: 0.003
+            Event: 380118 site: BLD shum: 0.003
+            Event: 380119 site: BLD shum: 0.003
+            Event: 380120 site: BLD shum: 0.003
+            Event: 380121 site: BLD shum: 0.003
+            Event: 380122 site: BLD shum: 0.003 
+  
+    See ``/ccg/python/ccglib/ccg_db/example.py`` to run this example
+

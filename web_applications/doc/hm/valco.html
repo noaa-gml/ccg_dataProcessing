@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>valco &mdash; python hm 0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RunAction" href="runaction.html" />
+    <link rel="prev" title="scpi" href="scpi.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> python hm
+            <img src="_static/NOAA.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Starting hm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hmsubs.html">hmsubs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq.html">daq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hp35900.html">hp35900</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">scpi</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">valco</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#turnvalve-or-turnuniversalactuator">TurnValve or TurnUniversalActuator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#valcocurrentposition">ValcoCurrentPosition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#valcofindstops">ValcoFindStops</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="runaction.html">RunAction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obsolete.html">Obsolete Actions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python hm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>valco</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/valco.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="valco">
+<span id="id1"></span><h1>valco<a class="headerlink" href="#valco" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><p>These actions are for use with Valco stream selection valves using the Universal Actuator.</p>
+</div></blockquote>
+<section id="turnvalve-or-turnuniversalactuator">
+<span id="valco-turn-valve"></span><h2>TurnValve or TurnUniversalActuator<a class="headerlink" href="#turnvalve-or-turnuniversalactuator" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Turn a Valco valve with Universal Acutator.  Either multiposition or two
+position valve.</p>
+<p>Option string syntax is:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">time</span>&#160;&#160;&#160; <span class="pre">TurnValve</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">valve_name</span>&#160;&#160;&#160; <span class="pre">position</span>&#160; <span class="pre">(direction)</span></code></p>
+</div></blockquote>
+<p>Example:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160;&#160;&#160; <span class="pre">TurnValve</span>&#160;&#160;&#160; <span class="pre">SampleSelect</span>&#160;&#160;&#160; <span class="pre">2</span>&#160;&#160;&#160;&#160; <span class="pre">(up</span> <span class="pre">or</span> <span class="pre">down)</span></code></p>
+</div></blockquote>
+<p>The direction is an optional argument for multiposition valves, and can be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>up = CW (clockwise)</p></li>
+<li><p>down = CC (counter clockwise)</p></li>
+<li><p>default if no direction given is shortest</p></li>
+</ul>
+</div></blockquote>
+<p>or for two position valves:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span>&#160;&#160;&#160; <span class="pre">TurnUniversalAcuator</span>&#160;&#160;&#160; <span class="pre">CH4inject</span>&#160;&#160;&#160; <span class="pre">Load</span></code></p>
+</div></blockquote>
+<p>Valve name can be either the device name set in the configuration file,
+or a ‘virtual’ name defined in the configuration file with an associated device
+For example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#device definition (can have one or many valves on same serial port)</span>
+device<span class="w">  </span>ValcoValves<span class="w">      </span>serial<span class="w"> </span>/dev/ttyS1<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">9600</span>
+
+<span class="c1"># Information on multi-position valves</span>
+<span class="c1"># type = multiposition</span>
+<span class="c1">#name           device       type           id  max_positions</span>
+SampleSelect<span class="w">    </span>ValcoValves<span class="w">  </span>multiposition<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">16</span>
+
+<span class="c1">#Use &#39;*&#39; for id if valve is not set with an id number</span>
+
+<span class="c1"># Information of 2-position valves</span>
+<span class="c1"># type = two_position</span>
+<span class="c1"># name          device    type  id  load_position  Inject_position</span>
+CH4inject<span class="w">    </span>ValcoValves<span class="w">  </span>two_position<span class="w">  </span><span class="m">1</span><span class="w">  </span>A<span class="w">  </span>B
+</pre></div>
+</div>
+<p>Then use either</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">TurnValve</span> <span class="pre">ValcoValves</span> <span class="pre">4</span></code></p>
+<p>or</p>
+<p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">TurnValve</span> <span class="pre">SampleSelect</span> <span class="pre">4</span></code></p>
+</div></blockquote>
+<p>The ‘virtual’ name method is required if multiple valves are connected to the same
+interface, using different ID numbers for each valve.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The ‘TurnUniversalActuator’ name was used in previous versions of hm.  The name
+‘TurnValve’ should be used from now on.</p>
+</div>
+</div></blockquote>
+</section>
+<section id="valcocurrentposition">
+<span id="valco-current-position"></span><h2>ValcoCurrentPosition<a class="headerlink" href="#valcocurrentposition" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Get the curent position from a valco universal actuator.</p>
+<p>Action line syntax is:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">time</span>&#160;&#160;&#160; <span class="pre">ValcoCurrentPosition</span>&#160;&#160;&#160;&#160; <span class="pre">valve_name</span>&#160;&#160;&#160; <span class="pre">none</span></code></p>
+</div></blockquote>
+<p>Example:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ValcoCurrentPosition</span> <span class="pre">SystemSelect</span> <span class="pre">None</span></code></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Result:</dt><dd><p>The current position number is printed to stdout.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="valcofindstops">
+<span id="valco-find-stops"></span><h2>ValcoFindStops<a class="headerlink" href="#valcofindstops" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>Find stops on Valco two position valve.</p>
+<p>Action line syntax:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">time</span>&#160;&#160;&#160; <span class="pre">ValcoFindStops</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">valve_name</span>&#160;&#160;&#160; <span class="pre">none</span></code></p>
+</div></blockquote>
+<p>Example:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">ValcoFindStops</span> <span class="pre">CH4inject</span> <span class="pre">none</span></code></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Result:</dt><dd><p>The command ‘LRN’ for finding the stops on the valve is sent to the valve.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This action is for two position valves only.  If used on a multiposition valve, and
+error message is written to the log file.</p>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="scpi.html" class="btn btn-neutral float-left" title="scpi" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="runaction.html" class="btn btn-neutral float-right" title="RunAction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kirk Thoning.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

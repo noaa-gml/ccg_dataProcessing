@@ -1,0 +1,36 @@
+
+.. highlight:: rest
+
+.. _modules:
+
+Modules
+=======
+
+        Because some 'actions' may be specific to one type of instrument, the software that handles the actions
+        is divided into a main class with multiple subclasses, each subclass specific for one type of instrument.
+        You can also overwrite a routine in the generic *hmsubs.py* class to make it more specific to an instrument.
+
+        The class modules are:
+
+        * :ref:`hmsubs.py <hmsubs>`
+                Main class that holds generic routines that work with multiple instruments.
+        * :ref:`daq.py <daq>`
+                subclass for Superlogics data acquistion modules.
+        * :ref:`hp35900.py <hp35900>`
+                Subclass for the hp35900 integrator
+        * lgr.py
+                Subclass for LGR analyzer
+        * picarro.py
+                Subclass for Picarro analyzer
+        * pp.py
+                Subclass for Peak Labs gc
+        * :ref:`scpi.py <scpi>`
+                Subclass for instruments that use 'SCPI', the *Standard Commands for Programmable Instruments* syntax
+        * test.py
+                Special subclass for testing actions.
+        * :ref:`valco.py <valco>`
+                Subclass for Valco stream selection valves.
+
+        The *test.py* module is special in that routines for actions can be developed here in such a way
+        that actual communications with a device are not done, so that the logic of the action is performed without
+        the need for a physical device to be connected.

@@ -1,0 +1,48 @@
+
+
+.. highlight:: rest
+
+.. _overview:
+
+Overview
+=============
+
+This documentation describes the python version of the 'next generation' of data processing software.
+
+        - Data acquisition
+
+                - hardware
+
+                - software
+
+                - data storage
+
+                - hm
+
+        - Directory and file layout
+
+                - Directories
+
+                - Files
+
+                - qc files
+
+                - configuration files
+
+        - Data transfer
+
+        - Data processing
+
+                - Create analyzer data files
+
+                - Create qc files
+
+                - Create averaged 'raw' files from the analyzer data files.
+
+                - Apply quality control flagging to the raw files.
+
+                - Calculate mole fraction values from raw files, insert into database
+
+                        - uncertainty calculations
+
+        - ???

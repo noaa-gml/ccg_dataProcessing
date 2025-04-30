@@ -1,0 +1,219 @@
+
+:mod:`db_utils` --- Mysql database utility routines
+====================================================
+
+.. module:: db_utils.db_conn
+      :synopsis: wrapper class/functions to connect & query  mysql database (connect, query, insert... ).
+
+
+This module provides classes and functions for various database needs, for example, connecting to the mysql database server, building & running queries and returning result sets.
+
+
+Database connection and query class
+---------------------------------------------
+
+.. class:: RO(db='ccgg')
+
+   Wrapper class that can be instatiated to do multiple queries.
+   Makes a readonly connection to specified db.
+
+   Import and make readonly connection
+   
+   .. code-block:: python
+
+      import db_utils.db_conn as db_conn
+      db=db_conn.RO()
+   
+
+   The default database is "ccgg".  To specify another database, pass in the name to :func:`RO`
+
+   .. code-block:: python
+
+      db = db_conn.RO("reftank")
+
+   Connection closes automatically at end of script/variable scope.
+  
+   For database developer access, ProdDB() can be used for a read write connection.  
+    
+   :warning:
+
+      ProdDB should only be used by authorized developers!
+
+.. function:: doquery(query[,parameters=None, numRows=-1, form='dict',numpyFloat64=True,outfile=None,timerName=None,commit=True,multiInsert=False,insert=False])
+
+   This is used to issue a sql query or dml statement.
+
+   :query:  SQL select or DML statement to be executed on database connection.  
+
+   .. note::Queries that use user supplied variables to filter results or pass values should use  'parameterized' variable binding to avoid sql injection risks.  This is critical on public input, highly recommened on all queries as safe practice.  Variables are marked in the query with a %s placeholder and then the variables are passed (in order) in the 'parameters' parameter.  See examples below.
+
+   :parameters: Tuple or list of parameters matching in order query placeholders (see example). Bind parameters should be used in general for where clauses to prevent sql injection on unknown sourced params. If only 1 bind parameter, follow with , eg: (myvar,).  To pass insert/update to mysql null, use None in python bind value
+   :numRows: -1 (default) returns all rows or None if no results.  As a convienence, pass 0 to return the first value of the first row directly (no dataset wrappers, see form below).  See example.
+   :form: What form should result set be returned in.  None if no results and raises exception/exits on error.  All selects (except to csv) are limited by mem size or other python mysqldb constraints.
+
+      Python native:
+
+      * 'dict' (default) returns a list of row dictionaries with column names as keys.  None on no results.
+      * 'list' (faster for large sets) returns a list of row lists.
+
+      Numpy:
+
+      * 'numpy' returns a dictionary of numpy arrays, 1 array for each column.  Column names are the keys to dictionary.      
+
+      if numpy and nympyFloat64 is true, number arrays that are automatically created as decimal.Decimal objects will be created as float64 types instead (default)
+
+      * 'text' returns a nicely formatted list of strings
+
+      File output: (requires outfile)
+
+      * 'csv' sends to outfile in csv format.  all strings are quoted, embedded quotes are double quoted.  comma separator.
+      
+      .. note:: Output form csv is a scalable output as it fetches in chunks and can be used on any size dataset upto limits of mysql temporary table size (tested on 8 million rows).
+      
+      * 'tsv' sends to outfile in tab separated format.  all strings are quoted, embedded quotes are double quoted.  comma separator
+      * 'dat' sends formatted text lines to outfile
+      * 'txt' sends formatted text lines to outfile
+      * 'excel' sends excel compatible csv file to outfile
+      * 'npy' creates a npy format result file that can be imported in other programs.(not programmed yet)
+      * 'csv-nq' sends to outfile without any quoting
+
+      Screen output:
+      
+      * 'std' formatted text output to standard out (using print)
+
+   :timerName: If timerName is passed, a the query is timed and results printed.
+   :commit: If True (default), then a commit is sent after the command.  This needs to be used on dml for inoodb tables because python turns off autocommit by default.  Pass False to use explicity transaction commands.
+   :multiInsert: Pass True for optimized bulk inserts.  Parameters should be a list of tuples.  See doMultiInsert() wrapper below for example.
+   :insert: Pass True to return lastinsertid (if appropriate)
+
+   Examples:
+
+   Import and make readonly Connection, do select query using %s place holder for parameterized query to sanitize inputs
+
+   .. code-block:: python   
+      
+      import db_utils.db_conn as db_conn
+      db=db_conn.RO()
+      a=db.doquery("select num as data_num, v.* from flask_data v where date > %s limit 10",('2016-01-01',))
+      if a:
+       for row in a :
+        print(("num: %s date: %s time: %s" % (row['data_num'],row['date'],row['time'])))
+
+   .. code-block:: python
+
+      num: 6343672 date: 2016-01-02 time: 0:12:00
+      num: 6343929 date: 2016-01-02 time: 0:12:00
+      num: 6344186 date: 2016-01-02 time: 0:12:00
+      num: 6344443 date: 2016-01-02 time: 0:12:00
+      num: 6344700 date: 2016-01-02 time: 0:12:00
+      num: 6344957 date: 2016-01-02 time: 0:12:00
+      num: 6345214 date: 2016-01-02 time: 0:12:00
+      num: 6345471 date: 2016-01-02 time: 0:12:00
+      num: 6345728 date: 2016-01-02 time: 0:12:00
+      num: 6345985 date: 2016-01-02 time: 0:12:00
+
+   Get single value directly by passing numRows=0
+
+   .. code-block:: python
+
+      count=db.doquery("select count(*) from flask_event", numRows=0)
+      print(count)
+
+   .. code-block:: python
+
+      494372
+
+   Select into a dict of numpy col arrays by using form='numpy'
+
+   .. code-block:: python
+
+      a=db.doquery("select data_num,ev_datetime,site,lat,lon from flask_data_view where site=%s limit 10",('MLO',),form='numpy')      
+      print(a['lat']) #this is a numpy.float64 array of lats
+      print(type(a['lat']))
+
+   .. code-block:: python
+
+      [19.53 19.53 19.53 19.53 19.53 19.53 19.53 19.53 19.53 19.53]
+      <class 'numpy.ndarray'>
+
+
+
+   You can use the BldSQL sql object to build a query (see it's documentation), which is convient when building programmatically.
+   As a convience, If you don't pass query (or parameters), then the BldSQL object is used to generate the query (and parameters)
+   You could also use sql.cmd() and sql.bind() to get them
+
+   .. code-block:: python
+
+      sql=db.sql #handle for the query builder. See bldsql.py for documentation.
+
+      showMet=True
+
+      sql.initQuery() #Resets/initializes
+      sql.table("flask_event e") #Set tables and columns separately
+      sql.col("e.num as event_num")
+      sql.innerJoin("gmd.site s on e.site_num=s.num") #Can use join syntax or regular where = joins
+      sql.col('s.code as site')
+      sql.orderby("s.code")
+      sql.limit(10)
+
+      sql.where("e.date>%s",('2015-01-01')) #binds parameters instead of passing text
+      sql.where("e.date<%s",('2016-01-01'))
+
+      #conditional branching
+      if(showMet):
+          sql.leftJoin("flask_met met on e.num=met.event_num") #outer join
+          sql.col("met.narr_spec_humidity")
+
+      #bind multiple
+      sites=('aao','crv','bld')
+      sql.wherein('s.code in', sites)
+
+      a=db.doquery() #returns list of dicts by default
+      for row in a:
+        print("Event: %s site: %s shum: %s " % (row['event_num'],row['site'],row['narr_spec_humidity']))
+
+      a=db.doquery(outfile='/tmp/out.csv', form='csv') #write csv file
+
+   .. code-block:: python
+      
+      Event: 380113 site: BLD shum: 0.003
+      Event: 380114 site: BLD shum: 0.003
+      Event: 380115 site: BLD shum: 0.003
+      Event: 380116 site: BLD shum: 0.003
+      Event: 380117 site: BLD shum: 0.003
+      Event: 380118 site: BLD shum: 0.003
+      Event: 380119 site: BLD shum: 0.003
+      Event: 380120 site: BLD shum: 0.003
+      Event: 380121 site: BLD shum: 0.003
+      Event: 380122 site: BLD shum: 0.003 
+  
+   See /ccg/src/db/db_utils/examples.py to run these examples
+
+
+
+.. function:: doMultiInsert(self,sql,params,maxLen=10000,all=False)
+
+   Wrapper function to do an optimized bulk insert of many rows.  Particularly convienent if doing inserts in a loop.  You must call with all=True after loop to send through any remaining.  Returns True when data was submitted and params[] should be cleared (see below), false if we haven't hit the threshold yet.
+
+   :sql: Insert statment with %s placeholders for bind variables
+   :params: List of bind variable lists (one list for each insert)
+   :maxLen: Max # of inserts to accumulate before sending in.  
+   :all: True to send through any remaining inserts even if we haven't yet hit maxLen.  False to accumulate.
+
+   Example usage:
+
+   .. code-block:: python
+
+      params=[]
+      i=1
+      sql="insert mund_dev.t_brmAerodyneData (dt,c2h6,ch4) values (%s,%s,%s)"
+      for row in fh.readf(delim=',',skip_lines=1):
+         c2h6=row[0]
+         ch4=row[1]
+         dt=row[2]
+         params.append([dt,c2h6,ch4])
+         if self.db.doMultiInsert(sql,params):params=[]#When returns true, params list should be reset
+      self.db.doMultiInsert(sql,params,all=True)#Send any remaining through.
+
+
+

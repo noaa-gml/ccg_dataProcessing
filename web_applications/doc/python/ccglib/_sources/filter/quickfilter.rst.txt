@@ -1,0 +1,9 @@
+
+:mod:`ccg_quickfilter` --- Flag outliers of data using ccg_filter curve fit
+============================================================================
+
+.. automodule:: ccg_quickfilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:

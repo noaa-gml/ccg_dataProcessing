@@ -1,0 +1,56 @@
+.. highlight:: rest
+
+.. _hp35900:
+
+hp35900
+^^^^^^^
+
+.. _startrun:
+
+StartRun
+-----------
+
+        Start a run on the HP 35900 Dual Channel Interface.
+
+        Action line syntax:
+
+            ``0 StartRun HP35900 channel``
+
+        where channel should be either 'A' or 'B'.
+
+.. _stoprun:
+
+StopRun
+-----------
+
+        Stop a run on the HP 35900 Dual Channel Interface
+
+        Action line syntax:
+
+            ``0 StopRun HP35900 Channel``
+
+        where Channel should be either 'A' or 'B'.
+
+.. _storedata:
+
+StoreData
+-----------
+
+        Read back the data from the 35900 dci, write values to file.
+        File is in gc TEXT format. (see /ccg/src/integrator/src)
+        'Option' must contain 4 fields:
+
+                * the channel letter either 'A' or 'B',
+                * the filename to store the data,
+                * the port number where the sample came from,
+                * the samplerate of the data in Hz
+
+        Action line syntax:
+
+                ``0 StoreData device channel filename port samplerate``
+
+        Example:
+
+                ``0 Storedata HP35900 A gc.ch4.txt 3 10``
+
+

@@ -1,0 +1,17 @@
+.wy-nav-content {
+    background: #ffffff;
+}
+.wy-nav-content a:visited {
+    color: #2980b9;
+}
+.wy-nav-content a:hover {
+text-decoration: underline;
+}
+
+.highlight {
+    background: #fffff0;
+}
+
+.rst-content div[class^="highlight"], .rst-content pre.literal-block {
+    border: 1px solid #ddddcc;
+}
